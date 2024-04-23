@@ -1,0 +1,56 @@
+simple_env:
+  1:
+    output_folder: temp
+    tool: ['fork', 'knife']
+    containers:
+      - x: None
+        y: None
+        type: bowl
+        food: ball
+        color: ['black']
+        amount: 20
+      - x: None
+        y: None
+        type: green_bowl
+        food: None
+        color: ['red', 'purple']
+        amount: 20
+  2:
+    franka_type: original
+    output_folder: temp
+    tool: ['fork', 'spoon', 'knife']
+    containers:
+      - x: 0.5
+        y: 0.5
+        type: cutting_board
+        container_color: pink
+        food: forked_food
+        color: ['black']
+        amount: 1600
+      - x: 0.3
+        y: 0.8
+        type: bowl
+        container_color: blue
+        food: ball
+        color: ['black']
+        amount: 1600
+      - x: 0.35
+        y: 0.2
+        type: round_plate
+        container_color: green
+        food: None
+        color: None
+  3:
+    franka_type: original
+    output_folder: temp
+    tool: ['fork', 'spoon', 'knife']
+    containers:
+      - x: 0.8
+        y: 0.5
+        type: bowl
+        food: ball
+        color: ['black']
+        amount: 1600
+      
+
+    
