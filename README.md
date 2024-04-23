@@ -1,5 +1,7 @@
 # robotic-powder-weighting
 
+modified from [repo](https://github.com/ben25000233/scoop-env/tree/main)
+
 ## Getting started
 
 ### To build environments
