@@ -17,7 +17,7 @@
         <color rgba="1. 0.9 0.6 1.0" />
       </material>
       <geometry>
-        <box size="0.04 0.04 0.04" />
+        <box size="0.075 0.075 0.075" />
       </geometry>
     </visual>
   </link>

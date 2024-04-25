@@ -37,6 +37,7 @@ import cv2
 import math
 import argparse
 from torchvision.transforms.functional import to_pil_image
+from time import time
 torch.pi = math.pi
 
 
@@ -128,24 +129,25 @@ class IsaacSim():
         self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_D, "turn_left")
         self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_E, "turn_up")
         self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_Q, "turn_down")
+        self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_SPACE, "gripper_close")
         
         self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_1, "move_scoop")
         self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_2, "move_scoop_put")
         self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_3, "move_stir")
-        self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_4, "move_fork")
+        self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_0, "set_tool")
         self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_I, "scoop")
-        self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_O, "stir")
+        self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_O, "scoop_put")
+        self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_K, "stir")
         self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_P, "fork")
         self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_L, "cut")
         self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_8, "take_tool")
         self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_7, "put_tool")
+        self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_M, "move_around")
         
-        self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_0, "scoop_put")
-        self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_9, "change container index")
         
-        self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_SPACE, "gripper_close")
         self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_X, "save")
         self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_F, "to_file")
+        self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_R, "action_reset")
         self.gym.subscribe_viewer_keyboard_event(self.viewer, gymapi.KEY_B, "quit")
 
         # Look at the first env
@@ -223,8 +225,8 @@ class IsaacSim():
         
     def add_camera(self, env_ptr):
         camera_props = gymapi.CameraProperties()
-        camera_props.width = 1080
-        camera_props.height = 720
+        camera_props.width = 1920
+        camera_props.height = 1080
         camera_props.enable_tensors = True
         cam_handle = self.gym.create_camera_sensor(env_ptr, camera_props)
         self.gym.set_camera_location(cam_handle, env_ptr, gymapi.Vec3(1.5, 0, 1.2), gymapi.Vec3(0, 0, 0))
@@ -272,16 +274,22 @@ class IsaacSim():
             self.container_asset = []
         self.containers_pose = []
         self.containers_color = []
-        self.min_container_dist = 0.3
+        self.min_container_dist = 0.2
+        max_x = 0.58
+        min_x = 0.35
+        max_y = 0.34
+        min_y = -0.2
         for i in range(self.container_num):
             random_sample = False
             containers_pose = gymapi.Transform()
             containers_pose.r = gymapi.Quat(1, 0, 0, 1) if 'plate' not in self.env_cfg_dict["containers"][i]["type"] else gymapi.Quat(0, 0, 0, 1)
+            height_offset = 0.02 if self.env_cfg_dict["containers"][i]["type"] == "bowl" else 0
             if self.env_cfg_dict["containers"][i]["x"] != "None":
-                containers_pose.p = gymapi.Vec3(0.35 + 0.3 * self.env_cfg_dict["containers"][i]["x"], -0.3 + 0.75 * self.env_cfg_dict["containers"][i]["y"], self.default_height/2)
+                # containers_pose.p = gymapi.Vec3(min_x + (max_x-min_x) * self.env_cfg_dict["containers"][i]["x"], min_y + (max_y - min_y) * self.env_cfg_dict["containers"][i]["y"], self.default_height/2+0.02)
+                containers_pose.p = gymapi.Vec3(self.env_cfg_dict["containers"][i]["x"], self.env_cfg_dict["containers"][i]["y"], self.default_height/2+height_offset)
             else:
                 while not random_sample:
-                    containers_pose.p = gymapi.Vec3(0.35 + (0.3) * random.random(), -0.3 + (0.65) * random.random(), self.default_height/2)
+                    containers_pose.p = gymapi.Vec3(min_x + (max_x-min_x) * random.random(), min_y + (max_y - min_y) * random.random(), self.default_height/2+height_offset)
                     random_sample = True
                     for pose in self.containers_pose:
                         if calculate_dist(pose, containers_pose) < self.min_container_dist:
@@ -290,7 +298,7 @@ class IsaacSim():
             self.containers_pose.append(containers_pose)
             
             c = None
-            if self.env_cfg_dict["containers"][i]["container_color"] == "None":
+            if self.env_cfg_dict["containers"][i]["container_color"] == None:
                 c = "white"
             else:
                 c = self.env_cfg_dict["containers"][i]["container_color"]
@@ -313,12 +321,7 @@ class IsaacSim():
         self.butter_poses.append(butter_pose)
         butter_pose.p = gymapi.Vec3(0.4, 0.05, self.default_height/2)
         self.butter_poses.append(butter_pose)
-        
-    def add_butter(self, env_ptr):
-        for butter_pose in self.butter_poses:
-            self.butter_handle = self.gym.create_actor(env_ptr, self.butter_asset, butter_pose, "food", 0, 0)
-            butter_idx = self.gym.get_actor_index(env_ptr, self.butter_handle, gymapi.DOMAIN_SIM)
-            self.butter_indices.append(butter_idx)       
+             
           
     def create_holder(self):
         file_name = 'holder/holder.urdf'
@@ -394,8 +397,8 @@ class IsaacSim():
 
         ball_friction = self.ball_friction
         ball_restitution = 0
-        ball_rolling_friction = 1
-        ball_torsion_friction = 1
+        ball_rolling_friction = 0.1
+        ball_torsion_friction = 0.1
         ball_handle = self.gym.create_actor(env_ptr, self.ball_asset, ball_pose, f"{color} grain", 0, 0)
         body_shape_prop = self.gym.get_actor_rigid_shape_properties(env_ptr, ball_handle)
 
@@ -408,15 +411,7 @@ class IsaacSim():
         self.gym.set_actor_rigid_shape_properties(env_ptr, ball_handle, body_shape_prop)
         return ball_handle
     
-    def add_food(self, env_ptr):
-        # add balls
-        from matplotlib.colors import to_rgba
-        
-
-        ball_pose = gymapi.Transform()
-        ball_pose.r = gymapi.Quat(0, 0, 0, 1)
-        ball_spacing = self.between_ball_space
-        
+    def create_food(self):
         file_name = 'food/butter.urdf'
         asset_options = gymapi.AssetOptions()
         asset_options.armature = 0.01
@@ -431,25 +426,32 @@ class IsaacSim():
         asset_options.vhacd_params.resolution = 300000
         self.forked_food_asset = self.gym.load_asset(self.sim, self.asset_root, file_name, asset_options)
         
+    def add_food(self, env_ptr):
+        # add balls
+        from matplotlib.colors import to_rgba
         
+
+        ball_pose = gymapi.Transform()
+        ball_pose.r = gymapi.Quat(0, 0, 0, 1)
+        ball_spacing = self.between_ball_space
         for i, containers_pose in enumerate(self.containers_pose):
             if self.env_cfg_dict["containers"][i]["food"] == "ball":
                 total_amount = int(self.env_cfg_dict["containers"][i]["amount"])
                 color_num = len(self.env_cfg_dict["containers"][i]["color"])
                 ball_amount_max = min(10, total_amount)
-                range = ball_spacing * 0.18 * ball_amount_max
-                x_start, y_start = containers_pose.p.x - range / 2, containers_pose.p.y - range / 2
+                ran = ball_spacing * 0.18 * ball_amount_max
+                x_start, y_start = containers_pose.p.x - ran / 2, containers_pose.p.y - ran / 2
                 for cnt, c in enumerate(self.env_cfg_dict["containers"][i]["color"]):
                     ball_amount = int(total_amount / color_num)
                     rgba = to_rgba(c)
                     color = gymapi.Vec3(rgba[0], rgba[1], rgba[2])
-                    sub_range = ball_amount / total_amount * range
+                    sub_ran = ball_amount / total_amount * ran
                     x, y, z = x_start, y_start, self.default_height / 2
                     while ball_amount > 0:
                         y = y_start
-                        while y < y_start + sub_range and ball_amount > 0:
+                        while y < y_start + sub_ran and ball_amount > 0:
                             x = x_start
-                            while x < x_start + range and ball_amount > 0:
+                            while x < x_start + ran and ball_amount > 0:
                                 ball_pose.p = gymapi.Vec3(x + (random.random() - 0.5) * 0.01, y + (random.random() - 0.5) * 0.01, z)
                                 ball_handle = self.set_ball_property(env_ptr, ball_pose, c)
                                 self.gym.set_rigid_body_color(env_ptr, ball_handle, 0, gymapi.MESH_VISUAL_AND_COLLISION, color)
@@ -458,18 +460,17 @@ class IsaacSim():
                                 ball_amount -= 1
                             y += ball_spacing * 0.18
                         z += ball_spacing * 0.18
-                    y_start += sub_range
+                    y_start += sub_ran
                         
-            elif self.env_cfg_dict["containers"][i]["food"] == "butter":
-                butter_poses = []
-                butter_pose = gymapi.Transform()
-                butter_pose.r = gymapi.Quat(1, 0, 0, 1)
-                butter_pose.p = gymapi.Vec3(containers_pose.p.x, containers_pose.p.y, self.default_height/2 + 0.03)
-                butter_poses.append(butter_pose)
-                butter_pose.p = gymapi.Vec3(containers_pose.p.x, containers_pose.p.y + 0.05, self.default_height/2 + 0.1)
-                butter_poses.append(butter_pose)
-                for butter_pose in butter_poses:
-                    self.butter_handle = self.gym.create_actor(env_ptr, self.butter_asset, butter_pose, "cuttable_food", 0, 0)
+            elif self.env_cfg_dict["containers"][i]["food"] == "cuttable_food":
+                rot = gymapi.Quat(1, 0, 0, 1)
+                x, y, z = containers_pose.p.x, containers_pose.p.y, containers_pose.p.z + 0.03
+                for _ in range(2):
+                    pose = gymapi.Transform()
+                    pose.r = rot
+                    pose.p = gymapi.Vec3(x, y, z)
+                    y += 0.05
+                    self.butter_handle = self.gym.create_actor(env_ptr, self.forked_food_asset, pose, "cuttable_food", 0, 0)
                     butter_idx = self.gym.get_actor_index(env_ptr, self.butter_handle, gymapi.DOMAIN_SIM)
                     self.butter_indices.append(butter_idx)       
             
@@ -478,7 +479,6 @@ class IsaacSim():
                 pose.r = gymapi.Quat(1, 0, 0, 1)
                 pose.p = gymapi.Vec3(containers_pose.p.x, containers_pose.p.y, self.default_height/2 + 0.03)
                 self.forked_food_handle = self.gym.create_actor(env_ptr, self.forked_food_asset, pose, "forked_food", 0, 0)
-                self.gym.set_actor_scale(env_ptr, self.forked_food_handle, 1.5)
                 idx = self.gym.get_actor_index(env_ptr, self.forked_food_handle, gymapi.DOMAIN_SIM)
                 self.forked_food_indices.append(idx)      
 
@@ -553,6 +553,7 @@ class IsaacSim():
         self.create_ball()
         self.create_franka()
         self.create_tool()
+        self.create_food()
     
         # cache some common handles for later use
         self.camera_handles = []
@@ -639,7 +640,7 @@ class IsaacSim():
         self.is_moving = False
     
     def action_state_reset(self):
-        self.action_list = ['scoop', 'stir', 'fork', 'cut', 'scoop_put', 'take_tool', 'put_tool']
+        self.action_list = ['scoop', 'stir', 'fork', 'cut', 'scoop_put', 'take_tool', 'put_tool', 'move_around']
         for action in self.action_list:
             self.action_stage[action] = -1
             self.is_acting[action] = False
@@ -710,16 +711,18 @@ class IsaacSim():
             rot = euler_to_quaternion(roll, pitch, yaw)
             pitch = -1.57
             knife_rot = euler_to_quaternion(roll, pitch, yaw)
+            hold_tight = 0.01 if "primary_tool" in self.env_cfg_dict.keys() else 0
+            
             self.goal_pos_set = [
-                torch.Tensor([[tool_pos[:, 0], tool_pos[:, 1] - 0.0026, tool_pos[:, 2] + 0.17]]),
-                torch.Tensor([[tool_pos[:, 0], tool_pos[:, 1] - 0.0026, tool_pos[:, 2] + 0.1]]),
-                torch.Tensor([[tool_pos[:, 0], tool_pos[:, 1] - 0.0026, tool_pos[:, 2] + 0.13]]),
-                torch.Tensor([[tool_pos[:, 0], tool_pos[:, 1] + 0.15, tool_pos[:, 2] + 0.13]]),
-                torch.Tensor([[tool_pos[:, 0], tool_pos[:, 1] + 0.15, tool_pos[:, 2] + 0.2]])
+                torch.Tensor([[tool_pos[:, 0], tool_pos[:, 1], tool_pos[:, 2] + 0.17]]),
+                torch.Tensor([[tool_pos[:, 0], tool_pos[:, 1], tool_pos[:, 2] + 0.095 - hold_tight]]),
+                torch.Tensor([[tool_pos[:, 0], tool_pos[:, 1], tool_pos[:, 2] + 0.13]]),
+                torch.Tensor([[tool_pos[:, 0], tool_pos[:, 1] + 0.05, tool_pos[:, 2] + 0.13]]),
+                torch.Tensor([[tool_pos[:, 0], tool_pos[:, 1] + 0.05, tool_pos[:, 2] + 0.2]])
             ]
             self.goal_rot_set = [torch.Tensor([[rot.x, rot.y, rot.z, rot.w]])] * len(self.goal_pos_set)
-            if tool == 'knife':
-                self.gaol_rot_set[-1] = torch.Tensor([[knife_rot.x, knife_rot.y, knife_rot.z, knife_rot.w]])
+            # if tool == 'knife':
+            #     self.goal_rot_set[-1] = torch.Tensor([[knife_rot.x, knife_rot.y, knife_rot.z, knife_rot.w]])
             roll, pitch, yaw = quaternion_to_euler(rot)
             print(f'r:{roll}, p:{pitch}, y:{yaw}')
             self.action_stage['take_tool'] = 0
@@ -772,9 +775,11 @@ class IsaacSim():
             roll += 3.14
             rot = euler_to_quaternion(roll, pitch, yaw)
             self.goal_pos_set = [
-                torch.Tensor([[tool_pos.x, tool_pos.y + 0.15, tool_pos.z + 0.1]]),
-                torch.Tensor([[tool_pos.x, tool_pos.y - 0.0026, tool_pos.z + 0.1]]),
-                torch.Tensor([[tool_pos.x, tool_pos.y - 0.0026, tool_pos.z + 0.08]])
+                torch.Tensor([[tool_pos.x, tool_pos.y + 0.05, tool_pos.z + 0.18]]),
+                torch.Tensor([[tool_pos.x, tool_pos.y + 0.05, tool_pos.z + 0.15]]),
+                torch.Tensor([[tool_pos.x, tool_pos.y - 0.0026, tool_pos.z + 0.13]]),
+                torch.Tensor([[tool_pos.x, tool_pos.y - 0.0026, tool_pos.z + 0.085]]),
+                torch.Tensor([[tool_pos.x, tool_pos.y - 0.0026, tool_pos.z + 0.2]])
             ]
             self.goal_rot_set = [torch.Tensor([[rot.x, rot.y, rot.z, rot.w]])] * len(self.goal_pos_set)
             roll, pitch, yaw = quaternion_to_euler(rot)
@@ -809,7 +814,62 @@ class IsaacSim():
         
         return dpose * 0.8
         
+    def move_around(self):
         
+        hand_pos = self.rb_state_tensor[self.franka_hand_indices, :3]
+        hand_rot = self.rb_state_tensor[self.franka_hand_indices, 3:7]
+        
+        if self.action_stage['move_around'] == -1:
+            # initialize
+            print("move around start")
+            self.delta['move_around'] = 1
+            init_pos = hand_pos.clone()
+            
+            max_z = 0.81 if self.env_cfg_dict["primary_tool"] == "spoon" else 0.84
+            min_z = 0.78 if self.env_cfg_dict["primary_tool"] == "spoon" else 0.81
+            max_x = 0.62
+            min_x = 0.32
+            max_y = 0.38
+            min_y = -0.23
+            max_dist = 0.65
+            
+            # original pos: 0.3871, 0.0877, container pos: 0.43999999999999995, 0.07500000000000001
+            self.goal_pos_set = []
+            for i in np.arange(min_x, max_x, 0.05):
+                for j in np.arange(min_y, max_y, 0.05):
+                    if np.sqrt(i*i + j*j) < max_dist:
+                        self.goal_pos_set.append(torch.tensor([[float(i), float(j), float(min_z + random.random() * (max_z - min_z))]]))
+            
+                    
+            self.goal_rot_set = [ torch.tensor([[ 0.9953,  0.0393, -0.0701,  0.0542]]) for i in self.goal_pos_set]
+            self.is_acting['move_around'] = True
+            self.action_stage['move_around'] = 0
+            return torch.Tensor([[0.], [0.], [0.], [0.], [0.], [0.]])
+        
+        elif self.action_stage['move_around'] == len(self.goal_pos_set):
+            # final stage
+            if self.is_acting['move_around']:
+                print("finish move_around")
+                self.is_acting['move_around'] = False
+            return torch.Tensor([[0.], [0.], [0.], [0.], [0.], [0.]])
+        
+        goal_pos = self.goal_pos_set[self.action_stage['move_around']]
+        goal_rot = self.goal_rot_set[self.action_stage['move_around']]
+        to_goal = goal_pos - hand_pos
+        goal_dist = torch.norm(to_goal, dim=1).unsqueeze(-1)
+        to_axis = goal_rot[:, :3] - hand_rot[:, :3]
+        axis_dist = torch.norm(to_axis, dim=1).unsqueeze(-1)
+        w_dist = goal_rot[:, -1] - hand_rot[:, -1]
+        w_dist = abs(w_dist)
+        pos_err = torch.where(goal_dist > self.goal_offset, goal_pos - hand_pos, torch.Tensor([0, 0, 0]))
+        orn_err = torch.where(axis_dist > self.axis_offset or w_dist > self.w_offset, self.orientation_error(goal_rot, hand_rot), torch.Tensor([0, 0, 0]))
+        dpose = torch.cat([pos_err, orn_err], -1).unsqueeze(-1)
+        
+        if goal_dist <= self.goal_offset and axis_dist <= self.axis_offset and w_dist <= self.w_offset:
+            self.action_stage['move_around'] += 1
+            print(self.action_stage['move_around'])
+        dpose *= self.delta['move_around']
+        return dpose
         
         
     def scoop(self):
@@ -822,7 +882,7 @@ class IsaacSim():
             # initialize
             
             print("scoop start")
-            self.delta['scoop'] = [0.5, 0.5, 0.5, 0.3]
+            self.delta['scoop'] = [0.5, 0.5, 0.5, 0.5]
             # self.delta['scoop'] = [0.05, 0.05, 0.05, 0.5]
             self.goal_pos_set = [hand_pos + torch.Tensor([[0., 0., -0.065]])]
             self.goal_rot_set = [torch.Tensor([[1.0, 0.0, -0.05, 0.0]])]
@@ -867,6 +927,7 @@ class IsaacSim():
                 init_pos + torch.tensor([[x_temp+-0.0570,  0.0019,  0.6808]]), 
                 init_pos + torch.tensor([[x_temp+-0.1330,  0.0017,  0.7000]])
             ]
+
             self.goal_rot_set = [
                 torch.tensor([[ 0.9945,  0.0413, -0.0809,  0.0523]]),
                 torch.tensor([[ 0.9945,  0.0410, -0.0808,  0.0522]]),
@@ -916,6 +977,7 @@ class IsaacSim():
         return dpose
     
     def scoop_put(self):
+        hand_pos = self.rb_state_tensor[self.franka_hand_indices, :3]
         hand_rot = self.rb_state_tensor[self.franka_hand_indices, 3:7]
         delta = 1.5
         
@@ -923,13 +985,33 @@ class IsaacSim():
             print("scoop put")
             goal_rot = torch.Tensor([[1, 0, -0.1, 0]])
             stage_num = 4
+            use_container_pos = True
+            if use_container_pos:
+                init_pos = hand_pos.clone()
+                init_pos[:, 2] = 0
+                min_dist = float('inf')
+                for i, container_pose in enumerate(self.containers_pose):
+                    container_p = torch.Tensor([[container_pose.p.x, container_pose.p.y, 0.0]])
+                    print(f"container pos: {container_p}, init pos: {init_pos}")
+                    dist = torch.norm(container_p - init_pos, dim=1)
+                    if dist < min_dist:
+                        min_dist = dist
+                        best_tensor = container_p
+                init_pos = best_tensor + torch.Tensor([[-0.12, 0, 0.8]])
             goal_rot = (goal_rot - hand_rot) / stage_num
             self.goal_rot_set = [
                 hand_rot + goal_rot * (i + 1) for i in range(stage_num)
             ]
-            self.action_stage['scoop_put'] = 0
+            
+            to_goal = init_pos - hand_pos
+            goal_dist = torch.norm(to_goal, dim=1).unsqueeze(-1)
+            pos_err = torch.where(goal_dist > self.goal_offset, init_pos - hand_pos, torch.Tensor([0, 0, 0]))
             self.is_acting['scoop_put'] = True
-            return torch.Tensor([[0.], [0.], [0.], [0.], [0.], [0.]])
+            if goal_dist < self.goal_offset:
+                self.action_stage['scoop_put'] = 0
+                return torch.Tensor([[0.], [0.], [0.], [0.], [0.], [0.]])
+            return torch.cat([pos_err, torch.Tensor([[0, 0, 0]])], -1).unsqueeze(-1) * 0.5
+        
         elif self.action_stage['scoop_put'] == len(self.goal_rot_set):
             # final stage
             print("finish putting")
@@ -944,7 +1026,6 @@ class IsaacSim():
         pos_err = torch.Tensor([[0, 0, 0]])
         orn_err = torch.where(axis_dist > self.axis_offset or w_dist > self.w_offset, self.orientation_error(goal_rot, hand_rot), torch.Tensor([0, 0, 0]))
         dpose = torch.cat([pos_err, orn_err], -1).unsqueeze(-1)
-        
         if axis_dist <= self.axis_offset and w_dist <= self.w_offset:
             self.action_stage['scoop_put'] += 1
         dpose *= delta
@@ -956,23 +1037,35 @@ class IsaacSim():
         
         
         if self.action_stage['stir'] == -1:
-            self.stir_center = hand_pos + torch.Tensor([[0.03, 0, 0]])
-            self.goal_rot_set = [
-                self.stir_center + torch.Tensor([[0.1, 0, 0]]),
-                hand_pos
-            ]
+            stage_num = 10
+            self.stir_center = hand_pos + torch.Tensor([[0.04, 0, 0]])
+            radius = 0.04
+            x = -0.04
+            middle = False
+            step = radius * 4 / stage_num
+            self.goal_pos_set = []
+            for _ in range(stage_num):
+                x += step if not middle else -step
+                y = math.sqrt(radius ** 2 - x ** 2)
+                y *= 1 if not middle else -1
+                if x >= radius and not middle:
+                    middle = True
+                self.goal_pos_set.append(self.stir_center + torch.Tensor([x, y, 0]))
+                
+                
             self.action_stage['stir'] = 0
             self.is_acting['stir'] = True
-            self.delta['stir'] = 0.1
-            return torch.Tensor([[0.], [0.], [-5.], [0.], [0.], [0.]])
+            self.delta['stir'] = 0.05
+            return torch.Tensor([[0.], [0.], [0.], [0.], [0.], [0.]])
             
-        elif self.action_stage['stir'] == len(self.goal_rot_set):
-            print("finish stirring")
-            self.is_acting['stir'] = False
+        elif self.action_stage['stir'] == len(self.goal_pos_set):
+            if self.is_acting['stir']:
+                print("finish stirring")
+                self.is_acting['stir'] = False
             return torch.Tensor([[0.], [0.], [0.], [0.], [0.], [0.]])
         
-        stage_xy = self.goal_rot_set[self.action_stage['stir']]
-        stage_dir = stage_xy - hand_pos
+        stage_xy = self.goal_pos_set[self.action_stage['stir']]
+        stage_dir = torch.sub(stage_xy, hand_pos)
         stage_dist = torch.norm(stage_dir[:, :1], dim=1).unsqueeze(-1)
         if stage_dist < self.goal_offset:
             self.action_stage['stir'] += 1
@@ -990,7 +1083,7 @@ class IsaacSim():
         pos_err = goal_xy
         orn_err = torch.Tensor([[0, 0, 0]])
         
-        dpose = torch.cat([pos_err, orn_err], -1).unsqueeze(-1)        
+        dpose = torch.cat([pos_err, orn_err], -1).unsqueeze(-1) * self.delta["stir"]    
         return dpose
         
     def fork(self):
@@ -1036,19 +1129,56 @@ class IsaacSim():
         hand_pos = self.rb_state_tensor[self.franka_hand_indices, :3]
         hand_rot = self.rb_state_tensor[self.franka_hand_indices, 3:7]
         
-        cut_delta = 0.1
         
         if self.action_stage['cut'] == -1:
+            self.delta["cut"] = [0.5]
             self.action_stage['cut'] = 0
             self.is_acting['cut'] = True
-            self.cut_end = self.default_height / 2 + 0.12
+            food_pos = torch.mean(self.rb_state_tensor[self.butter_indices, :3], dim=0)
+            food_rot = self.rb_state_tensor[self.butter_indices, 3:7][0]
+            print(food_rot)
+            roll, pitch, yaw = quaternion_to_euler(gymapi.Quat(food_rot[..., 0], food_rot[..., 1], food_rot[..., 2], food_rot[..., 3]))
+            roll_init = roll + 1.57
+            pitch_init = pitch - math.pi / 3
+            init_rot = euler_to_quaternion(roll_init, pitch_init, yaw)
+            final_rot = euler_to_quaternion(3.14, 0, 0)
+            print(food_pos)
+            self.goal_pos_set = [
+                food_pos + torch.Tensor([[-0.18, -0.0165, 0.3]]),
+                food_pos + torch.Tensor([[-0.18, -0.0165, 0.1]]),
+                food_pos + torch.Tensor([[-0.18, -0.0165, 0.3]]),
+            ]
+            self.goal_rot_set = [
+                torch.Tensor([[init_rot.x, init_rot.y, init_rot.z, init_rot.w]]),
+                torch.Tensor([[init_rot.x, init_rot.y, init_rot.z, init_rot.w]]),
+                torch.Tensor([[final_rot.x, final_rot.y, final_rot.z, final_rot.w]])
+            ]
             return torch.Tensor([[[0.], [0.], [0.], [0.], [0.], [0.]]])
-        if hand_pos[:, -1].item() - self.cut_end < 0.001:
-            print("finish cut")
-            self.action_stage['cut'] = -1
-            self.is_acting['cut'] = False
+        elif self.action_stage["cut"] == len(self.goal_pos_set):
+            if self.is_acting["cut"]:
+                print("finish cut")
+                self.action_stage['cut'] = -1
+                self.is_acting['cut'] = False
             return torch.Tensor([[0.], [0.], [0.], [0.], [0.], [0.]])
-        return torch.Tensor([[[0.], [0.], [self.cut_end - hand_pos[:, -1].item()], [0.], [0.], [0.]]]) * cut_delta
+        
+        goal_pos = self.goal_pos_set[self.action_stage['cut']]
+        goal_rot = self.goal_rot_set[self.action_stage['cut']]
+        to_goal = goal_pos - hand_pos
+        goal_dist = torch.norm(to_goal, dim=1).unsqueeze(-1)
+        to_axis = goal_rot[:, :3] - hand_rot[:, :3]
+        axis_dist = torch.norm(to_axis, dim=1).unsqueeze(-1)
+        w_dist = goal_rot[:, -1] - hand_rot[:, -1]
+        w_dist = abs(w_dist)
+        pos_err = torch.where(goal_dist > self.goal_offset, goal_pos - hand_pos, torch.Tensor([0, 0, 0]))
+        orn_err = torch.where(axis_dist > self.axis_offset or w_dist > self.w_offset, self.orientation_error(goal_rot, hand_rot), torch.Tensor([0, 0, 0]))
+        dpose = torch.cat([pos_err, orn_err], -1).unsqueeze(-1)
+        
+        if goal_dist <= self.goal_offset and axis_dist <= self.axis_offset and w_dist <= self.w_offset:
+            self.action_stage['cut'] += 1
+            print(self.action_stage['cut'])
+        dpose *= self.delta['cut'][self.action_stage['cut'] if self.action_stage['cut'] < len(self.delta['cut']) else -1]
+        
+        return dpose
         
     def switch(self):
         next_tool = np.random.choice(self.tool_list, 1)[0]
@@ -1071,22 +1201,22 @@ class IsaacSim():
     def data_collection(self):
         self.reset()
         img_num = 0
+        start = time()
+        image_freq = 1.5 # sec.
 
         action = ""
+        current_tool = "knife"
 
         while not self.gym.query_viewer_has_closed(self.viewer):
             if self.container_num > 0:
                 container_pos = [self.rb_state_tensor[indice, :3] for indice in self.containers_indices]
-                scoop_idx = 1
+                scoop_idx = 0
                 put_idx = -1
                 scoop_pos = container_pos[scoop_idx] + torch.Tensor([[-0.1, 0., 0.3]])
                 scoop_rot = torch.Tensor([[1., 0., 0., 0.]])
                 scoop_put_pos = container_pos[put_idx] + torch.Tensor([[-0.15, 0., 0.3]])
-                stir_pos = container_pos[scoop_idx] + torch.Tensor([[-0.06, 0., 0.3]])
-                stir_rot = torch.Tensor([[1., 0., 0., 0.]])
-                fork_food_pos = self.rb_state_tensor[self.butter_indices, :3]
-                fork_food_pos[:, -1] += 0.3
-                fork_food_rot = torch.Tensor([[1., 0., 0., 0.]])
+                stir_pos = container_pos[scoop_idx] + torch.Tensor([[-0.06, 0., 0.2]])
+                stir_rot = torch.Tensor([[1., 0., 0., 0.]])\
             # scoop_rot = quat_from_angle_axis(torch.Tensor([0.3]), to_container)
             # scoop_rot = torch.cat([to_container.view(3, ), torch.Tensor([0.8])], -1).unsqueeze(-1).view(1, 4)
             
@@ -1116,6 +1246,10 @@ class IsaacSim():
             for evt in self.gym.query_viewer_action_events(self.viewer):
                 action = evt.action if (evt.value) > 0 else ""
             
+            if action == "action_reset":
+                self.action_state_reset()
+                print("reset")
+            
             for a in self.action_list:
                 if self.is_acting[a]:
                     if action in [a, ""]:
@@ -1124,7 +1258,13 @@ class IsaacSim():
                         self.action_state_reset()
                         print(f"{a} terminate")
                     break
-                
+            if time() - start > image_freq:
+                for i in range(self.num_envs):
+                    file_name = f'./observation/{self.output_folder}/image{img_num}.png'
+                    img_num += 1
+                    self.gym.write_camera_image_to_file(self.sim, self.envs[i], self.camera_handles[i], gymapi.IMAGE_COLOR, file_name)
+                    start = time()
+            
             if action == "up":
                 dpose = torch.Tensor([[[0.],[0.],[1.],[0.],[0.],[0.]]]) * delta
             elif action == "down":
@@ -1152,7 +1292,7 @@ class IsaacSim():
             elif action == "scoop":
                 dpose = self.scoop()
             elif action == "stir":
-                dpose = self.stir() * self.delta['stir']
+                dpose = self.stir()
             elif action == "scoop_put":
                 dpose = self.scoop_put()
             elif action == "move_stir":
@@ -1161,28 +1301,30 @@ class IsaacSim():
                 dpose = self.move(scoop_pos, scoop_rot) * moving_delta
             elif action == "move_scoop_put":
                 dpose = self.move(scoop_put_pos, slow=True) * moving_delta
-            elif action == "move_fork":
-                dpose = self.move(fork_food_pos, fork_food_rot) * moving_delta
             elif action == "fork":
                 dpose = self.fork()
             elif action == "cut":
                 dpose = self.cut()
             elif action == "take_tool":
-                dpose = self.take_tool("spoon")
+                dpose = self.take_tool(current_tool)
             elif action == "put_tool":
-                dpose = self.put_tool("spoon")
-            elif action == "change container index":
-                self.container_idx = int(input("New goal container index"))
-                if self.container_idx >= self.container_num: self.container_idx = self.container_num - 1
-                elif self.container_idx < 0: self.container_idx = 0
-            elif action == "switch":
-                self.switch()
+                dpose = self.put_tool(current_tool)
+            elif action == "move_around":
+                dpose = self.move_around()
             elif action == "gripper_close":
                 dpose = torch.Tensor([[[0.],[0.],[0.],[0.],[0.],[0.]]])
                 if torch.all(self.pos_action[:, 7:9] == gripper_close):
                     self.pos_action[:, 7:9] = gripper_open
                 elif torch.all(self.pos_action[:, 7:9] == gripper_open):
                     self.pos_action[:, 7:9] = gripper_close
+            elif action == "set_tool":
+                for i, tool in enumerate(self.tool_list):
+                    if tool == current_tool:
+                        current_tool = self.tool_list[(i + 1) % len(self.tool_list)]
+                        print(current_tool)
+                        break
+                dpose = torch.Tensor([[[0.],[0.],[0.],[0.],[0.],[0.]]])
+                
             elif action == "save":
                 hand_pos = self.rb_state_tensor[self.franka_hand_indices, 0:3]
                 hand_rot = self.rb_state_tensor[self.franka_hand_indices, 3:7]
@@ -1323,8 +1465,83 @@ class IsaacSim():
 
         self.gym.destroy_viewer(self.viewer)
         self.gym.destroy_sim(self.sim)
+        
+    def take_tool_move_around(self):
+        self.reset()
+        img_num = 0
+        start = time()
+        image_freq = 1.5 # sec.
 
-def read_yaml(file_path, env_type='simple_env', env_num=1):
+        dpose = torch.Tensor([[[0.],[0.],[0.],[0.],[0.],[0.]]])
+        action_sequence = ['action_reset', 'take_tool', 'move_around']
+        action_idx = 0
+        self.create_food()
+        
+        rgb_images = []
+        depth_images = []
+        while not self.gym.query_viewer_has_closed(self.viewer):
+
+            self.gym.simulate(self.sim)
+            self.gym.fetch_results(self.sim, True)
+            self.gym.render_all_camera_sensors(self.sim)
+            self.gym.refresh_dof_state_tensor(self.sim)
+            self.gym.refresh_actor_root_state_tensor(self.sim)
+            self.gym.refresh_rigid_body_state_tensor(self.sim)
+            self.gym.refresh_jacobian_tensors(self.sim)
+
+            action = action_sequence[action_idx]
+
+            if action == "action_reset":
+                self.action_state_reset()
+                action_idx += 1
+            
+            if time() - start > image_freq:
+                rgb_images.append(self.gym.get_camera_image(self.sim, self.envs[0], self.camera_handles[0], gymapi.IMAGE_COLOR).reshape(1080, 1920, 4)[:,:,:-1])
+                depth_image = self.gym.get_camera_image(self.sim, self.envs[0], self.camera_handles[0], gymapi.IMAGE_DEPTH)
+                depth_image = np.clip(depth_image, -1.8, 0)
+                depth_image = (depth_image - np.min(depth_image)) / (np.max(depth_image) - np.min(depth_image)) * 255
+                depth_images.append(depth_image.astype(np.uint8))
+                start = time()
+                
+            
+            if action == "take_tool":
+                dpose = self.take_tool(self.env_cfg_dict["primary_tool"])
+                if self.is_acting['take_tool'] == False:
+                    action_idx += 1
+            
+            elif action == "move_around":
+                dpose = self.move_around()
+                if self.is_acting['move_around'] == False:
+                    return rgb_images, depth_images
+                        
+            dpose = dpose.to(self.device)
+            
+            self.pos_action[:, :7] = self.dof_state[:, self.franka_dof_indices, 0].squeeze(-1)[:, :7] + self.control_ik(dpose)
+       
+            test_dof_state = self.dof_state[:, :, 0].contiguous()
+            test_dof_state[:, self.franka_dof_indices] = self.pos_action
+
+            franka_actor_indices = self.franka_indices.to(dtype=torch.int32)
+            self.gym.set_dof_position_target_tensor_indexed(
+                self.sim,
+                gymtorch.unwrap_tensor(test_dof_state),
+                gymtorch.unwrap_tensor(franka_actor_indices),
+                len(franka_actor_indices)
+            )
+
+            # update the viewer
+            self.gym.step_graphics(self.sim)
+            self.gym.draw_viewer(self.viewer, self.sim, True)
+
+            self.gym.sync_frame_time(self.sim)
+
+            self.frame += 1
+
+        self.gym.destroy_viewer(self.viewer)
+        self.gym.destroy_sim(self.sim)
+
+
+def read_yaml(file_path, env_type='medium_env', env_num=1):
     with open(file_path, 'r') as f:
         config = yaml.safe_load(f)
     config = config[env_type][env_num]

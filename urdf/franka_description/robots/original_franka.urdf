@@ -196,6 +196,9 @@
         <mesh filename="meshes/collision/hand.obj"/>
       </geometry>
     </collision>
+    <inertial>
+      <mass value="5"/> 
+    </inertial>
   </link>
   <link name="panda_leftfinger">
     <visual>
