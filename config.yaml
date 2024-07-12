@@ -1,6 +1,6 @@
 simple_env:
   1:
-    franka_type: original
+    instruction: "Scoop the beans to the green bowl"
     tool: ['spoon', 'fork', 'knife']
     containers:
       - x: None
@@ -16,58 +16,102 @@ simple_env:
         container_color: green
         food: None
         color: ['red', 'purple']
-        amount: 20
+        amount: 0
   2:
-    franka_type: original
+    instruction: "Stir the food in the bowl."
     tool: ['fork', 'spoon', 'knife']
     containers:
-      - x: 0.5
-        y: 0.23
+      - x: None
+        y: None
         type: bowl
         container_color: yellow
-        food: None
-        color: ['black']
-        amount: 1600
-      - x: 0.3
-        y: 0.8
-        type: bowl
-        container_color: gray
         food: ball
+        color: ['black', 'white']
+        amount: 1200
+      - x: None
+        y: None
+        type: bowl
+        container_color: white
+        food: None
         color: ['black', 'darkgreen']
-        amount: 2000
+        amount: 0
   3:
-    franka_type: original
-    output_folder: temp
+    instruction: "Cut the food"
     tool: ['fork', 'spoon', 'knife']
     containers:
-      - x: 0.8
-        y: 0.5
+      - x: None
+        y: None
+        type: cutting_board
+        container_color: None
+        food: cuttable_food
+        color: None
+        amount: None
+      - x: None
+        y: None
+        type: square_plate
+        container_color: None
+        food: None
+        color: None
+        amount: None
+  4:
+    instruction: "Scoop the food to the empty plate"
+    tool: ['spoon', 'fork', 'knife']
+    containers:
+      - x: None
+        y: None
         type: bowl
+        container_color: black
+        food: ball
+        color: ['red']
+        amount: 1200
+      - x: None
+        y: None
+        type: round_plate
+        container_color: green
+        food: None
+        color: ['red', 'purple']
+        amount: 20
+  5:
+    instruction: "Take fork and move to the plate with beans"
+    tool: ['spoon', 'knife', 'fork']
+    containers:
+      - x: None
+        y: None
+        type: square_plate
+        container_color: white
+        food: None
+        color: white
+        amount: 0
+      - x: None
+        y: None
+        type: round_plate
+        container_color: white
         food: ball
         color: ['black']
-        amount: 1600
+        amount: 200
 medium_env:
   1:
+    instruction: "Stir food in the bowl then scoop it to the plate with food"
     franka_type: original
     output_folder: temp
     tool: ['fork', 'spoon', 'knife']
     containers:
       - x: 0.5
-        y: 0.5
+        y: 0.
         type: bowl
         container_color: blue
         food: ball
         color: ['black', 'white']
-        amount: 1600
+        amount: 1200
       - x: 0.3
-        y: 0.8
+        y: 0.3
         type: square_plate
         container_color: gray
-        food: butter
+        food: forked_food
         color: ['black']
         amount: 1600
       - x: 0.35
-        y: 0.2
+        y: -0.3
         type: round_plate
         container_color: white
         food: None
@@ -104,35 +148,130 @@ medium_env:
         color: None
 hard_env:
   1:
-    franka_type: original
-    output_folder: temp
+    instruction: "Cut the food first then scoop some food on the cutted food"
     tool: ['fork', 'spoon', 'knife']
     containers:
-      - x: 0.5
-        y: 0.
+      - x: None
+        y: None
         type: bowl
-        container_color: gray
+        container_color: white
         food: ball
         color: ['brown']
         amount: 1200
-      - x: 0.5
-        y: 0.3
+      - x: None
+        y: None
         type: cutting_board
         container_color: white
         food: cuttable_food
         color: None
         amount: None
-      - x: 0.35
-        y: 0.1
-        type: round_plate
-        container_color: white
-        food: None
-        color: None
-      - x: 0.65
-        y: -0.2
+      - x: None
+        y: None
         type: bowl
         container_color: gray
         food: None
         color: None
-
+      - x: None
+        y: None
+        type: square_plate
+        container_color: black
+        food: None
+        color: None
+  2:
+    instruction: "Stir the beans twice then scoop them to all empty bowls."
+    tool: ['fork', 'knife', 'spoon']
+    containers:
+      - x: None
+        y: None
+        type: bowl
+        container_color: white
+        food: ball
+        color: ['green', 'red']
+        amount: 1200
+      - x: None
+        y: None
+        type: bowl
+        container_color: gray
+        food: None
+      - x: None
+        y: None
+        type: bowl
+        container_color: black
+        food: None
+      - x: None
+        y: None
+        type: bowl
+        container_color: darkgray
+        food: None
+  3:
+    instruction: "Stir the beans in the yellow bowl, then scoop to another bowl with beans and stir it again."
+    tool: ["fork", "knife", "spoon"]
+    containers:
+    - x: None
+      y: None
+      type: bowl
+      container_color: yellow
+      food: ball
+      color: ['darkred', 'black']
+      amount: 1200
+    - x: None
+      y: None
+      type: bowl
+      container_color: black
+      food: ball
+      color: ['lightyellow']
+      amount: 1100
+    - x: None
+      y: None
+      type: bowl
+      container_color: purple
+      food: None
+  4:
+    instruction: "Spread some beans on the butter and take fork."
+    tool: ["spoon", "fork", "knife"]
+    containers:
+    - x: None
+      y: None
+      type: bowl
+      container_color: white
+      food: ball
+      color: ['darkgreen']
+      amount: 1200
+    - x: None
+      y: None
+      type: square_plate
+      container_color: white
+      food: forked_food
+      color: None
+      amount: None
+  5:
+    instruction: "Make a bowl of meal consisting of red beans, green beans and black beans in a ratio of 3:2:1."
+    tool: ["knife", "spoon"]
+    containers:
+    - x: None
+      y: None
+      type: bowl
+      container_color: gray
+      food: ball
+      color: ['green']
+      amount: 1200
+    - x: None
+      y: None
+      type: bowl
+      container_color: lightgray
+      food: ball
+      color: ['red']
+      amount: 1200
+    - x: None
+      y: None
+      type: bowl
+      container_color: darkgray
+      food: ball
+      color: ['black']
+      amount: 1200
+    - x: None
+      y: None
+      type: bowl
+      container_color: white
+      food: None
     
