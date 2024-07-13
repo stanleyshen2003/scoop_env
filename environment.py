@@ -28,22 +28,14 @@ import time
 import random
 import yaml
 import torch
-import pickle
 import numpy as np
-import open3d as o3d
 import pytorch3d.transforms
-from tqdm import tqdm
-import cv2
 import math
-import argparse
-from torchvision.transforms.functional import to_pil_image
 from time import time
 from PIL import Image
 torch.pi = math.pi
 
-from decision_pipeline import Decision_pipeline
-from BallGenerator import BallGenerator
-from WeighingDomainInfo import WeighingDomainInfo
+from src import Decision_pipeline, BallGenerator
 
 
 def pose7d_to_matrix(pose7d: torch.Tensor):
@@ -416,8 +408,8 @@ class IsaacSim():
         self.ball_radius, self.ball_mass, self.ball_friction = 0.0035, 1e-3 , 5e-3
         self.between_ball_space = 0.045
         ballGenerator = BallGenerator()
-        file_name = f'BallHLS.urdf'
-        ballGenerator.generate(file_name=file_name, ball_radius=self.ball_radius, ball_mass=self.ball_mass)
+        file_name = f'ball/BallHLS.urdf'
+        ballGenerator.generate(root=self.asset_root, file_name=file_name, ball_radius=self.ball_radius, ball_mass=self.ball_mass)
         self.ball_asset = self.gym.load_asset(self.sim, self.asset_root, file_name, gymapi.AssetOptions())
     
     def set_ball_property(self, env_ptr, ball_pose, color):

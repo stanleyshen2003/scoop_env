@@ -1,10 +1,9 @@
-from simple_env import IsaacSim
+from environment import IsaacSim
 import matplotlib.colors as mcolors
 import random
 from datetime import datetime
 import os
 from PIL import Image
-import threading
 import yaml
 
 

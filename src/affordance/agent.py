@@ -7,7 +7,7 @@ import sys
 from typing import List
 
 class Affordance_agent():
-    def __init__(self, init_object_list: List[str], model_path='affordance/model/49_0.9759231705667524.pth'):
+    def __init__(self, init_object_list: List[str], model_path='src/affordance/model/49_0.9759231705667524.pth'):
         self.env_state = {obj.split(" (")[0]: obj.split(" (")[1].replace(")", "") != "empty" for obj in init_object_list}
         self.tool_on_hand = False
         self.food_on_hand = False

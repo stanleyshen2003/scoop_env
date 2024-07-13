@@ -1,5 +1,6 @@
 *.mp4
-*.txt
+experiment_log/
+observation/
 *.pth
 test_collect/
 record/
@@ -7,6 +8,7 @@ lightning_logs/
 log/
 __pycache__/
 mode/
+.vscode/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

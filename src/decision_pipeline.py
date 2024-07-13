@@ -1,6 +1,6 @@
 import cv2
-from affordance.agent import Affordance_agent
-from semantic import get_semantic_openai
+from src.affordance.agent import Affordance_agent
+from src.semantic import get_semantic_openai
 
 class Decision_pipeline():
     def __init__(self, init_object_list) -> None:

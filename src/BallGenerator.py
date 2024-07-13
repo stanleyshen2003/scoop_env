@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import xml.etree.ElementTree as gfg
-from matplotlib.colors import to_rgba
+import os
 
 
 class BallGenerator(object):
@@ -8,8 +8,8 @@ class BallGenerator(object):
     def __init__(self):
         pass
 
-    def generate(self, file_name=None, ball_radius=None, ball_mass=None, ball_color=None):
-        file_name = 'urdf/' + file_name
+    def generate(self, root='urdf/', file_name=None, ball_radius=None, ball_mass=None, ball_color=None):
+        file_name = os.path.join(root, file_name)
         root = gfg.Element("robot", name="ball")
 
         link = gfg.Element("link", name="ball")
