@@ -1,6 +1,6 @@
 import cv2
 from src.affordance.agent import Affordance_agent
-from src.semantic import get_semantic_openai
+from src.semantic import get_semantic_openai, get_semantic_gemini
 
 class Decision_pipeline():
     def __init__(self, init_object_list) -> None:
@@ -15,7 +15,7 @@ class Decision_pipeline():
             action_sequence=None, 
             use_affordance=True
         ):
-        action_list = ["scoop", "fork", "cut", "stir", "put_food", "DONE"]
+        action_list = ["scoop", "fork", "cut", "stir", "put_food", "pull_bowl_closer", "DONE"]
         action_list.extend([f"take_tool ({tool})" for tool in tool_list])
         action_list.extend([f"put_tool ({tool})" for tool in tool_list])
         action_list.extend([f"move_to_{object.split(' (')[0]}" for object in object_list])
@@ -27,15 +27,20 @@ class Decision_pipeline():
             
         # get semantic score
         semantic = get_semantic_openai(instruction, object_list, action_list, action_sequence)
+        # semantic = get_semantic_gemini(instruction, object_list, action_list, action_sequence)
         
         
         print(instruction)
+        print("=" * 20)
         use_affordance and print(f"affordance {max(affordance, key=affordance.get)}")
         use_affordance and print(affordance)
+        print("=" * 20)
         print(f"semantic {max(semantic, key=semantic.get)}")
         print(semantic)
+        print("=" * 20)
         combined = {action: affordance[action] * semantic[action] for action in action_list}
         print(f"combined\n{combined}")
+        print("=" * 20)
         # move_destination = None
         # if combined["move"] == max(combined, key=combined.get):
         #     instruction += "move to "

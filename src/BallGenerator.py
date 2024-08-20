@@ -8,7 +8,7 @@ class BallGenerator(object):
     def __init__(self):
         pass
 
-    def generate(self, root='urdf/', file_name=None, ball_radius=None, ball_mass=None, ball_color=None):
+    def generate(self, root='urdf/', file_name=None, ball_radius=None, ball_mass=None):
         file_name = os.path.join(root, file_name)
         root = gfg.Element("robot", name="ball")
 
