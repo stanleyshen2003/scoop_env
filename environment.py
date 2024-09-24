@@ -148,6 +148,7 @@ class IsaacSim():
                 "C": "choose action",
                 "T": "pull_bowl_closer", 
             }
+            self.action_list = []
         elif k_mode == 'demo':
             setting = {
                 "0": "set_tool",
@@ -984,7 +985,7 @@ class IsaacSim():
             # initialize
             
             print("scoop start")
-            self.delta['scoop'] = [1.5, 1.5, 1.5, 1.5, 1.5, 3, 3, 3, 3, 3, 3, 2.5, 3, 3, 3, 3]
+            self.delta['scoop'] = [1.5, 1.5, 1.5, 1.5, 1.5, 3, 3, 3, 3, 3, 3, 2.5, 3, 3, 3, 2.7]
             # self.delta['scoop'] = [0.05, 0.05, 0.05, 0.5]
             self.goal_pos_set = [hand_pos + torch.tensor([[0., 0., -0.065]], device=self.device)]
             self.goal_rot_set = [torch.tensor([[1.0, 0.0, -0.05, 0.0]], device=self.device)]
@@ -1019,7 +1020,7 @@ class IsaacSim():
                 init_pos + torch.tensor([[-0.1024,  0.0019,  0.6758]], device=self.device),
                 init_pos + torch.tensor([[-0.1016,  0.0021,  0.6708]], device=self.device),
                 init_pos + torch.tensor([[-0.1370,  0.0019,  0.6808]], device=self.device),
-                init_pos + torch.tensor([[-0.2130,  0.0017,  0.7000]], device=self.device)
+                init_pos + torch.tensor([[-0.1830,  0.0017,  0.7000]], device=self.device)
             ]
 
             self.goal_rot_set = [
@@ -1677,9 +1678,9 @@ class IsaacSim():
                 init_pos + torch.tensor([[-0.07, -0.07,  0.57]], device=self.device),
                 init_pos + torch.tensor([[-0.07, -0.07,  0.57]], device=self.device),
                 # init_pos + torch.tensor([[-0.2, -0.3,  0.57]], device=self.device)
-                torch.tensor([[0.3,-0.1,0.63]], device=self.device),
-                torch.tensor([[0.3,-0.1,0.63]], device=self.device),
-                torch.tensor([[0.3,-0.1,0.8]], device=self.device),
+                torch.tensor([[0.4,-0.2,0.63]], device=self.device),
+                torch.tensor([[0.4,-0.2,0.63]], device=self.device),
+                torch.tensor([[0.4,-0.2,0.8]], device=self.device),
             ]
 
             self.goal_rot_set = [
@@ -2267,7 +2268,7 @@ def read_yaml(file_path, env_type='medium_env', env_num=1):
 
 
 if __name__ == "__main__":
-    config = read_yaml("config.yaml", env_type='simple', env_num=6)
+    config = read_yaml("config.yaml", env_type='hard', env_num=7)
     issac = IsaacSim(config)
     issac.data_collection()
 

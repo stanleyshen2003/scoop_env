@@ -105,8 +105,8 @@ simple:
         type: bowl
         container_color: green
         food: None
-        color: ['red', 'purple']
-        amount: 0
+        color: ['red']
+        amount: 1200
 medium:
   1:
     instruction: "Stir food in the bowl then scoop it to the plate with food"
@@ -451,4 +451,43 @@ hard:
       food: ball
       color: ['green']
       amount: 1200
+  7:
+    instruction: "None, just for testing."
+    tool: ['spoon', 'fork', 'knife']
+    containers:
+    - x: 0.4
+      y: 0.25
+      type: bowl
+      container_color: white
+      food: ball
+      color: ['green']
+      amount: 1800
+    - x: 0.6
+      y: 0.25
+      type: bowl
+      container_color: white
+      food: ball
+      color: ['darkred']
+      amount: 1800
+    - x: 0.4
+      y: 0.05
+      type: bowl
+      container_color: white
+      food: ball
+      color: ['salmon']
+      amount: 1800
+    - x: 0.6
+      y: 0.05
+      type: bowl 
+      container_color: white
+      food: ball
+      color: ['black']
+      amount: 1800
+    - x: 0.7
+      y: -0.18
+      type: bowl
+      container_color: yellow
+      food: None
+      color: ['black']
+      amount: None
     
