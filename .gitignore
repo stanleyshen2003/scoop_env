@@ -1,4 +1,5 @@
 *.mp4
+confidence_calibration/question/*
 experiment_log/
 observation/
 *.pth

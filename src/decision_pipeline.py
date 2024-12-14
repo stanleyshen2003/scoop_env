@@ -1,10 +1,33 @@
+import os
 import cv2
 from src.affordance.agent import Affordance_agent
-from src.semantic import get_semantic_openai, get_semantic_gemini
+from src.semantic import *
+import base64
+import mimetypes
 
+
+def encode_image(image_path: str):
+    """Encodes an image to base64 and determines the correct MIME type."""
+    mime_type, _ = mimetypes.guess_type(image_path)
+    if mime_type is None:
+        raise ValueError(f"Cannot determine MIME type for {image_path}")
+
+    with open(image_path, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+        return f"data:{mime_type};base64,{encoded_string}"
+
+def get_action_list(tool_list, object_list):
+    action_list = ["scoop", "stir", "put_food", "pull_bowl_closer", "DONE"]
+    action_list.extend([f"take_tool ({tool})" for tool in tool_list])
+    action_list.extend([f"put_tool ({tool})" for tool in tool_list])
+    action_list.extend([f"move_to_{object.split(' (')[0]}" for object in object_list])
+    return action_list
+    
 class Decision_pipeline():
-    def __init__(self, init_object_list) -> None:
+    def __init__(self, init_object_list, log_folder=None) -> None:
         self.affordance_agent = Affordance_agent(init_object_list)
+        self.log_folder = log_folder
+        self.obs_id = 0
     def get_combine(
             self,
             instruction: str, 
@@ -13,12 +36,12 @@ class Decision_pipeline():
             object_list=None, 
             tool_list=None, 
             action_sequence=None, 
-            use_affordance=True
+            use_affordance=True,
+            use_vlm=False,
         ):
-        action_list = ["scoop", "fork", "cut", "stir", "put_food", "pull_bowl_closer", "DONE"]
-        action_list.extend([f"take_tool ({tool})" for tool in tool_list])
-        action_list.extend([f"put_tool ({tool})" for tool in tool_list])
-        action_list.extend([f"move_to_{object.split(' (')[0]}" for object in object_list])
+        # action_list = ["scoop", "fork", "cut", "stir", "put_food", "pull_bowl_closer", "DONE"]
+        action_list = get_action_list(tool_list, object_list)
+        print(action_list)
         rgb_img = cv2.imread(observation_rgb)
         gray_scale_img = cv2.imread(observation_d, cv2.IMREAD_GRAYSCALE)
         
@@ -26,7 +49,13 @@ class Decision_pipeline():
         affordance = self.affordance_agent.get_affordance(rgb_img, gray_scale_img, action_list, action_sequence) if use_affordance else {action: 1 for action in action_list}
             
         # get semantic score
-        semantic = get_semantic_openai(instruction, object_list, action_list, action_sequence)
+        obs_image = None
+        base64_image = encode_image(observation_rgb)
+        if use_vlm:
+            obs_image = base64_image
+            if self.log_folder is not None:
+                cv2.imwrite(os.path.join(self.log_folder, f'observation_{self.obs_id}.png'), rgb_img)
+        semantic = get_selection_score_openai(instruction, object_list, action_list, action_sequence, use_vlm, obs_image, log_folder=self.log_folder, obs_id=self.obs_id)
         # semantic = get_semantic_gemini(instruction, object_list, action_list, action_sequence)
         
         
@@ -45,6 +74,8 @@ class Decision_pipeline():
         # if combined["move"] == max(combined, key=combined.get):
         #     instruction += "move to "
         #     move_destination = get_semantic_destination(instruction, object_list)
+        
+        self.obs_id += 1
         
         return combined
     

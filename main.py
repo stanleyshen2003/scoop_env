@@ -9,6 +9,8 @@ import numpy as np
 import threading
 import time
 import trace
+import datetime
+import logging
 
 dotenv.load_dotenv()
 
@@ -51,30 +53,34 @@ def run_experiment(config):
 def get_log_id(dir):
     if not os.path.exists(dir):
         os.makedirs(dir)
-    log_files = glob.glob(os.path.join(dir, '*.txt'))
-    if len(log_files) == 0:
-        return 0
-    log_files = [int(''.join(filter(str.isdigit, os.path.basename(x)))) for x in log_files]
-    log_files = sorted(log_files)
-    return log_files[-1] + 1
+    return datetime.datetime.fromtimestamp(time.time()).strftime('%Y%m%d%H%M%S')
     
 def test(mode, env_type, env_num):
-    assert mode in ['llm', 'pipeline'], "Invalid mode"
+    assert mode in ['llm', 'pipeline', 'calibration_collection'], f"Invalid mode {mode}"
     print("=" * 10, env_type.upper(), env_num, "=" * 10)
     root = 'experiment_log'
     
-    log_dir = os.path.join(root, f"{env_type}_{env_num}")
-    log_id: str = str(get_log_id(log_dir))
-    f = open(os.path.join(log_dir, f"log_{log_id.zfill(3)}.txt"), 'w')
-    sys.stdout = f
-    config = read_yaml("config.yaml", env_type=env_type, env_num=env_num)
-    Environment = IsaacSim(env_cfg_dict=config)
-    if mode == 'pipeline':
-        Environment.test_pipeline()
-    elif mode == 'llm':
-        Environment.test_llm()
-        pyautogui.screenshot().save(os.path.join(log_dir, f"env_{log_id.zfill(3)}.jpg"))
-    f.close()
+    log_folder = None
+    if mode != 'calibration_collection':
+        log_dir = os.path.join(root, f"{env_type}_{env_num}")
+        log_id: str = str(get_log_id(log_dir))
+        log_folder = os.path.join(log_dir, log_id)
+        os.makedirs(log_folder, exist_ok=True)
+        # f = open(os.path.join(log_dir, f"{log_id}.txt"), 'w')
+        # sys.stdout = f
+        config = read_yaml("config.yaml", env_type=env_type, env_num=env_num)
+        Environment = IsaacSim(env_cfg_dict=config, log_folder=log_folder)
+        if mode == 'pipeline':
+            Environment.test_pipeline()
+        elif mode == 'llm':
+            Environment.test_llm()
+            pyautogui.screenshot().save(os.path.join(log_dir, f"{log_id}.jpg"))
+    else:
+        config = read_yaml("confidence_calibration/config.yaml", env_type=env_type, env_num=env_num)
+        Environment = IsaacSim(env_cfg_dict=config)
+        Environment.test_pipeline(action_sequence=config['answer'])
+        
+    # f.close()
     sys.stdout = sys.__stdout__
     # Environment.data_collection()
 
@@ -97,8 +103,8 @@ def experiments():
             print(env_type, env_num, "\n" + "=" * 30)
             log_dir = os.path.join(root, f"{env_type}_{env_num}")
             log_id: str = str(get_log_id(log_dir))
-            video_filename = os.path.join(log_dir, f"log_{log_id.zfill(3)}.mp4")
-            f = open(os.path.join(log_dir, f"log_{log_id.zfill(3)}.txt"), 'w')
+            video_filename = os.path.join(log_dir, f"{log_id}.mp4")
+            f = open(os.path.join(log_dir, f"{log_id}.txt"), 'w')
             # sys.stdout = f
             config = read_yaml("config.yaml", env_type=env_type, env_num=env_num)
             Environment = IsaacSim(config)
@@ -124,7 +130,7 @@ def experiments():
 if __name__ == "__main__":
   # data_collection('simple', 2)
   # test('pipeline', 'medium', 6)
-  test('llm', 'medium', 3)
+  test('calibration_collection', 'simple', 1)
   # test('llm', 'hard', 5)
   # env_types = ['hard', 'simple', 'medium']
   # env_nums = [i + 1 for i in range(5)]
