@@ -1,0 +1,471 @@
+general:
+  # general scooping
+  1: 
+    instruction: Scoop the beans.
+    answer: ['take_tool (spoon)', 'move_to_red_bowl', 'scoop']
+    tool: [spoon]
+    containers:
+    - x: 0.45
+      y: 0.2
+      type: bowl
+      color: red
+      food:
+        type: ball
+        color: [darkred]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.61
+      y: 0.0
+      type: bowl
+      color: orange
+      food:
+        type: None
+        color: [darkred, purple]
+        amount: 0
+        position: [1, 1]
+  2: 
+    instruction: Scoop the beans.
+    answer: ['take_tool (spoon)', 'move_to_green_bowl', 'scoop']
+    tool: [spoon]
+    containers:
+    - x: 0.55
+      y: 0.05
+      type: bowl
+      color: green
+      food:
+        type: ball
+        color: [darkgreen]
+        amount: 1600
+        position: [1, 1]
+  3: 
+    instruction: Scoop the beans.
+    answer: ['take_tool (spoon)', 'move_to_blue_bowl', 'scoop']
+    tool: [spoon]
+    containers:
+    - x: 0.54
+      y: 0.1
+      type: bowl
+      color: blue
+      food:
+        type: ball
+        color: [darkgreen]
+        amount: 1800
+        position: [1, 1]
+  4: 
+    instruction: Scoop the beans.
+    answer: ['take_tool (spoon)', 'move_to_purple_bowl', 'scoop']
+    tool: [spoon]
+    containers:
+    - x: 0.52
+      y: -0.12
+      type: bowl
+      color: purple
+      food:
+        type: ball
+        color: [black]
+        amount: 1400
+        position: [1, 1]
+  5: 
+    instruction: Scoop the beans.
+    answer: ['take_tool (spoon)', 'move_to_yellow_bowl', 'scoop']
+    tool: [spoon]
+    containers:
+    - x: 0.39
+      y: 0.2
+      type: bowl
+      color: yellow
+      food:
+        type: ball
+        color: [darkred]
+        amount: 1650
+        position: [1, 1]
+amount_ambiguity:
+  # different amounts of the beans
+  1: 
+    instruction: Scoop the beans as quickly as you can.
+    answer: ['take_tool (spoon)', 'move_to_red_bowl', 'scoop']
+    tool: [spoon]
+    containers:
+    - x: None
+      y: None
+      type: bowl
+      color: gray
+      food:
+        type: ball
+        color: [darkred]
+        amount: 20
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: red
+      food:
+        type: ball
+        color: [darkred]
+        amount: 1600
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: green
+      food:
+        type: ball
+        color: [darkred]
+        amount: 20
+        position: [1, 1]
+  2: 
+    instruction: Scoop the beans as quickly as you can.
+    answer: ['take_tool (spoon)', 'move_to_blue_bowl', 'scoop']
+    tool: [spoon]
+    containers:
+    - x: None
+      y: None
+      type: bowl
+      color: blue
+      food:
+        type: ball
+        color: [darkred]
+        amount: 1400
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: darkblue
+      food:
+        type: ball
+        color: [darkred]
+        amount: 200
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: lightblue
+      food:
+        type: None
+        color: [darkred]
+        amount: 200
+        position: [1, 1]
+  3: 
+    instruction: Scoop the beans as quickly as you can.
+    answer: ['take_tool (spoon)', 'move_to_brown_bowl', 'scoop']
+    tool: [spoon]
+    containers:
+    - x: None
+      y: None
+      type: bowl
+      color: green
+      food:
+        type: ball
+        color: [darkred]
+        amount: 200
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: brown
+      food:
+        type: ball
+        color: [darkred]
+        amount: 1200
+        position: [1, 1]
+  4: 
+    instruction: Scoop the beans as quickly as you can.
+    answer: ['take_tool (spoon)', 'move_to_yellow_bowl', 'scoop']
+    tool: [spoon]
+    containers:
+    - x: None
+      y: None
+      type: bowl
+      color: yellow
+      food:
+        type: ball
+        color: [darkgreen]
+        amount: 1800
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: red
+      food:
+        type: None
+        color: [darkgreen]
+        amount: 1800
+        position: [1, 1]
+  5: 
+    instruction: Scoop the beans as quickly as you can.
+    answer: ['take_tool (spoon)', 'move_to_purple_bowl', 'scoop']
+    tool: [spoon]
+    containers:
+    - x: None
+      y: None
+      type: bowl
+      color: purple
+      food:
+        type: ball
+        color: [darkred]
+        amount: 1000
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: violet
+      food:
+        type: ball
+        color: [darkred]
+        amount: 600
+        position: [1, 1]
+distance_ambiguity:
+  # different distance of beans
+  1:
+    instruction: Scoop the beans quickly.
+    answer: ['take_tool (spoon)', 'move_to_blue_bowl', 'scoop']
+    tool: [spoon]
+    containers:
+    - x: 0.65
+      y: -0.15
+      type: bowl
+      color: red
+      food:
+        type: ball
+        color: [darkred]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.55
+      y: 0.05
+      type: bowl
+      color: blue
+      food:
+        type: ball
+        color: [darkred]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.33
+      y: 0.28
+      type: bowl
+      color: green
+      food:
+        type: ball
+        color: [darkred]
+        amount: 1600
+        position: [1, 1]
+  2:
+    instruction: Scoop the beans quickly.
+    answer: ['take_tool (spoon)', 'move_to_orange_bowl', 'scoop']
+    tool: [spoon]
+    containers:
+    - x: 0.75
+      y: -0.2
+      type: bowl
+      color: yellow
+      food:
+        type: ball
+        color: [darkred]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.5
+      y: 0.15
+      type: bowl
+      color: orange
+      food:
+        type: ball
+        color: [darkred]
+        amount: 1600
+        position: [1, 1]
+  3:
+    instruction: Scoop the beans quickly.
+    answer: ['take_tool (spoon)', 'move_to_violet_bowl', 'scoop']
+    tool: [spoon]
+    containers:
+    - x: 0.7
+      y: -0.1
+      type: bowl
+      color: green
+      food:
+        type: ball
+        color: [darkred]
+        amount: 1400
+        position: [1, 1]
+    - x: 0.45
+      y: -0.1
+      type: bowl
+      color: violet
+      food:
+        type: ball
+        color: [darkred]
+        amount: 1200
+        position: [1, 1]
+  4:
+    instruction: Scoop the beans quickly.
+    answer: ['take_tool (spoon)', 'move_to_purple_bowl', 'scoop']
+    tool: [spoon]
+    containers:
+    - x: 0.5
+      y: 0.11
+      type: bowl
+      color: purple
+      food:
+        type: ball
+        color: [black]
+        amount: 1500
+        position: [1, 1]
+    - x: 0.2
+      y: 0.3
+      type: bowl
+      color: white
+      food:
+        type: ball
+        color: [darkgreen]
+        amount: 200
+        position: [1, 1]
+  5:
+    instruction: Scoop the beans quickly.
+    answer: ['take_tool (spoon)', 'move_to_yellow_bowl', 'scoop']
+    tool: [spoon]
+    containers:
+    - x: 0.63
+      y: 0.2
+      type: bowl
+      color: red
+      food:
+        type: ball
+        color: [darkred]
+        amount: 1800
+        position: [1, 1]
+    - x: 0.38
+      y: 0.22
+      type: bowl
+      color: yellow
+      food:
+        type: ball
+        color: [darkred]
+        amount: 1200
+        position: [1, 1]
+tool_block:
+  # the bowl block the tool
+  1:
+    instruction: Take the spoon.
+    answer: ['move_to_blue_bowl', 'pull_bowl_closer', 'take_tool (spoon)']
+    tool: [spoon]
+    containers:
+    - x: 0.43
+      y: -0.2
+      type: bowl
+      color: blue
+      food:
+        type: None
+        color: [darkred]
+        amount: 0
+        position: [1, 1]
+  2:
+    instruction: Take the spoon.
+    answer: ['move_to_red_bowl', 'pull_bowl_closer', 'take_tool (spoon)']
+    tool: [spoon]
+    containers:
+    - x: 0.45
+      y: -0.2
+      type: bowl
+      color: red
+      food:
+        type: ball
+        color: [darkred]
+        amount: 1000
+        position: [1, 1]
+  3:
+    instruction: Take the spoon.
+    answer: ['move_to_yellow_bowl', 'pull_bowl_closer', 'take_tool (spoon)']
+    tool: [spoon]
+    containers:
+    - x: 0.4
+      y: -0.22
+      type: bowl
+      color: yellow
+      food:
+        type: None
+        color: [darkgreen]
+        amount: 0
+        position: [1, 1]
+  4:
+    instruction: Take the spoon.
+    answer: ['move_to_purple_bowl', 'pull_bowl_closer', 'take_tool (spoon)']
+    tool: [spoon]
+    containers:
+    - x: 0.42
+      y: -0.25
+      type: bowl
+      color: purple
+      food:
+        type: None
+        color: [darkred]
+        amount: 0
+        position: [1, 1]
+  5:
+    instruction: Take the spoon.
+    answer: ['move_to_green_bowl', 'pull_bowl_closer', 'take_tool (spoon)']
+    tool: [spoon]
+    containers:
+    - x: 0.46
+      y: -0.25
+      type: bowl
+      color: green
+      food:
+        type: ball
+        color: [darkred]
+        amount: 20
+        position: [1, 1]
+distance:
+  # the bowl are too far to scoops
+  1: 
+    instruction: Scoop the beans.
+    answer: ['move_to_red_bowl', 'pull_bowl_closer', 'take_tool (spoon)', 'move_to_red_bowl', 'scoop']
+    tool: [spoon]
+    containers:
+    - x: 0.65
+      y: -0.05
+      type: bowl
+      color: red
+      food:
+        type: ball
+        color: [darkred]
+        amount: 1200
+        position: [1, 1]
+    - x: 0.45
+      y: 0.25
+      type: bowl
+      color: blue
+      food:
+        type: None
+        color: [darkred]
+        amount: 0
+        position: [1, 1]
+  2: 
+    instruction: Scoop the beans.
+    answer: ['move_to_gray_bowl', 'pull_bowl_closer', 'take_tool (spoon)', 'move_to_gray_bowl', 'scoop']
+    tool: [spoon]
+    containers:
+    - x: 0.65
+      y: -0.2
+      type: bowl
+      color: gray
+      food:
+        type: ball
+        color: [darkgreen]
+        amount: 1200
+        position: [1, 1]
+    - x: 0.45
+      y: 0.25
+      type: bowl
+      color: blue
+      food:
+        type: None
+        color: [darkred]
+        amount: 0
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: lightgray
+      food:
+        type: None
+        color: [darkred]
+        amount: 0
+        position: [1, 1]

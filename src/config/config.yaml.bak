@@ -1,0 +1,790 @@
+simple:
+  1:
+    instruction: Scoop the beans to the green bowl.
+    tool: [spoon, fork, knife]
+    containers:
+    - x: None
+      y: None
+      type: bowl
+      color: pink
+      food:
+        type: ball
+        color: [red]
+        amount: 1200
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: green
+      food:
+        type: None
+        color: [red, purple]
+        amount: 0
+        position: [1, 1]
+  2:
+    instruction: Stir the food in the bowl.
+    tool: [fork, spoon, knife]
+    containers:
+    - x: None
+      y: None
+      type: bowl
+      color: yellow
+      food:
+        type: ball
+        color: [black, white]
+        amount: 1200
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: white
+      food:
+        type: None
+        color: [black, darkgreen]
+        amount: 0
+        position: [1, 1]
+  3:
+    instruction: Cut the food
+    tool: [fork, spoon, knife]
+    containers:
+    - x: None
+      y: None
+      type: cutting_board
+      color: None
+      food: {type: cuttable_food, color: None, amount: None, position: [1, 1]}
+    - x: None
+      y: None
+      type: square_plate
+      color: None
+      food: {type: None, color: None, amount: None, position: [1, 1]}
+  4:
+    instruction: Scoop the food to the empty plate
+    tool: [spoon, fork, knife]
+    containers:
+    - x: None
+      y: None
+      type: bowl
+      color: black
+      food:
+        type: ball
+        color: [red]
+        amount: 1200
+        position: [1, 1]
+    - x: None
+      y: None
+      type: round_plate
+      color: green
+      food:
+        type: None
+        color: [red, purple]
+        amount: 20
+        position: [1, 1]
+  5:
+    instruction: Move to the plate with food with the fork held on the hand.
+    tool: [spoon, knife, fork]
+    containers:
+    - x: None
+      y: None
+      type: square_plate
+      color: white
+      food:
+        type: None
+        color: [white]
+        amount: 0
+        position: [1, 1]
+    - x: None
+      y: None
+      type: round_plate
+      color: white
+      food:
+        type: ball
+        color: [black]
+        amount: 200
+        position: [1, 1]
+  6:
+    instruction: Put the beans into the bowl.
+    tool: [spoon, fork, knife]
+    containers:
+    - x: 0.5
+      y: 0.0
+      type: bowl
+      color: pink
+      food:
+        type: ball
+        color: [red]
+        amount: 2000
+        position: [1, 1]
+    - x: 0.38
+      y: -0.25
+      type: bowl
+      color: green
+      food:
+        type: ball
+        color: [red]
+        amount: 2000
+        position: [1, 1]
+    - x: 0.7
+      y: 0.18
+      type: bowl
+      color: yellow
+      food:
+        type: None
+        color: [black]
+        amount: None
+        position: [1, 1]
+medium:
+  1:
+    instruction: Stir food in the bowl then scoop it to the plate with food
+    tool: [fork, spoon, knife]
+    containers:
+    - x: 0.5
+      y: 0.0
+      type: bowl
+      color: blue
+      food:
+        type: ball
+        color: [black, white]
+        amount: 1200
+        position: [1, 1]
+    - x: 0.3
+      y: 0.3
+      type: square_plate
+      color: gray
+      food:
+        type: forked_food
+        color: [black]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.35
+      y: -0.3
+      type: round_plate
+      color: white
+      food: {type: None, color: None, amount: 1200, position: [1, 1]}
+  2:
+    instruction: Move the red beans to all bowls and stir them.
+    tool: [fork, spoon, knife]
+    containers:
+    - x: 0.5
+      y: 0.5
+      type: bowl
+      color: white
+      food:
+        type: ball
+        color: [red]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.35
+      y: 0.8
+      type: bowl
+      color: gray
+      food:
+        type: None
+        color: [black]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.35
+      y: 0.2
+      type: bowl
+      color: black
+      food: {type: None, color: None, amount: 1200, position: [1, 1]}
+    - x: -0.3
+      y: 0.8
+      type: bowl
+      color: purple
+      food: {type: None, color: None, amount: 1200, position: [1, 1]}
+  3:
+    instruction: Cut the food, then scoop some of it into the empty bowl.
+    tool: [fork, spoon, knife]
+    containers:
+    - x: 0.5
+      y: 0.5
+      type: bowl
+      color: blue
+      food:
+        type: ball
+        color: [red]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.35
+      y: 0.8
+      type: bowl
+      color: red
+      food:
+        type: None
+        color: [black]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.35
+      y: 0.2
+      type: cutting_board
+      color: black
+      food: {type: cuttable_food, color: None, amount: 1200, position: [1, 1]}
+  4:
+    instruction: Scoop the food into the bowl and scoop it to the plate.
+    tool: [fork, spoon, knife]
+    containers:
+    - x: None
+      y: None
+      type: bowl
+      color: pink
+      food:
+        type: ball
+        color: [white, black]
+        amount: 1600
+        position: [1, 1]
+    - x: None
+      y: None
+      type: round_plate
+      color: gray
+      food:
+        type: None
+        color: [black]
+        amount: 1600
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: purple
+      food: {type: None, color: None, amount: 1200, position: [1, 1]}
+  5:
+    instruction: Stir the food in one bowl, transfer it to another bowl.
+    tool: [fork, spoon, knife]
+    containers:
+    - x: None
+      y: None
+      type: bowl
+      color: darkgray
+      food:
+        type: ball
+        color: [black]
+        amount: 1600
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: lightblue
+      food:
+        type: None
+        color: [green, pink]
+        amount: 1600
+        position: [1, 1]
+    - x: None
+      y: None
+      type: cutting_board
+      color: white
+      food: {type: None, color: None, amount: 1200, position: [1, 1]}
+  6:
+    instruction: Scoop the green bean into the purple bowl.
+    tool: [fork, spoon, knife]
+    containers:
+    - x: 0.8
+      y: 0.1
+      type: bowl
+      color: darkgray
+      food:
+        type: ball
+        color: [green]
+        amount: 1200
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: lightblue
+      food:
+        type: ball
+        color: [red]
+        amount: 800
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: purple
+      food: {type: None, color: None, amount: 1200, position: [1, 1]}
+  7:
+    instruction: Scoop some red bean to the bowl with green bean.
+    tool: [fork, spoon, knife]
+    containers:
+    - x: None
+      y: None
+      type: bowl
+      color: darkgray
+      food:
+        type: ball
+        color: [green]
+        amount: 2700
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: lightblue
+      food:
+        type: ball
+        color: [green]
+        amount: 800
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: purple
+      food:
+        type: ball
+        color: [red]
+        amount: 1600
+        position: [1, 1]
+  8:
+    instruction: Put the bowl with beans into the microwave.
+    tool: [spoon, fork, knife]
+    containers:
+    - x: None
+      y: None
+      type: bowl
+      color: gray
+      food:
+        type: ball
+        color: [green]
+        amount: 1200
+        position: [1, 1]
+    - x: 0.5
+      y: 0.6
+      type: bowl
+      color: lightgray
+      food:
+        type: None
+        color: [green]
+        amount: 1200
+        position: [1, 1]
+  9:
+    instruction: Put the bowl with beans into the microwave.
+    tool: [spoon, fork, knife]
+    containers:
+    - x: 0.45
+      y: 0.28
+      type: bowl
+      color: red
+      food:
+        type: ball
+        color: [green]
+        amount: 1200
+        position: [1, 1]
+hard:
+  1:
+    instruction: Cut the food first then scoop some food on the cutted food
+    tool: [fork, spoon, knife]
+    containers:
+    - x: None
+      y: None
+      type: bowl
+      color: white
+      food:
+        type: ball
+        color: [brown]
+        amount: 1200
+        position: [1, 1]
+    - x: None
+      y: None
+      type: cutting_board
+      color: white
+      food: {type: cuttable_food, color: None, amount: None, position: [1, 1]}
+    - x: None
+      y: None
+      type: bowl
+      color: gray
+      food: {type: None, color: None, amount: 1200, position: [1, 1]}
+    - x: None
+      y: None
+      type: square_plate
+      color: black
+      food: {type: None, color: None, amount: 1200, position: [1, 1]}
+  2:
+    instruction: Stir the beans twice then scoop them to all empty bowls.
+    tool: [fork, knife, spoon]
+    containers:
+    - x: None
+      y: None
+      type: bowl
+      color: white
+      food:
+        type: ball
+        color: [green, red]
+        amount: 1200
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: gray
+      food:
+        type: None
+        color: [green]
+        amount: 1200
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: black
+      food:
+        type: None
+        color: [green]
+        amount: 1200
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: darkgray
+      food:
+        type: None
+        color: [green]
+        amount: 1200
+        position: [1, 1]
+  3:
+    instruction: Prepare the bean mixture and scoop it into the empty bowl.
+    tool: [fork, knife, spoon]
+    containers:
+    - x: None
+      y: None
+      type: bowl
+      color: yellow
+      food:
+        type: ball
+        color: [darkred, black]
+        amount: 1200
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: black
+      food:
+        type: ball
+        color: [lightyellow]
+        amount: 1100
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: purple
+      food:
+        type: None
+        color: [green]
+        amount: 1200
+        position: [1, 1]
+  4:
+    instruction: Spread some beans on the butter and take fork.
+    tool: [spoon, fork, knife]
+    containers:
+    - x: None
+      y: None
+      type: bowl
+      color: white
+      food:
+        type: ball
+        color: [darkgreen]
+        amount: 1200
+        position: [1, 1]
+    - x: None
+      y: None
+      type: square_plate
+      color: white
+      food: {type: forked_food, color: None, amount: None, position: [1, 1]}
+  5:
+    instruction: Make a bowl of meal consisting of red beans, green beans and black
+      beans in a ratio of 3:2:1.
+    tool: [knife, spoon]
+    containers:
+    - x: None
+      y: None
+      type: bowl
+      color: gray
+      food:
+        type: ball
+        color: [green]
+        amount: 1200
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: lightgray
+      food:
+        type: ball
+        color: [red]
+        amount: 1200
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: darkgray
+      food:
+        type: ball
+        color: [black]
+        amount: 1200
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: white
+      food:
+        type: None
+        color: [green]
+        amount: 1200
+        position: [1, 1]
+  6:
+    instruction: Scoop some green ball into the empty bowl.
+    tool: [spoon, fork, knife]
+    containers:
+    - x: None
+      y: None
+      type: bowl
+      color: lightblue
+      food: {type: None, color: None, amount: None, position: [1, 1]}
+    - x: None
+      y: None
+      type: bowl
+      color: darkblue
+      food:
+        type: ball
+        color: [green]
+        amount: 1200
+        position: [1, 1]
+  7:
+    instruction: None, just for testing.
+    tool: [spoon, fork, knife]
+    containers:
+    - x: 0.35
+      y: 0
+      type: bowl
+      color: white
+      food:
+        type: ball
+        color: [green]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.54
+      y: -0.05
+      type: bowl
+      color: white
+      food:
+        type: ball
+        color: [darkred]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.4
+      y: -0.2
+      type: bowl
+      color: white
+      food:
+        type: ball
+        color: [salmon]
+        amount: 1800
+        position: [1, 1]
+    - x: 0.66
+      y: -0.22
+      type: bowl
+      color: white
+      food:
+        type: ball
+        color: [black]
+        amount: 1400
+        position: [1, 1]
+    - x: 0.7
+      y: 0.18
+      type: bowl
+      color: yellow
+      food:
+        type: None
+        color: [black]
+        amount: None
+        position: [1, 1]
+  8:
+    instruction: None, just for testing.
+    tool: [spoon, fork, knife]
+    containers:
+    - x: 0.35
+      y: 0
+      type: bowl
+      color: white
+      food:
+        type: ball
+        color: [green]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.54
+      y: -0.05
+      type: bowl
+      color: white
+      food:
+        type: ball
+        color: [darkred]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.4
+      y: -0.2
+      type: bowl
+      color: gray
+      food:
+        type: ball
+        color: [green]
+        amount: 300
+        position: [1, 1]
+    - x: 0.66
+      y: -0.22
+      type: bowl
+      color: white
+      food:
+        type: ball
+        color: [black]
+        amount: 1400
+        position: [1, 1]
+    - x: 0.7
+      y: 0.18
+      type: bowl
+      color: yellow
+      food:
+        type: None
+        color: [black]
+        amount: None
+        position: [1, 1]
+  9:
+    instruction: I need one scoop of green beans, and I'm in a hurry. Can you make it quick?
+    tool: [spoon, fork, knife]
+    containers:
+    - x: 0.4
+      y: -0.2
+      type: bowl
+      color: white
+      food:
+        type: ball
+        color: [green]
+        amount: 20
+        position: [1, 1]
+    - x: 0.54
+      y: -0.05
+      type: bowl
+      color: red
+      food:
+        type: ball
+        color: [green]
+        amount: 30
+        position: [1, 1]
+    - x: 0.35
+      y: 0
+      type: bowl
+      color: skyblue
+      food:
+        type: ball
+        color: [green]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.66
+      y: -0.22
+      type: bowl
+      color: blue
+      food:
+        type: ball
+        color: [black]
+        amount: 300
+        position: [1, 1]
+    - x: 0.7
+      y: 0.18
+      type: bowl
+      color: yellow
+      food:
+        type: None
+        color: [black]
+        amount: None
+        position: [1, 1]
+  10:
+    instruction: I need one scoop of green beans.
+    tool: [spoon, fork, knife]
+    containers:
+    - x: 0.35
+      y: 0
+      type: bowl
+      color: white
+      food:
+        type: ball
+        color: [green]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.54
+      y: -0.05
+      type: bowl
+      color: black
+      food:
+        type: ball
+        color: [green]
+        amount: 100
+        position: [1, 1]
+    - x: 0.4
+      y: -0.2
+      type: bowl
+      color: pink
+      food:
+        type: ball
+        color: [green]
+        amount: 10
+        position: [1, 1]
+    - x: 0.7
+      y: -0.22
+      type: bowl
+      color: purple
+      food:
+        type: ball
+        color: [green]
+        amount: 1400
+        position: [1, 1]
+    - x: 0.7
+      y: 0.18
+      type: bowl
+      color: yellow
+      food:
+        type: None
+        color: [black]
+        amount: None
+        position: [1, 1]
+  11:
+    instruction: I need one scoop of green beans, and I'm in a hurry. Can you make it quick?
+    tool: [spoon, fork, knife]
+    containers:
+    - x: 0.35
+      y: 0
+      type: bowl
+      color: white
+      food:
+        type: ball
+        color: [green]
+        amount: 1
+        position: [2, 0]
+    - x: 0.54
+      y: -0.05
+      type: bowl
+      color: black
+      food:
+        type: ball
+        color: [green]
+        amount: 100
+        position: [2, 2]
+    - x: 0.4
+      y: -0.2
+      type: bowl
+      color: pink
+      food:
+        type: ball
+        color: [green]
+        amount: 1200
+        position: [0, 0]
+    - x: 0.7
+      y: -0.22
+      type: bowl
+      color: purple
+      food:
+        type: ball
+        color: [green]
+        amount: 1200
+        position: [1, 1]
+    - x: 0.7
+      y: 0.18
+      type: bowl
+      color: yellow
+      food:
+        type: None
+        color: [black]
+        amount: None
+        position: [1, 1]

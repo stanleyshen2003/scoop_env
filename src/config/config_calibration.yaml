@@ -1,0 +1,24 @@
+simple:
+  1:
+    instruction: Scoop the beans to the green bowl.
+    answer: ['take_tool (spoon)', 'move_to_pink_bowl', 'scoop', 'move_to_green_bowl', 'put_food', 'put_tool (spoon)', 'DONE']
+    tool: [spoon]
+    containers:
+    - x: None
+      y: None
+      type: bowl
+      color: pink
+      food:
+        type: ball
+        color: [red]
+        amount: 1600
+        position: [1, 1]
+    - x: None
+      y: None
+      type: bowl
+      color: green
+      food:
+        type: None
+        color: [red, purple]
+        amount: 0
+        position: [1, 1]
