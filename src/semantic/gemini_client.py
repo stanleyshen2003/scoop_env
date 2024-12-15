@@ -7,35 +7,8 @@ import os
 import dotenv
 import google.ai.generativelanguage_v1 as genai
 
+from .utils import *
 genai.GenerationConfig
-def generate_prompt(action_seq, indent=False):
-    ret = ""
-    for i, action in enumerate(action_seq):
-        executed_action = " ".join([f'{j+1}. {action_seq[j]}' for j in range(i)])
-        if indent:
-            ret += f"""Iteration {i+1}:
-        Output: {action}
-    """
-        else:
-            ret += f"""Iteration {i+1}:
-    Output: {action}
-"""
-    # Input: {executed_action}
-    return ret
-
-def action_description_prompt():
-    action_list = ['take_tool (tool name)', 'move_to_container', 'scoop', 'fork', 'cut', 'stir', 'put_food', 'put_tool (tool_name)', 'DONE']
-    action_description_prompt = f"""Here is some explanation of the actions in the action list:
-    1. {action_list[0]}: take the tool from the tool holder.
-    2. {action_list[1]}: move to the container.
-    3. {action_list[2]}: scoop the food.
-    4. {action_list[3]}: fork the food.
-    5. {action_list[4]}: cut the food.
-    6. {action_list[5]}: stir the food.
-    7. {action_list[6]}: put the food on your tool into the container.
-    8. {action_list[7]}: put the tool back to the tool holder.
-    9. {action_list[8]}: indicates that the instruction is done."""
-    return action_description_prompt
 
 def get_semantic(instruction: str, container_list=None, action_list=["scoop", "fork", "cut", "move", "stir", "DONE"], action_seq=None):
     dotenv.load_dotenv()
@@ -62,7 +35,7 @@ def get_semantic(instruction: str, container_list=None, action_list=["scoop", "f
     messages = [
             {"role": "system", "content": f"""You need to pick an action from the action list to finish the whole task step by step.
 Please also take the previous actions into consideration when choosing the next action.
-{action_description_prompt()}
+{get_action_description_prompt()}
 
 Example:
     Action list: {example_action_list}

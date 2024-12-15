@@ -1,33 +1,7 @@
 import socket
 import pickle
-from typing import List
 
-def generate_prompt(action_seq, indent=False):
-    ret = ""
-    for i, action in enumerate(action_seq):
-        executed_action = " ".join([f'{j+1}. {action_seq[j]}' for j in range(i)])
-        if indent:
-            ret += f"""Iteration {i+1}: {action}
-    """
-        else:
-            ret += f"""Iteration {i+1}: {action}
-"""
-    # Input: {executed_action}
-    return ret
-
-def action_description_prompt():
-    action_list = ['take tool tool_name', 'move to container', 'scoop', 'fork', 'cut', 'stir', 'put food', 'put tool tool_name', 'DONE']
-    action_description_prompt = f"""Here is some explanation of the actions in the action list:
-    1. {action_list[0]}: take the tool from the tool holder.
-    2. {action_list[1]}: move to the container.
-    3. {action_list[2]}: scoop the food.
-    4. {action_list[3]}: fork the food.
-    5. {action_list[4]}: cut the food.
-    6. {action_list[5]}: stir the food.
-    7. {action_list[6]}: put the food on your tool into the container.
-    8. {action_list[7]}: put the tool back to the tool holder.
-    9. {action_list[8]}: indicates that the instruction is done."""
-    return action_description_prompt
+from .utils import *
 
 def get_semantic(instruction: str, container_list=None, action_list=["scoop", "fork", "cut", "move", "stir", "DONE"], action_seq=None):
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -53,7 +27,7 @@ def get_semantic(instruction: str, container_list=None, action_list=["scoop", "f
         [
             {"role": "system", "content": f"""You need to pick an action from the action list to finish the whole task step by step.
 Please also take the previous actions into consideration when choosing the next action.
-{action_description_prompt()}
+{get_action_description_prompt()}
 
 Example:
     Action list: {example_action_list}
