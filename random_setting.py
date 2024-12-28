@@ -128,12 +128,6 @@ class Collector():
         with open(os.path.join(self.root, 'store_keys.yaml'), 'w') as f:
             yaml.dump(self.now_dict, f)
 
-     
-    
-
-
-
-
 if __name__ == "__main__":
     root = 'hello'
     collector = Collector(root)

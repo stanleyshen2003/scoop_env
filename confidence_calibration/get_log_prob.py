@@ -1,19 +1,10 @@
 import os
 from openai import OpenAI
-import base64
-import mimetypes
 from tqdm import tqdm
 
-openai_client = OpenAI()
-def encode_image(image_path: str):
-    """Encodes an image to base64 and determines the correct MIME type."""
-    mime_type, _ = mimetypes.guess_type(image_path)
-    if mime_type is None:
-        raise ValueError(f"Cannot determine MIME type for {image_path}")
+from src.utils import *
 
-    with open(image_path, "rb") as image_file:
-        encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
-        return f"data:{mime_type};base64,{encoded_string}"
+openai_client = OpenAI()
 
 def get_log_prob(system_content, user_content, answer, model):
       
@@ -31,7 +22,7 @@ def get_log_prob(system_content, user_content, answer, model):
     )
     top_logprobs = response.choices[0].logprobs.content[0].top_logprobs
     top_logprobs = {top_logprob.token: top_logprob.logprob for top_logprob in top_logprobs}
-    return top_logprobs.get(answer, None)
+    return top_logprobs.get(answer, -float('inf'))
 
 def read_question(idx):
     file_name = str(idx).zfill(4)
@@ -60,16 +51,17 @@ def main(model='gpt-4o'):
         if len(answer) != 1:
             continue
         system_content, user_content = read_question(i)
-        log_prob = get_log_prob(system_content, user_content, answer[0], model)
-        if log_prob:
+        try:
+            log_prob = get_log_prob(system_content, user_content, answer[0], model)
             answer_list[i].append(str(log_prob))
-        else:
+        except:
             fail_pair.append(i)
     with open('answer.txt', 'w') as f:
         content = [' '.join(l) for l in answer_list]
         f.write('\n'.join(content))
     return fail_pair
-        
+  
 if __name__ == '__main__':
     fail_pair = main()
     print(fail_pair)
+    

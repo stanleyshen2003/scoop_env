@@ -92,7 +92,7 @@ amount_ambiguity:
       food:
         type: ball
         color: [darkred]
-        amount: 500
+        amount: 200
         position: [1, 1]
 distance_ambiguity:
   # different distance of beans
@@ -163,9 +163,9 @@ tool_block:
       type: bowl
       color: purple
       food:
-        type: None
+        type: ball
         color: [darkred]
-        amount: 0
+        amount: 2000
         position: [1, 1]
     - x: 0.4
       y: 0.2
@@ -188,7 +188,7 @@ tool_block:
       food:
         type: ball
         color: [darkred]
-        amount: 1000
+        amount: 2000
         position: [1, 1]
 distance:
   # the bowl are too far to scoops

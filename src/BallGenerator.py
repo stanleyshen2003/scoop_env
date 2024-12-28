@@ -29,7 +29,7 @@ class BallGenerator(object):
         gfg.SubElement(geometry, "sphere", radius=str(ball_radius))
         inertial = gfg.Element("inertial")
         link.append(inertial)
-        gfg.SubElement(inertial, "mass", value=str(ball_mass * 10. / 3.))
+        gfg.SubElement(inertial, "mass", value=str(ball_mass))
         gfg.SubElement(inertial, "inertia", ixx="0.01", ixy="0.0", ixz="0.0", iyy="0.01", iyz="0.0", izz="0.01")
 
         self.make_file(file_name, root)

@@ -1,4 +1,11 @@
 from typing import List
+
+def preprocess_action(action):
+    return action.replace('(', '').replace(')', '').replace('_', ' ')
+
+def preprocess_object(object):
+    return object.replace('_', ' ')
+
 def generate_prompt(action_seq, indent=False):
     ret = ""
     for i, action in enumerate(action_seq):
@@ -78,9 +85,9 @@ def get_system_prompt(use_vlm=False, selection=False, scenario_description=False
         "pull bowl closer", 
         "DONE"
     ]
-    example_action_seq = [action.replace('(', '').replace(')', '').replace('_', ' ') for action in example_action_seq]
-    example_action_list = [action.replace('(', '').replace(')', '').replace('_', ' ') for action in example_action_list]
-    example_container_list = [container.replace('_', ' ') for container in example_container_list]
+    example_action_seq = [preprocess_action(action) for action in example_action_seq]
+    example_action_list = [preprocess_action(action) for action in example_action_list]
+    example_container_list = [preprocess_object(container) for container in example_container_list]
     example_action_dict = format_action_choices(example_action_list)
     if selection:
         example_action_seq = [example_action_dict[action] for action in example_action_seq]
@@ -105,8 +112,8 @@ Example:
     return system_prompt
         
 def get_user_prompt(instruction, action_seq, action_dict, container_list) -> str:
-    container_list = [container.replace('_', ' ') for container in container_list]
-    action_seq = [action.replace('(', '').replace(')', '').replace('_', ' ') for action in action_seq]
+    container_list = [preprocess_object(container) for container in container_list]
+    action_seq = [preprocess_action(action) for action in action_seq]
     
     action_choices = [f"{v}. {k}" for k, v in action_dict.items()]
     action_seq_choices = [action_dict[action] for action in action_seq]

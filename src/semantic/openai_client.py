@@ -5,11 +5,16 @@ import pickle
 import torch
 import numpy as np
 
-from typing import List
 from .utils import *
+from src.utils import *
 
 def call_openai_api(messages, model='gpt-4o'):
-    openai_client = OpenAI()  
+    """
+    return: raw content
+    - .choices[0].message.content: text content
+    - .choices[0].logprobs.content[0].top_logprobs: top 20 log probabilities
+    """
+    openai_client = OpenAI()
     content = openai_client.chat.completions.create(
         # model='gpt-3.5-turbo',
         model=model,
@@ -21,7 +26,7 @@ def call_openai_api(messages, model='gpt-4o'):
 
 def get_semantic(
     instruction: str, 
-    container_list=None, 
+    object_list=None, 
     action_list=["scoop", "fork", "cut", "move", "stir", "DONE"], 
     action_seq=None, 
     use_vlm=False, 
@@ -31,25 +36,26 @@ def get_semantic(
     )->dict:
  
     
-    action_description = {action.replace('(', '').replace(')', '').replace('_', ' '): action for action in action_list}
+    action_description = {preprocess_action(action): action for action in action_list}
     action_dict = format_action_choices(list(action_description.keys()))
     system_prompt = get_system_prompt(use_vlm)
-    user_prompt = get_user_prompt(instruction, action_seq, action_dict, container_list)
+    user_prompt = get_user_prompt(instruction, action_seq, action_dict, object_list)
     system_content = [{"type": "text", "text": system_prompt}]
     user_content = [{"type": "text", "text": user_prompt}]
+    model = 'gpt-4o' if use_vlm else 'gpt-3.5-turbo'
     if use_vlm:
         assert obs_url is not None, "Observation url could not be None"
         scenario_prompt = get_messages(get_system_prompt(scenario_description=True), image_url=obs_url)
-        scenario_description = call_openai_api(scenario_prompt).choices[0].message.content
+        scenario_description = call_openai_api(scenario_prompt, model).choices[0].message.content
         messages = get_messages(system_prompt, user_prompt, obs_url)
     else:
         scenario_description = ''
         messages = get_messages(system_prompt, user_prompt)
     
-    response_content = call_openai_api(messages).choices[0].message.content
+    response_content = call_openai_api(messages, model).choices[0].message.content
     
     explanation_prompt = get_messages(system_prompt, user_prompt + f"{response_content} \nPlease explain why you choose the action.", obs_url)
-    explanation = call_openai_api(explanation_prompt).choices[0].message.content
+    explanation = call_openai_api(explanation_prompt, model).choices[0].message.content
     
     print(response_content)
     if use_vlm:
@@ -96,45 +102,43 @@ def get_semantic(
 
 def get_selection_score(
     instruction: str, 
-    container_list=None, 
+    object_list=None, 
     action_list=["scoop", "move", "stir", "DONE"],
     action_seq=None, 
     use_vlm=False, 
     obs_image=None,
     log_folder=None,
     obs_id=None,
-    )->dict:
+)->dict:
     print("instruction", instruction)
-    print("container_list", container_list)
+    print("object_list", object_list)
     print("action_list", action_list)
     print("action_seq", action_seq)
     print("use_vlm", use_vlm)
     print("log_folder", log_folder)
     print("obs_id", obs_id)
- 
-    openai_client = OpenAI() 
     
-    action_description = {action.replace('(', '').replace(')', '').replace('_', ' '): action for action in action_list}
+    action_description = {preprocess_action(action): action for action in action_list}
     action_dict = format_action_choices(list(action_description.keys()))
     system_prompt = get_system_prompt(use_vlm)
-    user_prompt = get_user_prompt(instruction, action_seq, action_dict, container_list)
-    
+    user_prompt = get_user_prompt(instruction, action_seq, action_dict, object_list)
+    model = 'gpt-4o' if use_vlm else 'gpt-3.5-turbo'
     if use_vlm:
         assert obs_image is not None, "Observation url could not be None"
         scenario_prompt = get_messages(get_system_prompt(scenario_description=True), '', obs_image)
-        scenario_description = call_openai_api(scenario_prompt).choices[0].message.content
+        scenario_description = call_openai_api(scenario_prompt, model).choices[0].message.content
         messages = get_messages(system_prompt, user_prompt, obs_image)
     else:
         scenario_description = ''
         messages = get_messages(system_prompt, user_prompt)
     
-    response = call_openai_api(messages)
+    response = call_openai_api(messages, model)
     response_content = response.choices[0].message.content
     top_logprobs = response.choices[0].logprobs.content[0].top_logprobs
     top_logprobs = {top_logprob.token: top_logprob.logprob for top_logprob in top_logprobs}
     
     explanation_prompt = get_messages(system_prompt, user_prompt + f"{response_content} \nPlease explain why you choose the action.", obs_image)
-    explanation = call_openai_api(explanation_prompt).choices[0].message.content
+    explanation = call_openai_api(explanation_prompt, model).choices[0].message.content
     
     print(messages[0]["content"][0]['text'])
     print('=' * 80)
@@ -145,11 +149,11 @@ def get_selection_score(
         print(scenario_description)
     print(explanation)
     
-    _semantic = {action: top_logprobs.get(choice, float('-inf')) for action, choice in action_dict.items()}
+    _semantic = {action: np.exp(top_logprobs.get(choice, float('-inf'))) for action, choice in action_dict.items()}
     semantic = {}
     for key, val in _semantic.items():
         semantic[action_description[key]] = val
-    semantic = dict(sorted(semantic.items(), key=lambda x: x[1], reverse=1))
+    semantic = sort_scores_dict(semantic)
     # print(semantic)
     
     if log_folder is not None:
@@ -169,22 +173,22 @@ def get_calibration_data(
     instruction: str, 
     action: str,
     action_list: List[str],
-    container_list=None, 
+    object_list=None, 
     action_seq=None,
     use_vlm=False
 ) -> str:
     """
     Given action and instruction to get question and answer pair in text for confidence calibration
     """
-    container_list = [container.replace('_', ' ') for container in container_list]
-    action_seq = [action.replace('(', '').replace(')', '').replace('_', ' ') for action in action_seq]
+    object_list = [preprocess_object(container) for container in object_list]
+    action_seq = [preprocess_action(action) for action in action_seq]
     
-    action_description = {action.replace('(', '').replace(')', '').replace('_', ' '): action for action in action_list}
+    action_description = {preprocess_action(action): action for action in action_list}
     action_dict = format_action_choices(list(action_description.keys()))
     
     system_prompt = get_system_prompt(use_vlm, True)
-    user_prompt = get_user_prompt(instruction, action_seq, action_dict, container_list)
-    answer = action_dict[action.replace('(', '').replace(')', '').replace('_', ' ')]
+    user_prompt = get_user_prompt(instruction, action_seq, action_dict, object_list)
+    answer = action_dict[preprocess_action(action)]
     return system_prompt, user_prompt, answer
     
     

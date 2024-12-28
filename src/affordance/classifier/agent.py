@@ -5,9 +5,16 @@ from .model import ResNet50
 from .preprocess import preprocess_single_image_cv2
 import sys
 from typing import List
+from src.affordance import Affordance_agent
 
-class Affordance_agent():
-    def __init__(self, init_object_list: List[str], model_path='src/affordance/model/49_0.9759231705667524.pth'):
+class Affordance_agent_classifier(Affordance_agent):
+    def __init__(
+        self, 
+        init_object_list: List[str], 
+        action_list: List[str], 
+        model_path='/home/hcis-s17/multimodal_manipulation/scoop_env/src/affordance/classifier/model/49_0.9759231705667524.pth'
+    ):
+        super(Affordance_agent_classifier, self).__init__(init_object_list, action_list)
         self.env_state = {obj.split(" (")[0]: obj.split(" (")[1].replace(")", "") != "empty" for obj in init_object_list}
         self.tool_on_hand = False
         self.food_on_hand = False
@@ -40,13 +47,7 @@ class Affordance_agent():
         #     logits = (logits + 1) / 2
         return logits.cpu().numpy()
     
-    def get_affordance(
-            self, 
-            rgb_img, 
-            gray_scale_img, 
-            action_list: List[str], 
-            action_seq: List[str]
-        ):
+    def get_affordance(self, rgb_img, gray_scale_img,action_seq: List[str],action_candidate=[]):
         last_action = action_seq[-1] if len(action_seq) else None
         if last_action:
             if not self.tool_on_hand and "take_tool" in last_action:
@@ -61,6 +62,8 @@ class Affordance_agent():
                     self.env_state[last_action.replace("move_to_", "")] = True
 
         action_list_affordance = ["scoop", "fork", "cut", "stir", "DONE"]
+        rgb_img = cv2.imread(rgb_img)
+        gray_scale_img = cv2.imread(gray_scale_img, cv2.IMREAD_GRAYSCALE)
         logits = self.predict(rgb_img, gray_scale_img)
         affordance_scores = logits.tolist()
         affordance_scores.append(affordance_scores[1]) # stir
@@ -80,7 +83,7 @@ class Affordance_agent():
         put_food_score = put_food_score_low + int(self.food_on_hand) * (put_food_score_high - put_food_score_low)
         
         affordance = {}
-        for action in action_list:
+        for action in self.action_list:
             if action in _affordance.keys(): 
                 affordance[action] = _affordance[action]
             elif "take_tool" in action:
