@@ -14,7 +14,7 @@ category = {
 }
 category_names = list(category.keys())
 def main(txt_file, splitter='\t'):
-    name = txt_file.split('.')[0]
+    name = txt_file.split('/')[-1].split('.')[0]
     answer_list = open(txt_file, 'r').readlines()
     answer_list = [l.strip().split(splitter) for l in answer_list]
     empty_data = [[0 for __ in range(len(category_names))] for _ in range(22)]
@@ -50,11 +50,11 @@ def main(txt_file, splitter='\t'):
     ax.legend(handles=legend_patches)
 
     plt.tight_layout()
-    plt.savefig(f"visualization_{name}.png")
+    plt.savefig(f"visualization/visualization_{name}.png")
     
     
 if __name__ == '__main__':
-    txt_files = ['answer_sys_2.txt'] if len(sys.argv) < 2 else sys.argv[1:]
+    txt_files = ['answer/answer_sys_2.txt'] if len(sys.argv) < 2 else sys.argv[1:]
     print(txt_files)
     for txt_file in txt_files:
         main(txt_file)

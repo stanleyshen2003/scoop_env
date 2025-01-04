@@ -79,5 +79,5 @@ def main(model='gpt-4o', splitter='\t', force=False, output_file='answer.txt'):
         f.write('\n'.join(content))
   
 if __name__ == '__main__':
-    fail_pair = main(force=True, output_file='answer_sys_1.txt')
+    fail_pair = main(force=True, output_file='answer/answer_sys_1.txt')
     

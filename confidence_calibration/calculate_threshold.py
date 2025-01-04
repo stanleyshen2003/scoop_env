@@ -25,7 +25,7 @@ def calculate_threshold(probs, epsilon=0.1):
     
 if __name__ == "__main__":
     probs = []
-    with open('answer.txt', 'r') as f:
+    with open('answer/answer.txt', 'r') as f:
         lines = f.readlines()
         for line in lines:
             prob = line.split()[-1].split('\n')[0]
