@@ -20,7 +20,7 @@ def data_collection(config):
     Environment = IsaacSim(env_cfg_dict=config)
     Environment.data_collection()
     
-def run(mode, config, task_type, env_idx, root, affordance_type=None, score_metric=None, threshold=None):
+def run(mode, config, task_type, env_idx, root, test_type=None, threshold=None):
     assert mode in ['llm', 'pipeline', 'calibration_collection'], f"Invalid mode {mode}"
     print("=" * 10, task_type.upper(), env_idx, "=" * 10)
     
@@ -33,9 +33,9 @@ def run(mode, config, task_type, env_idx, root, affordance_type=None, score_metr
             if os.path.exists(os.path.join(log_dir, folder, 'result_sequence.txt')):
                 return
         os.makedirs(log_folder, exist_ok=True)
-        Environment = IsaacSim(env_cfg_dict=config, log_folder=log_folder, record_video=(mode == 'pipeline'), affordance_type=affordance_type)
+        Environment = IsaacSim(env_cfg_dict=config, log_folder=log_folder, record_video=(mode == 'pipeline'))
         if mode == 'pipeline':
-            Environment.test_pipeline(config.get('answer', []), score_metric=score_metric, threshold=threshold)
+            Environment.test_pipeline(config.get('answer', []), test_type=test_type, threshold=threshold)
         elif mode == 'llm':
             Environment.test_llm()
             pyautogui.screenshot().save(os.path.join(log_folder, "result.jpg"))
@@ -44,13 +44,13 @@ def run(mode, config, task_type, env_idx, root, affordance_type=None, score_metr
         Environment = IsaacSim(env_cfg_dict=config)
         Environment.test_pipeline(action_sequence_answer=config['answer'])
                      
-def experiments(mode, config_file, root, specific_task=[], affordance_type=None, score_metric=None, threshold=None):
+def experiments(mode, config_file, root, specific_task=[], test_type=None, threshold=None):
     task_types = get_task_type_list(config_file)
     for task_type in task_types:
         for env_idx in range(1, get_task_env_num(config_file, task_type)+1):
             if not specific_task or (task_type, env_idx) in specific_task:
                 config = read_yaml(config_file, task_type=task_type, env_idx=env_idx)
-                run(mode, config, task_type, env_idx, root, affordance_type, score_metric=score_metric, threshold=threshold)
+                run(mode, config, task_type, env_idx, root, test_type=test_type, threshold=threshold)
 
 def calibration():
     config_root = 'src/config'
@@ -66,4 +66,5 @@ def calibration():
 if __name__ == "__main__":
     root = os.environ.get('RESULT_DIR', 'experiment_log/test')
     config_file = os.environ.get('CONFIG_FILE', 'src/config/pdm.yaml')
-    experiments('pipeline', config_file, root, affordance_type='lap', score_metric=1, threshold=0.1)
+    test_type = os.environ.get('TEST_TYPE', None)
+    experiments('pipeline', config_file, root, test_type=test_type, threshold=0.1)

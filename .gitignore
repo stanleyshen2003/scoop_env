@@ -190,3 +190,7 @@ src/vild/ckpt/
 src/introplan/
 confidence_calibration/visualization/
 confidence_calibration/answer/
+src/vild/test/
+src/affordance/ours/models
+src/affordance/ours/runs
+src/affordance/ours/image

@@ -96,7 +96,7 @@ def quaternion_to_euler(q, log=False):
     return [roll,pitch,yaw]
 
 class IsaacSim():
-    def __init__(self, env_cfg_dict, affordance_type=None, log_folder=None, record_video=False):
+    def __init__(self, env_cfg_dict, log_folder=None, record_video=False):
         keyboard_modes = ['collect', 'demo']
         custom_param = [
             {'name': '--output', 'type': str, 'default': None, 'help': 'Output folder'},
@@ -212,9 +212,9 @@ class IsaacSim():
         # for trajectory collection
         self.record = []
         
-        self.decision_pipeline = Decision_pipeline(self.containers_list, self.tool_list, affordance_type=affordance_type, log_folder=log_folder)
+        self.decision_pipeline = Decision_pipeline(self.containers_list, self.tool_list, log_folder=log_folder)
         self.record_video = record_video 
-        self.log_folder = log_folder
+        self.log_folder = log_folder if log_folder is not None else "temp"
         
 
     def set_keyboard(self, setting: dict):
@@ -2019,8 +2019,18 @@ class IsaacSim():
         dpose *= self.delta['scoop'][self.action_stage['scoop'] if self.action_stage['scoop'] < len(self.delta['scoop']) else -1]
         
         return dpose
+    
+    def saycan_pipeline(self, use_vlm=False, threshold=None, semantic_only=False):
+        """SayCan pipeline: Get the best action from the the score of multiplied semantic and affordance score
         
-    def choose_action(self, use_vlm=False, threshold=None):
+        Args:
+            use_vlm (bool, optional): Use VLM (GPT-4o) or not (GPT-3.5). Defaults to False.
+            threshold (float, optional): If pass a threshold, it is an uncertainty estimation version. Defaults to None.
+            semantic_only (bool, optional): Use only semantic score (VLM baseline). Defaults to False.
+
+        Returns:
+            best_action (str): The best action from the score
+        """
         # self.instruction += f" {len(self.action_sequence) + 1}. "
         rgb_path = os.path.join("observation", "rgb.png")
         depth_path = os.path.join("observation", "depth.png")
@@ -2036,14 +2046,53 @@ class IsaacSim():
             rgb_path, 
             depth_path, 
             self.action_sequence,
-            use_vlm=use_vlm
+            use_vlm=use_vlm,
+            semantic_only=semantic_only
         )
         if threshold is not None:
             best_action = [action for action, score in combined_score.items() if score > threshold]
         if threshold is None or len(best_action) == 0:
             best_action = max(combined_score, key=combined_score.get)
-        
         # self.instruction += best_action
+        return best_action
+    
+    def our_pipeline(self, threshold, use_vlm=False):
+        # self.instruction += f" {len(self.action_sequence) + 1}. "
+        rgb_path = os.path.join("observation", "rgb.png")
+        depth_path = os.path.join("observation", "depth.png")
+        rgb_image = self.gym.get_camera_image(self.sim, self.envs[0], self.camera_handles[0], gymapi.IMAGE_COLOR).reshape(1080, 1920, 4)[:,:,:-1]
+        depth_image = self.gym.get_camera_image(self.sim, self.envs[0], self.camera_handles[0], gymapi.IMAGE_DEPTH)
+        depth_image = np.clip(depth_image, -1.8, 0)
+        depth_image = ((depth_image - np.min(depth_image)) / (np.max(depth_image) - np.min(depth_image)) * 255).astype(np.uint8)
+        Image.fromarray(rgb_image).save(rgb_path)
+        Image.fromarray(depth_image).save(depth_path)
+        print(self.containers_list)
+        semantic_score = self.decision_pipeline.get_score(
+            self.instruction, 
+            rgb_path, 
+            depth_path, 
+            self.action_sequence,
+            use_vlm=use_vlm,
+            semantic_only=True
+        )
+        action_candidate = [action for action, score in semantic_score.items() if score > threshold]
+        affordance_score = self.decision_pipeline.get_score(
+            self.instruction,
+            rgb_path,
+            depth_path,
+            self.action_sequence,
+            affordance_only=True,
+            action_candidate=action_candidate
+        )
+        action_candidate = list(affordance_score.keys())
+        if len(action_candidate) == 0:
+            # TODO replan
+            pass
+        elif len(action_candidate) == 1:
+            best_action = action_candidate[0]
+        else:
+            # TODO Chain of Thought
+            pass
         return best_action
     
     def calibration_data_collection(self, action, use_vlm=False):
@@ -2098,7 +2147,7 @@ class IsaacSim():
             
             
             if time() - start > start_wait:
-                best_action = self.choose_action()
+                best_action = self.saycan_pipeline()
                 print(best_action)
                 action_seq.append(best_action)
                 self.action_sequence.append(best_action)
@@ -2115,7 +2164,7 @@ class IsaacSim():
         self.gym.destroy_viewer(self.viewer)
         self.gym.destroy_sim(self.sim)
     
-    def test_pipeline(self, action_sequence_answer=None, calibration_collect=False, score_metric=None, threshold=0):
+    def test_pipeline(self, action_sequence_answer=None, calibration_collect=False, test_type=None, threshold=0):
         def write_score(action_idx, total_action, human_help):
             filename = os.path.join(self.log_folder, 'result.txt')
             assert not os.path.exists(filename), FileExistsError(filename)
@@ -2136,9 +2185,14 @@ class IsaacSim():
         total_action = len(action_sequence_answer) if action_sequence_answer else 0
         max_sequence = 10
         human_help = 0
+        affordance_list = {
+            'lap': 'lap',
+            'saycan': 'classifier',
+            'our': 'our'
+        }
+        self.decision_pipeline.set_affordance_agent(affordance_list.get(test_type, None))
         
         if self.record_video:
-            assert self.log_folder, "Please provide log folder to record video"
             resolution = (1920, 1080)
             codec = cv2.VideoWriter_fourcc(*"mp4v")
             fps = 60.0
@@ -2163,8 +2217,9 @@ class IsaacSim():
                     self.calibration_data_collection(best_action, use_vlm=True)
                     if action_idx == total_action:
                         break
-                elif score_metric == 1 and action_sequence_answer:
-                    best_action = self.choose_action(use_vlm=True, threshold=threshold)
+                elif test_type == "lap" and action_sequence_answer:
+                    # allow LLM uncertainty and evaluate human help times
+                    best_action = self.saycan_pipeline(use_vlm=True, threshold=threshold)
                     if len(best_action) > 1 and action_sequence_answer[action_idx] in best_action:
                             best_action = action_sequence_answer[action_idx]
                             human_help += 1
@@ -2176,8 +2231,14 @@ class IsaacSim():
                         write_score(action_idx, total_action, human_help)
                         break
                     action_idx += 1
+                elif test_type == "vlm":
+                    best_action = self.saycan_pipeline(use_vlm=True, semantic_only=True)
+                elif test_type == "saycan":
+                    best_action = self.saycan_pipeline(use_vlm=True)
+                elif test_type == "our":
+                    best_action = self.our_pipeline(threshold=threshold, use_vlm=True)
                 else:
-                    best_action = self.choose_action(use_vlm=True)
+                    raise ValueError(f"Unsupported test type {test_type}")
                     
                 print(best_action)
                 self.action_sequence.append(best_action)
@@ -2435,7 +2496,7 @@ class IsaacSim():
                     
                 dpose = torch.tensor([[[0.],[0.],[0.],[0.],[0.],[0.]]])
             elif action == "choose action":
-                self.choose_action()
+                self.saycan_pipeline()
                 dpose = torch.tensor([[[0.],[0.],[0.],[0.],[0.],[0.]]])
                 
             elif action == "save":

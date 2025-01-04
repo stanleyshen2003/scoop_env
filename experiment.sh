@@ -10,6 +10,7 @@ usage() {
     echo "Usage: $0 -e <EXP_ID> -c <CONFIG_FILE> [-l <LOG_ROOT>] [-t <MAX_TRIALS>]"
     echo "  -e EXP_ID: Required. Experiment ID."
     echo "  -c CONFIG_FILE: Required. Path to your config file."
+    echo "  -n TEST_TYPE: Required. Type of test to run."
     echo "  -l LOG_ROOT: Optional. Path to experiment logs (default: $LOG_ROOT)."
     echo "  -t MAX_TRIALS: Optional. Number of trials to perform (default: $MAX_TRIALS)."
     echo "  -h: Show this help message."
@@ -17,10 +18,11 @@ usage() {
 }
 
 # Parse flags
-while getopts "e:c:l:t:h" opt; do
+while getopts "e:c:n:l:t:h" opt; do
     case $opt in
         e) EXP_ID=$OPTARG ;;
         c) CONFIG_FILE=$OPTARG ;;
+        n) TEST_TYPE=$OPTARG ;;
         l) LOG_ROOT=$OPTARG ;;  # Override default LOG_ROOT if provided
         t) MAX_TRIALS=$OPTARG ;;  # Override default MAX_TRIALS if provided
         h) usage ;;
@@ -30,7 +32,7 @@ done
 
 # Ensure required flags are provided
 if [ -z "$EXP_ID" ] || [ -z "$CONFIG_FILE" ]; then
-    echo "Error: Both -e (EXP_ID) and -c (CONFIG_FILE) are required."
+    echo "Error: Both -e (EXP_ID), -c (CONFIG_FILE), and -c (TEST_TYPE) are required."
     usage
 fi
 

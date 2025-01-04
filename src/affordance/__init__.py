@@ -8,5 +8,5 @@ class Affordance_agent:
     @abstractmethod
     def get_affordance(self, rgb_img_path, gray_scale_img_path, action_seq: List[str], action_candidate=[]):
         if not action_candidate:
-            return {action: 1 for action in self.action_list}
+            return {action: 0 for action in self.action_list}
         return (int(action in self.action_list) for action in action_candidate)

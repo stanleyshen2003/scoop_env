@@ -1,8 +1,10 @@
+import os
 import numpy as np
 import torch
 import clip
 import numpy as np
 import tensorflow.compat.v1 as tf
+import cv2
 
 from easydict import EasyDict
 from PIL import Image
@@ -16,17 +18,11 @@ FLAGS = {
     'use_softmax': False,
 }
 FLAGS = EasyDict(FLAGS)
-model = None
-preprocess = None
-session = None
-
-def start_model():
-    global model, preprocess, session
-    clip.available_models()
-    model, preprocess = clip.load("ViT-B/32")
-    session = tf.Session(graph=tf.Graph())
-    saved_model_dir = '/home/hcis-s17/multimodal_manipulation/scoop_env/src/vild/ckpt/image_path_v2' 
-    _ = tf.saved_model.load(session, ['serve'], saved_model_dir)
+clip.available_models()
+model, preprocess = clip.load("ViT-B/32")
+session = tf.Session(graph=tf.Graph())
+saved_model_dir = '/home/hcis-s17/multimodal_manipulation/scoop_env/src/vild/ckpt/image_path_v2' 
+_ = tf.saved_model.load(session, ['serve'], saved_model_dir)
 
 
 def article(name):
@@ -195,15 +191,22 @@ def nms(dets, scores, thresh, max_dets=1000):
         order = order[inds + 1]
     return keep
 
-def get_vild_prob(image_path, object_list, params):
-    start_model()
+def draw_bbox(img, bbox, color=(0, 255, 0), thickness=2, class_name=None):
+    y1, x1, y2, x2 = bbox
+    x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+    cv2.rectangle(img, (x1, y1), (x2, y2), color, thickness)
+    if class_name is not None:
+        cv2.putText(img, class_name, (x1, y1), cv2.FONT_HERSHEY_TRIPLEX, 2, color, thickness)
+    return img
+
+def get_vild_prob(image_path, object_list, params, write_result=True, image_root=None):
     global FLAGS, model, preprocess, session
     #################################################################
     # Preprocessing categories and get params
     object_list = ['background'] + object_list
     categories = [{'name': item, 'id': idx+1,} for idx, item in enumerate(object_list)]
     prob_records = [0.] * len(object_list)
-    nms_threshold, min_rpn_score_thresh, min_box_area, _ = params
+    nms_threshold, min_rpn_score_thresh, min_box_area, max_box_num = params
     #################################################################
     # Obtain results and read image
     roi_boxes, roi_scores, detection_boxes, scores_unused, box_outputs, detection_masks, visual_features, image_info = session.run(
@@ -228,7 +231,7 @@ def get_vild_prob(image_path, object_list, params):
     rescaled_detection_boxes = detection_boxes / image_scale # rescale
 
     # Read image
-    image = np.asarray(Image.open(open(image_path, 'rb')).convert("RGB"))
+    image = cv2.imread(image_path)
     assert image_height == image.shape[0]
     assert image_width == image.shape[1]
 
@@ -256,10 +259,12 @@ def get_vild_prob(image_path, object_list, params):
             )
         )
     )[0]
-    detection_boxes = detection_boxes[valid_indices]
-    detection_masks = detection_masks[valid_indices]
-    detection_visual_feat = visual_features[valid_indices]
-    rescaled_detection_boxes = rescaled_detection_boxes[valid_indices]
+    if max_box_num is None:
+        max_box_num = len(valid_indices)
+    detection_boxes = detection_boxes[valid_indices][:max_box_num, ...]
+    detection_masks = detection_masks[valid_indices][:max_box_num, ...]
+    detection_visual_feat = visual_features[valid_indices][:max_box_num, ...]
+    rescaled_detection_boxes = rescaled_detection_boxes[valid_indices][:max_box_num, ...]
 
 
     #################################################################
@@ -279,10 +284,20 @@ def get_vild_prob(image_path, object_list, params):
         scores = scores_all[anno_idx]
         cat = np.argmax(scores)
         prob_records[cat] = max(prob_records[cat], scores[cat])
+        bbox = rescaled_detection_boxes[anno_idx]
+        image = draw_bbox(image, bbox, thickness=2, class_name=object_list[cat])
         if np.all(prob_records[1:]):
             break
+    if write_result:
+        image_root = '/home/hcis-s17/multimodal_manipulation/scoop_env/src/vild/test' if image_root is None else image_root
+        os.makedirs(image_root, exist_ok=True)
+        image_id = len(os.listdir(image_root))
+        image_path = os.path.join(image_root, f'{image_id}.jpg')
+        cv2.imwrite(image_path, image)
+        print(image_path)
     return {o: p for o, p in zip(object_list[1:], prob_records[1:])}
-        
+
+
     
 if __name__ == '__main__':
         
@@ -292,8 +307,8 @@ if __name__ == '__main__':
     nms_threshold = 0.6 #@param {type:"slider", min:0, max:0.9, step:0.05}
     min_rpn_score_thresh = 0.9  #@param {type:"slider", min:0, max:1, step:0.01}
     min_box_area = 220 #@param {type:"slider", min:0, max:10000, step:1.0}
-    max_num_box = 10 #@param {type:"slider", min:1, max:100, step:1}
+    max_box_num = None #@param {type:"slider", min:1, max:100, step:1}
 
-    params = nms_threshold, min_rpn_score_thresh, min_box_area, max_num_box
+    params = nms_threshold, min_rpn_score_thresh, min_box_area, max_box_num
     probs = get_vild_prob(image_path, object_list, params)
     print(probs)

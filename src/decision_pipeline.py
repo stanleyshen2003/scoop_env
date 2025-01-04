@@ -17,38 +17,49 @@ affordance_agent_list = {
     "ours": Affordance_agent_ours
 } 
 class Decision_pipeline():
-    def __init__(self, init_object_list, tool_list, affordance_type=None, log_folder=None) -> None:
+    def __init__(self, init_object_list, tool_list, log_folder) -> None:
         self.init_object_list = init_object_list
         self.action_list = get_action_list(tool_list, init_object_list)
         self.log_folder = log_folder
         self.obs_id = 0
-        self.affordance_agent: Affordance_agent = affordance_agent_list.get(affordance_type, Affordance_agent)(init_object_list, self.action_list)
-        
+        self.affordance_agent = Affordance_agent(self.init_object_list, self.action_list)
+    
+    def set_affordance_agent(self, affordance_type):
+        self.affordance_agent = affordance_agent_list.get(affordance_type, Affordance_agent)(self.init_object_list, self.action_list)
+    
     def get_score(
-            self,
-            instruction: str, 
-            observation_rgb: str, 
-            observation_d: str, 
-            action_sequence=None,
-            use_vlm=False,
-        ):
+        self,
+        instruction: str, 
+        observation_rgb_path: str, 
+        observation_d_path: str, 
+        action_sequence=None,
+        use_vlm=False,
+        action_candiadate=[],
+        affordance_only=False,
+        semantic_only=False
+    ):
         # action_list = ["scoop", "fork", "cut", "stir", "put_food", "pull_bowl_closer", "DONE"]
         # action_list = get_action_list(tool_list, object_list)
         # print(action_list)
         
         # get affordance score
-        affordance = self.affordance_agent.get_affordance(observation_rgb, observation_d, action_sequence)
-        affordance = sort_scores_dict(affordance)
-        open(os.path.join(self.log_folder, f"affordance_{self.obs_id}.txt"), 'w').write(f"{affordance}")
+        if semantic_only:
+            affordance = {action: 1 for action in self.action_list}
+        else:
+            affordance = self.affordance_agent.get_affordance(observation_rgb_path, observation_d_path, action_sequence, action_candiadate)
+            affordance = sort_scores_dict(affordance)
+            open(os.path.join(self.log_folder, f"affordance_{self.obs_id}.txt"), 'w').write(f"{affordance}")
             
         # get semantic score
-        obs_image = None
-        base64_image = encode_image(observation_rgb)
-        if use_vlm:
-            obs_image = base64_image
-            if self.log_folder is not None:
-                cv2.imwrite(os.path.join(self.log_folder, f'observation_{self.obs_id}.png'), cv2.imread(observation_rgb))
-        semantic = get_selection_score_openai(instruction, self.init_object_list, self.action_list, action_sequence, use_vlm, obs_image, log_folder=self.log_folder, obs_id=self.obs_id)
+        if affordance_only:
+            semantic = {action: 1 for action in self.action_list}
+        else:
+            obs_image = None
+            base64_image = encode_image(observation_rgb_path)
+            if use_vlm:
+                obs_image = base64_image
+                cv2.imwrite(os.path.join(self.log_folder, f'observation_{self.obs_id}.png'), cv2.imread(observation_rgb_path))
+            semantic = get_selection_score_openai(instruction, self.init_object_list, self.action_list, action_sequence, use_vlm, obs_image, log_folder=self.log_folder, obs_id=self.obs_id)
         # semantic = get_semantic_gemini(instruction, object_list, action_list, action_sequence)
         
         
@@ -71,10 +82,10 @@ class Decision_pipeline():
         return score
     
 if __name__ == "__main__":
-    observation_rgb = 'affordance/data/spoon/30/0_rgb/000.png'
-    observation_d = observation_rgb.replace('_rgb', '_depth')
+    observation_rgb_path = 'affordance/data/spoon/30/0_rgb/000.png'
+    observation_d_path = observation_rgb_path.replace('_rgb', '_depth')
     instruction = "Stir the beans in the bowl, then scoop it to the round plate. 1."
     decision_pipeline = Decision_pipeline()
-    combined_score = decision_pipeline.get_score(instruction, observation_rgb, observation_d)
+    combined_score = decision_pipeline.get_score(instruction, observation_rgb_path, observation_d_path)
     print(f"combined_score {max(combined_score, key=combined_score.get)}")
     print(combined_score)
