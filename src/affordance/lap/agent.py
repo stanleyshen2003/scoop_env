@@ -6,7 +6,7 @@ from src.affordance import Affordance_agent
 from src.semantic.utils import get_messages
 from src.semantic.openai_client import call_openai_api
 from src.utils import *
-from src.affordance.lap.vild import get_vild_prob
+from src.vild.utils import get_vild_prob
     
 def parse_object_list(text_path):
     file_text = ''.join(open(text_path).readlines())
@@ -69,20 +69,20 @@ Answer: {answer if answer else ''}"""
                 return 0
         return 1
 
-    def get_perception_affordance(self, rgb_img, action_object=[]):
+    def get_perception_affordance(self, rgb_img_path, action_object=[]):
         if not action_object:
             return 1
         nms_threshold = 0.6 #@param {type:"slider", min:0, max:0.9, step:0.05}
         min_rpn_score_thresh = 0.9  #@param {type:"slider", min:0, max:1, step:0.01}
         min_box_area = 220 #@param {type:"slider", min:0, max:10000, step:1.0}
         params = nms_threshold, min_rpn_score_thresh, min_box_area
-        probs = get_vild_prob(rgb_img, action_object, params)
+        probs = get_vild_prob(rgb_img_path, action_object, params)
         return probs
 
-    def get_prompt_affordance(self, rgb_img, action, model='gpt-4o'):
+    def get_prompt_affordance(self, rgb_img_path, action, model='gpt-4o'):
         system_prompt = self.get_system_prompt()
         user_prompt = self.get_user_prompt(action)
-        base64_image = encode_image(rgb_img)
+        base64_image = encode_image(rgb_img_path)
         messages = get_messages(system_prompt, user_prompt, base64_image)
         top_logprobs = call_openai_api(messages, model).choices[0].logprobs.content[0].top_logprobs
         top_logprobs = {top_logprob.token: top_logprob.logprob for top_logprob in top_logprobs}
@@ -90,7 +90,7 @@ Answer: {answer if answer else ''}"""
         false_prob = np.exp(top_logprobs.get('False', float('-inf')))
         return 0.5 * int(true_prob == false_prob) + int(true_prob > false_prob)
     
-    def get_affordance(self, rgb_img, gray_scale_img, action_seq, action_candidate=[]):
+    def get_affordance(self, rgb_img_path, gray_scale_img, action_seq, action_candidate=[]):
         affordance = {}
         if not action_candidate:
             action_candidate = self.action_list
@@ -98,7 +98,7 @@ Answer: {answer if answer else ''}"""
         for action in action_candidate:
             all_object_action_perception.extend(self.get_action_object(action, 'perception'))
         all_object_action_perception = set(all_object_action_perception)
-        all_perception_affordance = self.get_perception_affordance(rgb_img, list(all_object_action_perception))
+        all_perception_affordance = self.get_perception_affordance(rgb_img_path, list(all_object_action_perception))
         
         for action in self.action_list:
             if action == 'DONE':
@@ -109,7 +109,7 @@ Answer: {answer if answer else ''}"""
                 action_object_perception = self.get_action_object(action, 'perception')
                 aff_cont = self.get_context_affordance(self.get_action_object(action, 'context'))
                 aff_per = np.mean([all_perception_affordance.get(o, 0) for o in action_object_perception]) if action_object_perception else 1
-                aff_prom = self.get_prompt_affordance(rgb_img, action)
+                aff_prom = self.get_prompt_affordance(rgb_img_path, action)
                 affordance[action] = aff_cont * aff_per * aff_prom
         return affordance
     

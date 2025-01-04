@@ -1,0 +1,27 @@
+I want you scoop red beans for me.
+
+move_to_blue_bowl
+pull_bowl_closer
+move_to_white_bowl
+pull_bowl_closer
+take_tool (spoon)
+move_to_blue_bowl
+scoop
+DONE
+
+white_bowl (with green beans)
+blue_bowl (with red beans)
+
+put_tool (spoon)
+take_tool (spoon)
+move_to_white_bowl
+move_to_blue_bowl
+cut
+fork
+scoop
+put_food
+pull_bowl_closer
+DONE
+
+# White bowl block the spoon
+# Blue bowl is too far to scoop

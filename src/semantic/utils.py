@@ -1,3 +1,4 @@
+import os
 from typing import List
 
 def preprocess_action(action):
@@ -41,57 +42,6 @@ def get_system_prompt(use_vlm=False, selection=False, scenario_description=False
         scenario_description_prompt = "Describe the food manipulation table top scenario from the image. Including what the robot are holding, spoon, knife, fork, or None"
         return scenario_description_prompt
     
-    example_instruction = "Use knife to cut the food and fork it into the empty bowl, then put some beans on the food."
-    example_action_seq = [
-        "take_tool (knife)", 
-        "move_to_white_cutting_board", 
-        "cut", 
-        "put_tool (knife)", 
-        "take_tool (fork)", 
-        "move_to_white_cutting_board", 
-        "fork", 
-        "move_to_blue_bowl", 
-        "put_food", 
-        "put_tool (fork)", 
-        "take_tool (spoon)", 
-        "move_to_yellow_bowl", 
-        "scoop",
-        "move_to_blue_bowl", 
-        "put_food", 
-        "put_tool (spoon)", 
-        "DONE"
-    ]
-    example_container_list = [
-        "blue_bowl (empty)", 
-        "white_cutting_board (with butter)", 
-        "yellow_bowl (with green beans)", 
-        "white_round_plate (empty)"
-    ]
-    example_action_list = [
-        "put_tool (spoon)", 
-        "put_tool (fork)", 
-        "put_tool (knife)", 
-        "take_tool (knife)", 
-        "take_tool (fork)", 
-        "take_tool (spoon)", 
-        "move_to_blue_bowl", 
-        "move_to_yellow_bowl", 
-        "move_to_white_cutting_board", 
-        "move_to_white_round_plate", 
-        "cut", 
-        "fork", 
-        "scoop", 
-        "put_food", 
-        "pull bowl closer", 
-        "DONE"
-    ]
-    example_action_seq = [preprocess_action(action) for action in example_action_seq]
-    example_action_list = [preprocess_action(action) for action in example_action_list]
-    example_container_list = [preprocess_object(container) for container in example_container_list]
-    example_action_dict = format_action_choices(example_action_list)
-    if selection:
-        example_action_seq = [example_action_dict[action] for action in example_action_seq]
-        example_action_list = [f'{selection}. {action}' for action, selection in example_action_dict.items()]
     
     vlm_prompt = """
 You should consider the information from the input image and decide the appropriate action. For example, if there are only a few beans in the bowl, making it unsuitable for scooping, avoid scooping from that bowl.
@@ -101,13 +51,35 @@ If the primitive might cause to collision of failure, you may pull bowl to avoid
     system_prompt = f"""You are a robot arm in food manipulation scneario. You should focus on your gripper. You need to pick an action from the action list to finish the whole task step by step.
 Please also take the previous actions into consideration when choosing the next action.
 {use_vlm * vlm_prompt}
-{get_action_description_prompt()}
+{get_action_description_prompt()}"""
 
-Example:
-    Action list: {example_action_list}
-    Initial object list: {example_container_list}
-    Instruction: {example_instruction}
-    {generate_prompt(example_action_seq, indent=True)}"""
+    example_path = '/home/hcis-s17/multimodal_manipulation/scoop_env/src/semantic/example/text'
+    for idx, txt in enumerate(os.listdir(example_path)):
+        if not txt.endswith('.txt'):
+            continue
+        content = ''.join(open(os.path.join(example_path, txt)).readlines()).split('\n\n')
+        example_instruction = content[0]
+        example_action_seq = content[1].split('\n')
+        example_container_list = content[2].split('\n')
+        example_action_list = content[3].split('\n')
+        if len(content) > 4:
+            example_environment = content[4]
+        
+        example_action_seq = [preprocess_action(action) for action in example_action_seq]
+        example_action_list = [preprocess_action(action) for action in example_action_list]
+        example_container_list = [preprocess_object(container) for container in example_container_list]
+        example_action_dict = format_action_choices(example_action_list)
+        if selection:
+            example_action_seq = [example_action_dict[action] for action in example_action_seq]
+            example_action_list = [f'{selection}. {action}' for action, selection in example_action_dict.items()]
+        system_prompt += f"""
+    Example {idx + 1}:
+        Environment description: \n{example_environment}
+
+        Action list: {example_action_list}
+        Initial object list: {example_container_list}
+        Instruction: {example_instruction}
+        {generate_prompt(example_action_seq, indent=True)}"""
     
     return system_prompt
         
@@ -167,3 +139,6 @@ def get_messages(system_prompt, user_prompt, image_url=None):
             {"role": "user", "content": user_content}
     ]
     return messages
+
+if __name__ == '__main__':
+    print(get_system_prompt(use_vlm=True, selection=True))

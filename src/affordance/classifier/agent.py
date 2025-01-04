@@ -47,7 +47,7 @@ class Affordance_agent_classifier(Affordance_agent):
         #     logits = (logits + 1) / 2
         return logits.cpu().numpy()
     
-    def get_affordance(self, rgb_img, gray_scale_img,action_seq: List[str],action_candidate=[]):
+    def get_affordance(self, rgb_img_path, gray_scale_img_path, action_seq: List[str],action_candidate=[]):
         last_action = action_seq[-1] if len(action_seq) else None
         if last_action:
             if not self.tool_on_hand and "take_tool" in last_action:
@@ -62,8 +62,8 @@ class Affordance_agent_classifier(Affordance_agent):
                     self.env_state[last_action.replace("move_to_", "")] = True
 
         action_list_affordance = ["scoop", "fork", "cut", "stir", "DONE"]
-        rgb_img = cv2.imread(rgb_img)
-        gray_scale_img = cv2.imread(gray_scale_img, cv2.IMREAD_GRAYSCALE)
+        rgb_img = cv2.imread(rgb_img_path)
+        gray_scale_img = cv2.imread(gray_scale_img_path, cv2.IMREAD_GRAYSCALE)
         logits = self.predict(rgb_img, gray_scale_img)
         affordance_scores = logits.tolist()
         affordance_scores.append(affordance_scores[1]) # stir

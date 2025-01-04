@@ -8,37 +8,39 @@ from easydict import EasyDict
 from PIL import Image
 from scipy.special import softmax
 
-def get_vild_prob(image_path, object_list, params):
+FLAGS = {
+    'prompt_engineering': True,
+    'this_is': True,
 
+    'temperature': 100.0,
+    'use_softmax': False,
+}
+FLAGS = EasyDict(FLAGS)
+model = None
+preprocess = None
+session = None
+
+def start_model():
+    global model, preprocess, session
     clip.available_models()
     model, preprocess = clip.load("ViT-B/32")
-
     session = tf.Session(graph=tf.Graph())
-
-    saved_model_dir = '/home/hcis-s17/multimodal_manipulation/scoop_env/src/affordance/lap/ckpt' 
-
+    saved_model_dir = '/home/hcis-s17/multimodal_manipulation/scoop_env/src/vild/ckpt/image_path_v2' 
     _ = tf.saved_model.load(session, ['serve'], saved_model_dir)
 
-    FLAGS = {
-        'prompt_engineering': True,
-        'this_is': True,
 
-        'temperature': 100.0,
-        'use_softmax': False,
-    }
-    FLAGS = EasyDict(FLAGS)
+def article(name):
+    return 'an' if name[0] in 'aeiou' else 'a'
 
+def processed_name(name, rm_dot=False):
+    # _ for lvis
+    # / for obj365
+    res = name.replace('_', ' ').replace('/', ' or ').lower()
+    if rm_dot:
+        res = res.rstrip('.')
+    return res
 
-    def article(name):
-        return 'an' if name[0] in 'aeiou' else 'a'
-
-    def processed_name(name, rm_dot=False):
-        # _ for lvis
-        # / for obj365
-        res = name.replace('_', ' ').replace('/', ' or ').lower()
-        if rm_dot:
-            res = res.rstrip('.')
-        return res
+def get_template():
     single_template = [
         'a photo of {article} {}.'
     ]
@@ -120,85 +122,88 @@ def get_vild_prob(image_path, object_list, params):
         'a painting of the {}.',
         'a painting of a {}.',
     ]
+    return single_template, multiple_templates
 
 
-    def build_text_embedding(categories):
-        if FLAGS.prompt_engineering:
-            templates = multiple_templates
-        else:
-            templates = single_template
+def build_text_embedding(categories):
+    global FLAGS, model
+    single_template, multiple_templates = get_template()
+    if FLAGS.prompt_engineering:
+        templates = multiple_templates
+    else:
+        templates = single_template
 
-        run_on_gpu = torch.cuda.is_available()
+    run_on_gpu = torch.cuda.is_available()
 
-        with torch.no_grad():
-            all_text_embeddings = []
-            for category in categories:
+    with torch.no_grad():
+        all_text_embeddings = []
+        for category in categories:
+            texts = [
+                template.format(processed_name(category['name'], rm_dot=True),
+                                article=article(category['name']))for template in templates
+                ]
+            if FLAGS.this_is:
                 texts = [
-                    template.format(processed_name(category['name'], rm_dot=True),
-                                    article=article(category['name']))for template in templates
-                    ]
-                if FLAGS.this_is:
-                    texts = [
-                            'This is ' + text if text.startswith('a') or text.startswith('the') else text
-                            for text in texts
-                    ]
-                texts = clip.tokenize(texts) #tokenize
-                if run_on_gpu:
-                    texts = texts.cuda()
-                text_embeddings = model.encode_text(texts) #embed with text encoder
-                text_embeddings /= text_embeddings.norm(dim=-1, keepdim=True)
-                text_embedding = text_embeddings.mean(dim=0)
-                text_embedding /= text_embedding.norm()
-                all_text_embeddings.append(text_embedding)
-            all_text_embeddings = torch.stack(all_text_embeddings, dim=1)
+                        'This is ' + text if text.startswith('a') or text.startswith('the') else text
+                        for text in texts
+                ]
+            texts = clip.tokenize(texts) #tokenize
             if run_on_gpu:
-                all_text_embeddings = all_text_embeddings.cuda()
-        return all_text_embeddings.cpu().numpy().T
+                texts = texts.cuda()
+            text_embeddings = model.encode_text(texts) #embed with text encoder
+            text_embeddings /= text_embeddings.norm(dim=-1, keepdim=True)
+            text_embedding = text_embeddings.mean(dim=0)
+            text_embedding /= text_embedding.norm()
+            all_text_embeddings.append(text_embedding)
+        all_text_embeddings = torch.stack(all_text_embeddings, dim=1)
+        if run_on_gpu:
+            all_text_embeddings = all_text_embeddings.cuda()
+    return all_text_embeddings.cpu().numpy().T
 
-    def nms(dets, scores, thresh, max_dets=1000):
-        """Non-maximum suppression.
-        Args:
-        dets: [N, 4]
-        scores: [N,]
-        thresh: iou threshold. Float
-        max_dets: int.
-        """
-        y1 = dets[:, 0]
-        x1 = dets[:, 1]
-        y2 = dets[:, 2]
-        x2 = dets[:, 3]
+def nms(dets, scores, thresh, max_dets=1000):
+    """Non-maximum suppression.
+    Args:
+    dets: [N, 4]
+    scores: [N,]
+    thresh: iou threshold. Float
+    max_dets: int.
+    """
+    y1 = dets[:, 0]
+    x1 = dets[:, 1]
+    y2 = dets[:, 2]
+    x2 = dets[:, 3]
 
-        areas = (x2 - x1) * (y2 - y1)
-        order = scores.argsort()[::-1]
+    areas = (x2 - x1) * (y2 - y1)
+    order = scores.argsort()[::-1]
 
-        keep = []
-        while order.size > 0 and len(keep) < max_dets:
-            i = order[0]
-            keep.append(i)
+    keep = []
+    while order.size > 0 and len(keep) < max_dets:
+        i = order[0]
+        keep.append(i)
 
-            xx1 = np.maximum(x1[i], x1[order[1:]])
-            yy1 = np.maximum(y1[i], y1[order[1:]])
-            xx2 = np.minimum(x2[i], x2[order[1:]])
-            yy2 = np.minimum(y2[i], y2[order[1:]])
+        xx1 = np.maximum(x1[i], x1[order[1:]])
+        yy1 = np.maximum(y1[i], y1[order[1:]])
+        xx2 = np.minimum(x2[i], x2[order[1:]])
+        yy2 = np.minimum(y2[i], y2[order[1:]])
 
-            w = np.maximum(0.0, xx2 - xx1)
-            h = np.maximum(0.0, yy2 - yy1)
-            intersection = w * h
-            overlap = intersection / (areas[i] + areas[order[1:]] - intersection + 1e-12)
+        w = np.maximum(0.0, xx2 - xx1)
+        h = np.maximum(0.0, yy2 - yy1)
+        intersection = w * h
+        overlap = intersection / (areas[i] + areas[order[1:]] - intersection + 1e-12)
 
-            inds = np.where(overlap <= thresh)[0]
-            order = order[inds + 1]
-        return keep
+        inds = np.where(overlap <= thresh)[0]
+        order = order[inds + 1]
+    return keep
 
+def get_vild_prob(image_path, object_list, params):
+    start_model()
+    global FLAGS, model, preprocess, session
     #################################################################
     # Preprocessing categories and get params
     object_list = ['background'] + object_list
     categories = [{'name': item, 'id': idx+1,} for idx, item in enumerate(object_list)]
     prob_records = [0.] * len(object_list)
-
-    nms_threshold, min_rpn_score_thresh, min_box_area = params
-
-
+    nms_threshold, min_rpn_score_thresh, min_box_area, _ = params
     #################################################################
     # Obtain results and read image
     roi_boxes, roi_scores, detection_boxes, scores_unused, box_outputs, detection_masks, visual_features, image_info = session.run(
@@ -287,8 +292,8 @@ if __name__ == '__main__':
     nms_threshold = 0.6 #@param {type:"slider", min:0, max:0.9, step:0.05}
     min_rpn_score_thresh = 0.9  #@param {type:"slider", min:0, max:1, step:0.01}
     min_box_area = 220 #@param {type:"slider", min:0, max:10000, step:1.0}
+    max_num_box = 10 #@param {type:"slider", min:1, max:100, step:1}
 
-
-    params = nms_threshold, min_rpn_score_thresh, min_box_area
+    params = nms_threshold, min_rpn_score_thresh, min_box_area, max_num_box
     probs = get_vild_prob(image_path, object_list, params)
     print(probs)

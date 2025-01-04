@@ -6,7 +6,7 @@ class Affordance_agent:
         self.action_list = action_list
         
     @abstractmethod
-    def get_affordance(self, rgb_img, gray_scale_img, action_seq: List[str], action_candidate=[]):
+    def get_affordance(self, rgb_img_path, gray_scale_img_path, action_seq: List[str], action_candidate=[]):
         if not action_candidate:
             return {action: 1 for action in self.action_list}
         return (int(action in self.action_list) for action in action_candidate)

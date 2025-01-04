@@ -1,0 +1,21 @@
+Scoop the beans.
+
+take_tool (spoon)
+move_to_white_bowl
+scoop
+DONE
+
+white_bowl (with green beans)
+green_bowl (with green beans)
+
+put_tool (spoon)
+take_tool (spoon)
+move_to_white_bowl
+cut
+fork
+scoop
+put_food
+pull_bowl_closer
+DONE
+
+# Green bowl has too few beans to scoop

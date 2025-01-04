@@ -1,16 +1,20 @@
 import os
+import numpy as np
 from openai import OpenAI
 from tqdm import tqdm
+import sys
+sys.path.append('..')
 
 from src.utils import *
-
+from src.semantic.utils import get_system_prompt
+from utils import parse_list
 openai_client = OpenAI()
 
-def get_log_prob(system_content, user_content, answer, model):
+def get_log_prob(system_content, user_content, answer, model, action_list, rank_in_action=False):
       
     messages = [
-            {"role": "system", "content": system_content},
-            {"role": "user", "content": user_content}
+        {"role": "system", "content": system_content},
+        {"role": "user", "content": user_content}
     ]
 
     response = openai_client.chat.completions.create(
@@ -22,7 +26,14 @@ def get_log_prob(system_content, user_content, answer, model):
     )
     top_logprobs = response.choices[0].logprobs.content[0].top_logprobs
     top_logprobs = {top_logprob.token: top_logprob.logprob for top_logprob in top_logprobs}
-    return top_logprobs.get(answer, -float('inf'))
+    sort_action_in_list = sorted(action_list, key=lambda x: top_logprobs.get(x, -1), reverse=True)
+    sort_action = sorted(top_logprobs.items(), key=lambda x: x[1], reverse=True)
+    sort_action = {k[0]: i + 1 for i, k in enumerate(sort_action)}
+    sort_action_in_list = {k: i + 1 for i, k in enumerate(sort_action_in_list)}
+    rank = sort_action.get(answer, -1)
+    rank_in_action = sort_action_in_list.get(answer, -1)
+    
+    return top_logprobs.get(answer, -float('inf')), rank, rank_in_action
 
 def read_question(idx):
     file_name = str(idx).zfill(4)
@@ -33,6 +44,7 @@ def read_question(idx):
     if not os.path.exists(system_text_path) or not os.path.exists(user_text_path):
         raise FileNotFoundError(f"{file_name}.txt")
     system_content = [{"type": "text", "text": ''.join(open(system_text_path).readlines())}]
+    # system_content = [{"type": "text", "text": get_system_prompt(use_vlm=True, selection=True)}]
     if os.path.exists(img_path):
         user_content = [
             {"type": "text", "text": ''.join(open(user_text_path).readlines())},
@@ -40,28 +52,32 @@ def read_question(idx):
         ]
     else:
         user_content = [{"type": "text", "text": ''.join(open(user_text_path).readlines())}]
-    return system_content, user_content
+    return system_content, user_content, parse_list(open(user_text_path).read())
         
-def main(model='gpt-4o'):
-    answer_list = [l.strip().split() for l in open('answer.txt').readlines()]
+def main(model='gpt-4o', splitter='\t', force=False, output_file='answer.txt'):
+    answer_list = [l.strip().split(splitter) for l in open('answer.txt').readlines()]
+    answer_list_rank_in_action = [l.strip().split(splitter) for l in open('answer.txt').readlines()]
+    output_file_rank_in_action = output_file.split('.')[0] + '_rank_in_action.txt'
     data_size = len(answer_list)
-    fail_pair = []
     for i in tqdm(range(data_size), ncols=100):
         answer = answer_list[i]
-        if len(answer) != 1:
+        if not force and len(answer) != 1:
             continue
-        system_content, user_content = read_question(i)
-        try:
-            log_prob = get_log_prob(system_content, user_content, answer[0], model)
-            answer_list[i].append(str(log_prob))
-        except:
-            fail_pair.append(i)
-    with open('answer.txt', 'w') as f:
-        content = [' '.join(l) for l in answer_list]
+        system_content, user_content, action_list = read_question(i)
+        action_list = [action.split('. ')[0] for action in action_list]
+        log_prob, rank, rank_in_action = get_log_prob(system_content, user_content, answer[0], model, action_list)
+        prob = np.exp(log_prob)
+        answer_list[i].append(str(prob))
+        answer_list[i].append(str(rank))
+        answer_list_rank_in_action[i].append(str(prob))
+        answer_list_rank_in_action[i].append(str(rank_in_action))
+    with open(output_file, 'w') as f:
+        content = [splitter.join(l) for l in answer_list]
         f.write('\n'.join(content))
-    return fail_pair
+    with open(output_file_rank_in_action, 'w') as f:
+        content = [splitter.join(l) for l in answer_list_rank_in_action]
+        f.write('\n'.join(content))
   
 if __name__ == '__main__':
-    fail_pair = main()
-    print(fail_pair)
+    fail_pair = main(force=True, output_file='answer_sys_1.txt')
     
