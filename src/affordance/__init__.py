@@ -10,3 +10,7 @@ class Affordance_agent:
         if not action_candidate:
             return {action: 0 for action in self.action_list}
         return (int(action in self.action_list) for action in action_candidate)
+    
+    @abstractmethod
+    def get_additional_info(self):
+        return ""

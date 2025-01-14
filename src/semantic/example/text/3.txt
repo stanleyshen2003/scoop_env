@@ -16,8 +16,6 @@ put_tool (spoon)
 take_tool (spoon)
 move_to_white_bowl
 move_to_blue_bowl
-cut
-fork
 scoop
 put_food
 pull_bowl_closer

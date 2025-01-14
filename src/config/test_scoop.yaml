@@ -1,0 +1,25 @@
+general:
+  # general scooping
+  1: 
+    instruction: Scoop the beans.
+    answer: ['take_tool (spoon)', 'move_to_red_bowl', 'scoop']
+    tool: [spoon]
+    containers:
+    - x: 0.45
+      y: 0.2
+      type: bowl
+      color: red
+      food:
+        type: ball
+        color: [darkred]
+        amount: 2000
+        position: [1, 1]
+    - x: 0.61
+      y: 0.0
+      type: bowl
+      color: orange
+      food:
+        type: None
+        color: [darkred, purple]
+        amount: 0
+        position: [1, 1]

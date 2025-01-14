@@ -1,0 +1,47 @@
+example:
+  1: 
+    instruction: Scoop the beans as quickly as you can.
+    answer: ['take_tool (spoon)', 'move_to_gray_bowl', 'scoop', 'DONE']
+    tool: [spoon]
+    containers:   
+    - x: 0.54
+      y: 0.24
+      type: bowl
+      color: green
+      food:
+        type: ball
+        color: [green]
+        amount: 20
+        position: [1, 1]
+    - x: 0.39
+      y: 0.08
+      type: bowl
+      color: white
+      food:
+        type: ball
+        color: [green]
+        amount: 1600
+        position: [1, 1] 
+  2: # distance + tool_block
+    instruction: Scoop the beans quickly.
+    answer: ['move_to_orange_bowl', 'pull_bowl_closer', 'take_tool (spoon)', 'move_to_orange_bowl', 'scoop', 'DONE']
+    tool: [spoon]
+    containers:
+    - x: 0.42
+      y: -0.23
+      type: bowl
+      color: blue
+      food:
+        type: ball
+        color: [darkred]
+        amount: 1200
+        position: [1, 1]
+    - x: 0.6
+      y: 0.3
+      type: bowl
+      color: white
+      food:
+        type: ball
+        color: [darkgreen]
+        amount: 1200
+        position: [1, 1]

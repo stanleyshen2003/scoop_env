@@ -1,8 +1,11 @@
 import os
 import cv2
+import random
 from src.affordance.agents import *
 from src.semantic import *
 from src.utils import *
+from src.cot_prompt import cot2 as cot # replace to other version
+from src.cot_prompt import cot_baseline1 as cot_baseline # replace to other version
 
 def get_action_list(tool_list, object_list):
     action_list = ["scoop", "stir", "put_food", "pull_bowl_closer", "DONE"]
@@ -11,11 +14,6 @@ def get_action_list(tool_list, object_list):
     action_list.extend([f"move_to_{object.split(' (')[0]}" for object in object_list])
     return action_list
 
-affordance_agent_list = {
-    "classifier": Affordance_agent_classifier,
-    "lap": Affordance_agent_LAP,
-    "ours": Affordance_agent_ours
-} 
 class Decision_pipeline():
     def __init__(self, init_object_list, tool_list, log_folder) -> None:
         self.init_object_list = init_object_list
@@ -25,61 +23,144 @@ class Decision_pipeline():
         self.affordance_agent = Affordance_agent(self.init_object_list, self.action_list)
     
     def set_affordance_agent(self, affordance_type):
+        affordance_agent_list = {
+            "classifier": Affordance_agent_classifier,
+            "lap": Affordance_agent_LAP,
+            "ours": Affordance_agent_ours
+        } 
         self.affordance_agent = affordance_agent_list.get(affordance_type, Affordance_agent)(self.init_object_list, self.action_list)
     
-    def get_score(
-        self,
-        instruction: str, 
-        observation_rgb_path: str, 
-        observation_d_path: str, 
+    def random_action(self):
+        return random.choice(self.action_list)
+    
+    def chain_of_thought(
+        self, 
+        instruction,
+        observation_rgb_path,
         action_sequence=None,
-        use_vlm=False,
-        action_candiadate=[],
-        affordance_only=False,
-        semantic_only=False
+        action_candidate=[],
+    ) -> dict:
+        if not action_candidate: 
+            action_candidate = self.action_list
+        action_candidate_scores = cot(
+            instruction=instruction, 
+            container_list=self.init_object_list, 
+            action_list=self.action_list, 
+            action_seq=action_sequence, 
+            obs_url=encode_image(observation_rgb_path), 
+            action_candidate=action_candidate, 
+            log_folder=self.log_folder, 
+            obs_id=self.obs_id
+        )
+        return action_candidate_scores
+    
+    
+    def chain_of_thought_baseline(
+        self, 
+        instruction,
+        observation_rgb_path,
+        action_sequence=None,
+        action_candidate=[],
+    ) -> dict:
+        if not action_candidate: 
+            action_candidate = self.action_list
+        action_candidate_scores = cot_baseline(
+            instruction=instruction, 
+            container_list=self.init_object_list, 
+            action_list=self.action_list, 
+            action_seq=action_sequence, 
+            obs_url=encode_image(observation_rgb_path), 
+            action_candidate=action_candidate, 
+            log_folder=self.log_folder, 
+            obs_id=self.obs_id
+        )
+        return action_candidate_scores
+     
+    def get_affordance_score(
+        self, 
+        observation_rgb_path, 
+        observation_d_path, 
+        action_sequence=None, 
+        action_candidate=[]
     ):
-        # action_list = ["scoop", "fork", "cut", "stir", "put_food", "pull_bowl_closer", "DONE"]
-        # action_list = get_action_list(tool_list, object_list)
-        # print(action_list)
-        
-        # get affordance score
-        if semantic_only:
-            affordance = {action: 1 for action in self.action_list}
-        else:
-            affordance = self.affordance_agent.get_affordance(observation_rgb_path, observation_d_path, action_sequence, action_candiadate)
-            affordance = sort_scores_dict(affordance)
-            open(os.path.join(self.log_folder, f"affordance_{self.obs_id}.txt"), 'w').write(f"{affordance}")
-            
-        # get semantic score
-        if affordance_only:
-            semantic = {action: 1 for action in self.action_list}
-        else:
-            obs_image = None
-            base64_image = encode_image(observation_rgb_path)
-            if use_vlm:
-                obs_image = base64_image
-                cv2.imwrite(os.path.join(self.log_folder, f'observation_{self.obs_id}.png'), cv2.imread(observation_rgb_path))
-            semantic = get_selection_score_openai(instruction, self.init_object_list, self.action_list, action_sequence, use_vlm, obs_image, log_folder=self.log_folder, obs_id=self.obs_id)
-        # semantic = get_semantic_gemini(instruction, object_list, action_list, action_sequence)
-        
-        
-        score = {action: affordance[action] * semantic[action] for action in self.action_list}
-        score = sort_scores_dict(score)
-        open(os.path.join(self.log_folder, f"combined_{self.obs_id}.txt"), 'w').write(f"{score}")
-        
-        self.obs_id += 1
-        print(instruction)
-        print("=" * 20)
+        affordance = self.affordance_agent.get_affordance(observation_rgb_path, observation_d_path, action_sequence, action_candidate)
+        affordance = sort_scores_dict(affordance)
+        open(os.path.join(self.log_folder, f"affordance_{self.obs_id}.txt"), 'w').write(f"{affordance}")
         print(f"affordance {max(affordance, key=affordance.get)}")
         print(affordance)
         print("=" * 20)
+        return affordance
+
+    def get_affordance_score_with_info(
+        self, 
+        observation_rgb_path, 
+        observation_d_path, 
+        action_sequence=None, 
+        action_candidate=[]
+    ):
+        affordance = self.affordance_agent.get_affordance(observation_rgb_path, observation_d_path, action_sequence, action_candidate)
+        additional_info = self.affordance_agent.get_additional_info()
+        affordance = sort_scores_dict(affordance)
+        open(os.path.join(self.log_folder, f"affordance_{self.obs_id}.txt"), 'w').write(f"{affordance}")
+        print(f"affordance {max(affordance, key=affordance.get)}")
+        print(affordance)
+        print("=" * 20)
+        return affordance, additional_info
+    
+    def get_semantic_score(
+        self, 
+        instruction, 
+        observation_rgb_path, 
+        action_sequence=None, 
+        use_vlm=False,
+        additional_info=None,
+        segmentation_prompt=False
+    ):
+        obs_image = None
+        base64_image = encode_image(observation_rgb_path)
+        if use_vlm:
+            obs_image = base64_image
+            cv2.imwrite(os.path.join(self.log_folder, f'observation_{self.obs_id}.png'), cv2.imread(observation_rgb_path))
+        semantic = get_selection_score_openai(
+            instruction, 
+            self.init_object_list, 
+            self.action_list, 
+            action_sequence, 
+            use_vlm,
+            obs_image,
+            additional_info=additional_info,
+            log_folder=self.log_folder, 
+            obs_id=self.obs_id,
+            segmentation_prompt=segmentation_prompt,
+        )
+        # semantic = get_semantic_gemini(instruction, object_list, action_list, action_sequence)
         print(f"semantic {max(semantic, key=semantic.get)}")
         print(semantic)
         print("=" * 20)
-        print(f"combined\n{score}")
+        return semantic
+    
+    def get_combined_score(
+        self, 
+        instruction, 
+        observation_rgb_path, 
+        observation_d_path, 
+        action_sequence=None, 
+        use_vlm=False, 
+        action_candidate=[]
+    ):
+        affordance = self.get_affordance_score(observation_rgb_path, observation_d_path, action_sequence, action_candidate)
+        semantic = self.get_semantic_score(instruction, observation_rgb_path, action_sequence, use_vlm)
+        score = {action: affordance[action] * semantic[action] for action in self.action_list}
+        score = sort_scores_dict(score)
+        open(os.path.join(self.log_folder, f"combined_{self.obs_id}.txt"), 'w').write(f"{score}")
+        print(f"combined {max(score, key=score.get)}")
+        print(score)
         print("=" * 20)
         
         return score
+    
+    def set_obs_id(self):
+        self.obs_id += 1
     
 if __name__ == "__main__":
     observation_rgb_path = 'affordance/data/spoon/30/0_rgb/000.png'

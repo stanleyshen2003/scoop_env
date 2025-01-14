@@ -31,17 +31,19 @@ while getopts "e:c:n:l:t:h" opt; do
 done
 
 # Ensure required flags are provided
-if [ -z "$EXP_ID" ] || [ -z "$CONFIG_FILE" ]; then
+if [ -z "$EXP_ID" ] || [ -z "$CONFIG_FILE" ] || [ -z "$TEST_TYPE" ]; then
     echo "Error: Both -e (EXP_ID), -c (CONFIG_FILE), and -c (TEST_TYPE) are required."
     usage
 fi
 
 # Path to results folder
-RESULT_DIR="$LOG_ROOT/$EXP_ID"
+RESULT_DIR="$LOG_ROOT/$TEST_TYPE"_"$EXP_ID"
+echo "Results will be saved in $RESULT_DIR"
 
 # Export environment variables for other scripts
 export RESULT_DIR=$RESULT_DIR
 export CONFIG_FILE=$CONFIG_FILE
+export TEST_TYPE=$TEST_TYPE
 
 # Prepare the experiment
 echo "Preparing the experiment..."
@@ -70,7 +72,7 @@ for ((trial=1; trial<=MAX_TRIALS; trial++)); do
 
     if $all_done; then
         echo "All experiments are complete. Exiting..."
-        ./zip_result.sh
+        # ./zip_result.sh
         exit 0
     fi
     

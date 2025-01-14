@@ -20,7 +20,8 @@ def call_openai_api(messages, model='gpt-4o'):
         model=model,
         messages=messages,
         logprobs=True,
-        top_logprobs=20
+        top_logprobs=20,
+        temperature=0,
     )
     return content
 
@@ -33,28 +34,28 @@ def get_semantic(
     obs_url=None,
     log_folder=None,
     obs_id=None,
-    )->dict:
- 
+) -> dict:
+    """no more used"""
     
     action_description = {preprocess_action(action): action for action in action_list}
     action_dict = format_action_choices(list(action_description.keys()))
-    system_prompt = get_system_prompt(use_vlm)
+    system_prompt, system_image_url = get_system_prompt(use_vlm)
     user_prompt = get_user_prompt(instruction, action_seq, action_dict, object_list)
-    system_content = [{"type": "text", "text": system_prompt}]
-    user_content = [{"type": "text", "text": user_prompt}]
     model = 'gpt-4o' if use_vlm else 'gpt-3.5-turbo'
     if use_vlm:
         assert obs_url is not None, "Observation url could not be None"
-        scenario_prompt = get_messages(get_system_prompt(scenario_description=True), image_url=obs_url)
+        description_system_prompt = "You are a robot arm in food manipulation scneario. You should focus on your gripper. You need to describe the food manipulation table top scenario from the image."
+        description_user_prompt = "Describe the food manipulation table top scenario from the image. Including what the robot are holding, spoon, knife, fork, or None"
+        scenario_prompt = get_messages(description_system_prompt, description_user_prompt, user_image_url=obs_url)
         scenario_description = call_openai_api(scenario_prompt, model).choices[0].message.content
-        messages = get_messages(system_prompt, user_prompt, obs_url)
+        messages = get_messages(system_prompt, user_prompt, system_image_url=system_image_url, user_image_url=obs_url)
     else:
         scenario_description = ''
         messages = get_messages(system_prompt, user_prompt)
     
     response_content = call_openai_api(messages, model).choices[0].message.content
     
-    explanation_prompt = get_messages(system_prompt, user_prompt + f"{response_content} \nPlease explain why you choose the action.", obs_url)
+    explanation_prompt = get_messages(system_prompt, user_prompt + f"{response_content} \nPlease explain why you choose the action.", user_image_url=obs_url)
     explanation = call_openai_api(explanation_prompt, model).choices[0].message.content
     
     print(response_content)
@@ -106,10 +107,14 @@ def get_selection_score(
     action_list=["scoop", "move", "stir", "DONE"],
     action_seq=None, 
     use_vlm=False, 
-    obs_image=None,
+    obs_url=None,
+    additional_info="",
     log_folder=None,
     obs_id=None,
-)->dict:
+    example_with_image=True,
+    segmentation_prompt=False
+) -> dict:
+    
     print("instruction", instruction)
     print("object_list", object_list)
     print("action_list", action_list)
@@ -120,14 +125,21 @@ def get_selection_score(
     
     action_description = {preprocess_action(action): action for action in action_list}
     action_dict = format_action_choices(list(action_description.keys()))
-    system_prompt = get_system_prompt(use_vlm)
-    user_prompt = get_user_prompt(instruction, action_seq, action_dict, object_list)
+    system_prompt, _ = get_system_prompt(use_vlm, selection=True, with_example=not example_with_image)
+    user_prompt = get_user_prompt(instruction, action_seq, action_dict, object_list, additional_info, segmentation=segmentation_prompt)
+    if example_with_image:
+        example_prompt, example_img_url = get_example_prompt(use_vlm, selection=True)
+        user_prompt = example_prompt + user_prompt
+        obs_url = example_img_url + [obs_url]
+        
     model = 'gpt-4o' if use_vlm else 'gpt-3.5-turbo'
     if use_vlm:
-        assert obs_image is not None, "Observation url could not be None"
-        scenario_prompt = get_messages(get_system_prompt(scenario_description=True), '', obs_image)
+        assert obs_url is not None, "Observation url could not be None"
+        description_system_prompt = "You are a robot arm in food manipulation scneario. You should focus on your gripper. You need to describe the food manipulation table top scenario from the image."
+        description_user_prompt = "Describe the food manipulation table top scenario from the image. Including what the robot are holding, spoon, knife, fork, or None"
+        scenario_prompt = get_messages(description_system_prompt, description_user_prompt, user_image_url=obs_url[-1])
         scenario_description = call_openai_api(scenario_prompt, model).choices[0].message.content
-        messages = get_messages(system_prompt, user_prompt, obs_image)
+        messages = get_messages(system_prompt, user_prompt, user_image_url=obs_url)
     else:
         scenario_description = ''
         messages = get_messages(system_prompt, user_prompt)
@@ -137,7 +149,7 @@ def get_selection_score(
     top_logprobs = response.choices[0].logprobs.content[0].top_logprobs
     top_logprobs = {top_logprob.token: top_logprob.logprob for top_logprob in top_logprobs}
     
-    explanation_prompt = get_messages(system_prompt, user_prompt + f"{response_content} \nPlease explain why you choose the action.", obs_image)
+    explanation_prompt = get_messages(system_prompt, user_prompt + f"{response_content} \nPlease explain why you choose the action.", user_image_url=obs_url)
     explanation = call_openai_api(explanation_prompt, model).choices[0].message.content
     
     print(messages[0]["content"][0]['text'])
@@ -148,11 +160,11 @@ def get_selection_score(
     if use_vlm:
         print(scenario_description)
     print(explanation)
-    
-    _semantic = {action: np.exp(top_logprobs.get(choice, float('-inf'))) for action, choice in action_dict.items()}
-    semantic = {}
-    for key, val in _semantic.items():
-        semantic[action_description[key]] = val
+    # _semantic = {action: np.exp(top_logprobs.get(choice, float('-inf'))) for action, choice in action_dict.items()}
+    # semantic = {}
+    # for key, val in _semantic.items():
+    #     semantic[action_description[key]] = val
+    semantic = {action_description[key]: np.exp(top_logprobs.get(value, float('-inf'))) for key, value in action_dict.items()}
     semantic = sort_scores_dict(semantic)
     # print(semantic)
     
@@ -186,7 +198,7 @@ def get_calibration_data(
     action_description = {preprocess_action(action): action for action in action_list}
     action_dict = format_action_choices(list(action_description.keys()))
     
-    system_prompt = get_system_prompt(use_vlm, True)
+    system_prompt, _ = get_system_prompt(use_vlm, True)
     user_prompt = get_user_prompt(instruction, action_seq, action_dict, object_list)
     answer = action_dict[preprocess_action(action)]
     return system_prompt, user_prompt, answer

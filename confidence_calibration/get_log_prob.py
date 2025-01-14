@@ -6,7 +6,7 @@ import sys
 sys.path.append('..')
 
 from src.utils import *
-from src.semantic.utils import get_system_prompt
+from src.semantic.utils import get_system_prompt, get_example_prompt
 from utils import parse_list
 openai_client = OpenAI()
 
@@ -35,7 +35,7 @@ def get_log_prob(system_content, user_content, answer, model, action_list, rank_
     
     return top_logprobs.get(answer, -float('inf')), rank, rank_in_action
 
-def read_question(idx):
+def read_question(idx, new_system_prompt=False):
     file_name = str(idx).zfill(4)
     img_path = f'question/image/{file_name}.jpg'
     system_text_path = f'question/text/system/{file_name}.txt'
@@ -43,20 +43,31 @@ def read_question(idx):
     
     if not os.path.exists(system_text_path) or not os.path.exists(user_text_path):
         raise FileNotFoundError(f"{file_name}.txt")
-    system_content = [{"type": "text", "text": ''.join(open(system_text_path).readlines())}]
-    # system_content = [{"type": "text", "text": get_system_prompt(use_vlm=True, selection=True)}]
-    if os.path.exists(img_path):
-        user_content = [
-            {"type": "text", "text": ''.join(open(user_text_path).readlines())},
-            {"type": "image_url", "image_url": {"url": encode_image(img_path), "detail": "high"}}
-        ]
+    user_content = []
+    user_prompt = ''.join(open(user_text_path).readlines())
+    if not new_system_prompt:
+        system_content = [{"type": "text", "text": ''.join(open(system_text_path).readlines())}]
     else:
-        user_content = [{"type": "text", "text": ''.join(open(user_text_path).readlines())}]
+        system_prompt, _ = get_system_prompt(use_vlm=True, selection=True, with_example=False)
+        example_prompt, example_img_url = get_example_prompt(use_vlm=True, selection=True)
+        system_content = [{"type": "text", "text": system_prompt}]
+        user_prompt = example_prompt + user_prompt
+        for url in example_img_url:
+            user_content.append({"type": "image_url", "image_url": {"url": url, "detail": "high"}})
+    if os.path.exists(img_path):
+        user_content.extend([
+            {"type": "text", "text": user_prompt},
+            {"type": "image_url", "image_url": {"url": encode_image(img_path), "detail": "high"}}
+        ])
+    else:
+        user_content.extend([{"type": "text", "text": user_prompt}])
     return system_content, user_content, parse_list(open(user_text_path).read())
         
-def main(model='gpt-4o', splitter='\t', force=False, output_file='answer.txt'):
-    answer_list = [l.strip().split(splitter) for l in open('answer.txt').readlines()]
-    answer_list_rank_in_action = [l.strip().split(splitter) for l in open('answer.txt').readlines()]
+def main(model='gpt-4o', splitter='\t', force=False, output_file=None):
+    assert output_file is not None, "output_file should not be None"
+    raw_answer_path = 'answer/answer.txt'
+    answer_list = [l.strip().split(splitter) for l in open(raw_answer_path).readlines()]
+    answer_list_rank_in_action = [l.strip().split(splitter) for l in open(raw_answer_path).readlines()]
     output_file_rank_in_action = output_file.split('.')[0] + '_rank_in_action.txt'
     data_size = len(answer_list)
     for i in tqdm(range(data_size), ncols=100):
@@ -79,5 +90,5 @@ def main(model='gpt-4o', splitter='\t', force=False, output_file='answer.txt'):
         f.write('\n'.join(content))
   
 if __name__ == '__main__':
-    fail_pair = main(force=True, output_file='answer/answer_sys_1.txt')
+    fail_pair = main(force=True, output_file='answer/answer_sys_6_temp_0.txt')
     

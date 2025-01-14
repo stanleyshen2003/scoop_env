@@ -18,6 +18,7 @@ An example that demonstrates various DOF control methods:
 - Apply DOF efforts
 """
 
+import inspect
 from isaacgym import gymtorch
 from isaacgym import gymapi
 from isaacgym import gymutil
@@ -38,9 +39,10 @@ from PIL import Image, ImageDraw, ImageFont
 from typing import List
 torch.pi = math.pi
 
+import src.action_state as action_state
 from src import Decision_pipeline, BallGenerator, get_action_list
-from src import action_state
 from src.semantic import get_calibration_data
+from src.semantic.utils import segmentation_process
 from src.config import read_yaml, get_task_env_num, get_task_type_list
 
 
@@ -151,10 +153,13 @@ class IsaacSim():
                 "Q": "turn_down",
                 "R": "rot_left",
                 "T": "rot_right",
+                "K": "put_bowl_into_microwave",
+                "L": "take_bowl_out_microwave",
                 "SPACE": "gripper_close",
                 "C": "choose action",
                 "M": "open_microwave",
-                "N": "close_microwave"
+                "N": "close_microwave",
+                "0": "scoop_put",
             }
             # self.action_list = []
             # ----------------------------------------#
@@ -174,6 +179,9 @@ class IsaacSim():
                 "D": "pull_bowl_closer",
                 "M": "open_microwave",
                 "N": "close_microwave",
+                "O": "start_microwave",
+                "K": "put_bowl_into_microwave",
+                "L": "take_bowl_out_microwave",
                 "SPACE": "choose action",
                 # "P": "change_ball_friction"
             }
@@ -242,7 +250,7 @@ class IsaacSim():
         #黏稠度
         sim_params.dt = 1.0 / 60.0 # 1.0 / 60 
 
-        sim_params.substeps = 10 # 3
+        sim_params.substeps = 8 # 10
 
         sim_params.physx.solver_type = 1
         sim_params.physx.num_position_iterations = 8
@@ -361,10 +369,13 @@ class IsaacSim():
                 print(container_pose.p)
             
             c = None
+            color_code = None
             if self.env_cfg_dict["containers"][i]["color"] == None:
                 c = "white"
+                color_code = "white"
             else:
                 c = self.env_cfg_dict["containers"][i]["color"]
+                color_code = self.env_cfg_dict["containers"][i]["colorcode"]
             
             food = None
             food_config = self.env_cfg_dict["containers"][i]["food"]
@@ -376,7 +387,7 @@ class IsaacSim():
             else:
                 food = f"(with {self.env_cfg_dict['containers'][i]['food']})"
                 
-            rgba = to_rgba(c)
+            rgba = to_rgba(color_code)
             color = gymapi.Vec3(rgba[0], rgba[1], rgba[2])
             self.containers_indices[f"{c}_{container_type} {food}"] = []
             self.containers_list.append(f"{c}_{container_type} {food}")
@@ -462,8 +473,8 @@ class IsaacSim():
                 
                 
                 body_shape_prop = self.gym.get_actor_rigid_shape_properties(env_ptr, handle)
-                body_shape_prop[0].thickness = 0
-                body_shape_prop[0].friction = 10
+                body_shape_prop[0].thickness = 10
+                body_shape_prop[0].friction = 500
                 body_shape_prop[0].contact_offset = 0.
                 body_shape_prop[1].friction = 0.01
                 self.gym.set_actor_rigid_shape_properties(env_ptr, handle, body_shape_prop)
@@ -547,7 +558,7 @@ class IsaacSim():
                 if y_config != 1:
                     ran_y = min(0.03, ran_y)
                 x_start, y_start = central_x - ran_x / 2, central_y - ran_y / 2
-                for cnt, c in enumerate(food_config["color"]):
+                for cnt, c in enumerate(food_config["colorcode"]):
                     ball_amount = int(total_amount / color_num)
                     rgba = to_rgba(c)
                     color = gymapi.Vec3(rgba[0], rgba[1], rgba[2])
@@ -688,8 +699,8 @@ class IsaacSim():
         
         body_shape_prop = self.gym.get_actor_rigid_shape_properties(env_ptr, franka_handle)
         for k in range(11):
-            body_shape_prop[k].thickness = 0.
-            body_shape_prop[k].friction = 100
+            body_shape_prop[k].thickness = 8
+            body_shape_prop[k].friction = 55
             # body_shape_prop[k].friction = float('inf')
         # body_shape_prop[9].thickness = 1
         # body_shape_prop[10].thickness = 1
@@ -1075,7 +1086,7 @@ class IsaacSim():
             if use_container_pos:
                 best_tensor = self.find_nearest_container(init_pos)
                 init_pos = best_tensor - torch.tensor([[0.01, -0.02, 0.0]], device=self.device)
-                init_pos[0][2] = 0.055
+                init_pos[0][2] = 0.035
                 init_pos[0][1] += 0.0127
                 #init_pos[0][0] -= 0.02
             else:
@@ -1190,7 +1201,8 @@ class IsaacSim():
                 init_pos + torch.tensor([[-x_shift-0.0295,  0.0043,  0.6638+z_shift]], device=self.device), 
                 init_pos + torch.tensor([[-x_shift-0.0288,  0.0043,  0.6638+z_shift]], device=self.device), 
                 init_pos + torch.tensor([[-x_shift+0.0169, 0.0043, 0.6700+z_shift]], device=self.device), 
-                init_pos + torch.tensor([[-x_shift+0.0000, 0.0000, 0.7836+z_shift]], device=self.device)
+                init_pos + torch.tensor([[-x_shift+0.0000, 0.0043, 0.6700+z_shift]], device=self.device), 
+                init_pos + torch.tensor([[-x_shift+0.0000, 0.0000, 0.7836+z_shift]], device=self.device),
             ]
             self.goal_rot_set = [ 
                 torch.tensor([[0.9340, 0.0089, 0.3514, 0.0637]], device=self.device), 
@@ -1201,7 +1213,8 @@ class IsaacSim():
                 torch.tensor([[0.9965, 0.0388, 0.0500, 0.0580]], device=self.device), 
                 torch.tensor([[0.9975, 0.0310, 0.0288, 0.0575]], device=self.device), 
                 torch.tensor([[0.9975, 0.0310, 0.0000, 0.0575]], device=self.device),
-                torch.tensor([[ 0.9945,  0.0413, -0.0809,  0.0523]], device=self.device)
+                torch.tensor([[ 0.9893,  0.0362, -0.1308,  0.0528]], device=self.device),
+                torch.tensor([[ 0.9945,  0.0413, -0.0809,  0.0523]], device=self.device),
             ]
             self.action_stage['scoop_put'] = 0
             self.is_acting['scoop_put'] = True
@@ -1540,7 +1553,7 @@ class IsaacSim():
             
             print("pull bowl closer start")
             self.gripper_offset_cnt = self.gripper_action_offset
-            self.delta['pull_bowl_closer'] = [0.5, 0.5, 0.5, 0.4, 0.5, 0.5]
+            self.delta['pull_bowl_closer'] = [2, 2, 2, 0.4, 2, 2]
             self.goal_pos_set = [hand_pos + torch.tensor([[0., 0., -0.065]], device=self.device)]
             self.goal_rot_set = [torch.tensor([[1.0, 0.0, -0.05, 0.0]], device=self.device)]
             init_pos = hand_pos.clone()
@@ -1554,15 +1567,15 @@ class IsaacSim():
                 init_pos[0][1] += 0.0127
             else:
                 init_pos[0][2] -= 0.02
-                
+            
             self.goal_pos_set = [
                 init_pos + torch.tensor([[-0.07, -0.07, 0.7836]], device=self.device),
                 init_pos + torch.tensor([[-0.07, -0.07,  0.57]], device=self.device),
                 init_pos + torch.tensor([[-0.07, -0.07,  0.57]], device=self.device),
                 # init_pos + torch.tensor([[-0.2, -0.3,  0.57]], device=self.device)
-                torch.tensor([[0.4,-0.2,0.63]], device=self.device),
-                torch.tensor([[0.4,-0.2,0.63]], device=self.device),
-                torch.tensor([[0.4,-0.2,0.8]], device=self.device),
+                torch.tensor([[0.45,0,0.62]], device=self.device),
+                torch.tensor([[0.45,0,0.62]], device=self.device),
+                torch.tensor([[0.45,0,0.8]], device=self.device),
             ]
 
             self.goal_rot_set = [
@@ -1615,6 +1628,220 @@ class IsaacSim():
         
         return dpose
 
+    def put_bowl_into_microwave(self):
+        hand_pos = self.rb_state_tensor[self.franka_hand_indices, :3]
+        hand_rot = self.rb_state_tensor[self.franka_hand_indices, 3:7]
+        use_container_pos = True
+        gripper_open = self.franka_dof_upper_limits[7:]
+        gripper_close = self.franka_dof_lower_limits[7:]
+        if self.action_stage['put_bowl_into_microwave'] == -1:
+            # initialize
+            self.stop_counter = 40
+            print("put bowl into microwave start")
+            self.gripper_offset_cnt = self.gripper_action_offset
+            self.delta['put_bowl_into_microwave'] = [2, 2, 2, 0.8]#, 0.5, 0.5, 0.5]
+            self.goal_pos_set = [hand_pos + torch.tensor([[0., 0., -0.065]], device=self.device)]
+            self.goal_rot_set = [torch.tensor([[1.0, 0.0, -0.05, 0.0]], device=self.device)]
+            init_pos = hand_pos.clone()
+            init_pos[:, 2] = 0
+            
+            # find the nearest container
+            if use_container_pos:
+                best_tensor = self.find_nearest_container(init_pos)
+                init_pos = best_tensor - torch.tensor([[0.01, -0.02, 0.0]], device=self.device)
+                init_pos[0][2] = 0.03
+                init_pos[0][1] += 0.0127
+            else:
+                init_pos[0][2] -= 0.02
+                
+            self.goal_pos_set = [
+                init_pos + torch.tensor([[-0.07, -0.07, 0.7836]], device=self.device),
+                init_pos + torch.tensor([[-0.07, -0.07,  0.6]], device=self.device),
+                init_pos + torch.tensor([[-0.07, -0.07,  0.6]], device=self.device),
+                init_pos + torch.tensor([[-0.07, -0.07,  0.6]], device=self.device),
+                torch.tensor([[0.4794, 0.0003, 0.6256]], device=self.device),
+                torch.tensor([[0.4794, 0.1503, 0.6256]], device=self.device),
+                torch.tensor([[0.4794, 0.2803, 0.6277]], device=self.device),
+                torch.tensor([[0.4794, 0.3203, 0.6277]], device=self.device),
+                torch.tensor([[0.4794, 0.3321, 0.6277]], device=self.device),
+                torch.tensor([[0.4794, 0.3321, 0.6700]], device=self.device),
+                torch.tensor([[0.4794, 0.2621, 0.6700]], device=self.device),
+                torch.tensor([[0.4794, 0.2621, 0.6277]], device=self.device),
+                torch.tensor([[0.4794, 0.3321, 0.6277]], device=self.device),
+                torch.tensor([[0.4794, 0.3383, 0.6277]], device=self.device)
+                
+            ]
+
+            self.goal_rot_set = [
+                torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
+                torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
+                torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
+                
+                torch.tensor([[ 0.9864,  0.0982,  0.1127, -0.0682]], device=self.device),
+                torch.tensor([[ 0.9864,  0.0982,  0.1127, -0.0682]], device=self.device),
+                torch.tensor([[ 0.9842, -0.0319,  0.0889, -0.1498]], device=self.device),
+                torch.tensor([[ 0.9842, -0.0319,  0.0889, -0.1498]], device=self.device),
+                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device)
+            ]
+            self.action_stage['put_bowl_into_microwave'] = 0
+            self.is_acting['put_bowl_into_microwave'] = True
+            return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
+        
+        elif self.action_stage['put_bowl_into_microwave'] == len(self.goal_pos_set):
+            # final stage
+            if self.is_acting['put_bowl_into_microwave']:
+                print("finish put_bowl_into_microwave")
+                self.is_acting['put_bowl_into_microwave'] = False
+            return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
+        
+        if (self.action_stage['put_bowl_into_microwave'] > 1 and self.action_stage['put_bowl_into_microwave'] < 8) or self.action_stage['put_bowl_into_microwave'] > 9:
+            self.pos_action[:, 7:9] = gripper_close
+        else:
+            self.pos_action[:, 7:9] = gripper_open
+            if self.gripper_offset_cnt < self.gripper_action_offset:
+                self.gripper_offset_cnt += 1
+                # print(self.gripper_offset_cnt)
+                return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
+        goal_pos = self.goal_pos_set[self.action_stage['put_bowl_into_microwave']]
+        goal_rot = self.goal_rot_set[self.action_stage['put_bowl_into_microwave']]
+        to_goal = goal_pos - hand_pos
+        goal_dist = torch.norm(to_goal, dim=1).unsqueeze(-1)
+        to_axis = goal_rot[:, :3] - hand_rot[:, :3]
+        axis_dist = torch.norm(to_axis, dim=1).unsqueeze(-1)
+        w_dist = goal_rot[:, -1] - hand_rot[:, -1]
+        w_dist = abs(w_dist)
+        pos_err = torch.where(goal_dist > self.goal_offset, goal_pos - hand_pos, torch.tensor([0., 0., 0.], device=self.device))
+        orn_err = torch.where(axis_dist > self.axis_offset or w_dist > self.w_offset, self.orientation_error(goal_rot, hand_rot), torch.tensor([0., 0., 0.], device=self.device))
+        dpose = torch.cat([pos_err, orn_err], -1).unsqueeze(-1)
+        
+        if self.action_stage['put_bowl_into_microwave'] == 2:
+            if self.stop_counter == 0:
+                self.action_stage['put_bowl_into_microwave'] += 1
+                print(self.action_stage['put_bowl_into_microwave'])
+            else:
+                self.stop_counter -= 1
+                print(f"stop_counter: {self.stop_counter}")
+                return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
+        
+        if goal_dist <= self.goal_offset and axis_dist <= self.axis_offset and w_dist <= self.w_offset:
+            self.action_stage['put_bowl_into_microwave'] += 1
+            print(self.action_stage['put_bowl_into_microwave'])
+            if self.action_stage['put_bowl_into_microwave'] == 5 or self.action_stage['put_bowl_into_microwave'] == 1:
+                self.gripper_offset_cnt = 0
+            else:
+                self.gripper_offset_cnt = self.gripper_action_offset
+        dpose *= self.delta['put_bowl_into_microwave'][self.action_stage['put_bowl_into_microwave'] if self.action_stage['put_bowl_into_microwave'] < len(self.delta['put_bowl_into_microwave']) else -1]
+        
+        return dpose
+    
+    
+    def take_bowl_out_microwave(self):
+        hand_pos = self.rb_state_tensor[self.franka_hand_indices, :3]
+        hand_rot = self.rb_state_tensor[self.franka_hand_indices, 3:7]
+        use_container_pos = True
+        gripper_open = self.franka_dof_upper_limits[7:]
+        gripper_close = self.franka_dof_lower_limits[7:]
+        if self.action_stage['take_bowl_out_microwave'] == -1:
+            # initialize
+            self.stop_counter = 40
+            print("put bowl into microwave start")
+            self.gripper_offset_cnt = self.gripper_action_offset
+            self.delta['take_bowl_out_microwave'] = [0.8]#, 0.5, 0.5, 0.5]
+            self.goal_pos_set = [hand_pos + torch.tensor([[0., 0., -0.065]], device=self.device)]
+            self.goal_rot_set = [torch.tensor([[1.0, 0.0, -0.05, 0.0]], device=self.device)]
+            init_pos = hand_pos.clone()
+            init_pos[:, 2] = 0
+            
+            
+                
+            self.goal_pos_set = [
+                torch.tensor([[0.4794, 0.0003, 0.6256]], device=self.device),
+                torch.tensor([[0.4794, 0.1503, 0.6256]], device=self.device),
+                torch.tensor([[0.4794, 0.2803, 0.6277]], device=self.device),
+                torch.tensor([[0.4794, 0.3203, 0.6277]], device=self.device),
+                torch.tensor([[0.4794, 0.3321, 0.6277]], device=self.device),
+                torch.tensor([[0.4794, 0.3321, 0.6700]], device=self.device),
+                torch.tensor([[0.4794, 0.2621, 0.6700]], device=self.device),
+                torch.tensor([[0.4794, 0.2621, 0.6277]], device=self.device),
+                torch.tensor([[0.4794, 0.3321, 0.6277]], device=self.device),
+                torch.tensor([[0.4794, 0.3383, 0.6277]], device=self.device)
+                
+            ]
+
+            self.goal_rot_set = [
+                torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
+                torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
+                torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
+                
+                torch.tensor([[ 0.9864,  0.0982,  0.1127, -0.0682]], device=self.device),
+                torch.tensor([[ 0.9864,  0.0982,  0.1127, -0.0682]], device=self.device),
+                torch.tensor([[ 0.9842, -0.0319,  0.0889, -0.1498]], device=self.device),
+                torch.tensor([[ 0.9842, -0.0319,  0.0889, -0.1498]], device=self.device),
+                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device)
+            ]
+            self.action_stage['take_bowl_out_microwave'] = 0
+            self.is_acting['take_bowl_out_microwave'] = True
+            return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
+        
+        elif self.action_stage['take_bowl_out_microwave'] == len(self.goal_pos_set):
+            # final stage
+            if self.is_acting['take_bowl_out_microwave']:
+                print("finish take_bowl_out_microwave")
+                self.is_acting['take_bowl_out_microwave'] = False
+            return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
+        
+        if (self.action_stage['take_bowl_out_microwave'] > 1 and self.action_stage['take_bowl_out_microwave'] < 8) or self.action_stage['take_bowl_out_microwave'] > 9:
+            self.pos_action[:, 7:9] = gripper_close
+        else:
+            self.pos_action[:, 7:9] = gripper_open
+            if self.gripper_offset_cnt < self.gripper_action_offset:
+                self.gripper_offset_cnt += 1
+                # print(self.gripper_offset_cnt)
+                return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
+        goal_pos = self.goal_pos_set[self.action_stage['take_bowl_out_microwave']]
+        goal_rot = self.goal_rot_set[self.action_stage['take_bowl_out_microwave']]
+        to_goal = goal_pos - hand_pos
+        goal_dist = torch.norm(to_goal, dim=1).unsqueeze(-1)
+        to_axis = goal_rot[:, :3] - hand_rot[:, :3]
+        axis_dist = torch.norm(to_axis, dim=1).unsqueeze(-1)
+        w_dist = goal_rot[:, -1] - hand_rot[:, -1]
+        w_dist = abs(w_dist)
+        pos_err = torch.where(goal_dist > self.goal_offset, goal_pos - hand_pos, torch.tensor([0., 0., 0.], device=self.device))
+        orn_err = torch.where(axis_dist > self.axis_offset or w_dist > self.w_offset, self.orientation_error(goal_rot, hand_rot), torch.tensor([0., 0., 0.], device=self.device))
+        dpose = torch.cat([pos_err, orn_err], -1).unsqueeze(-1)
+        
+        if self.action_stage['take_bowl_out_microwave'] == 2:
+            if self.stop_counter == 0:
+                self.action_stage['take_bowl_out_microwave'] += 1
+                print(self.action_stage['take_bowl_out_microwave'])
+            else:
+                self.stop_counter -= 1
+                print(f"stop_counter: {self.stop_counter}")
+                return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
+        
+        if goal_dist <= self.goal_offset and axis_dist <= self.axis_offset and w_dist <= self.w_offset:
+            self.action_stage['take_bowl_out_microwave'] += 1
+            print(self.action_stage['take_bowl_out_microwave'])
+            if self.action_stage['take_bowl_out_microwave'] == 5 or self.action_stage['take_bowl_out_microwave'] == 1:
+                self.gripper_offset_cnt = 0
+            else:
+                self.gripper_offset_cnt = self.gripper_action_offset
+        dpose *= self.delta['take_bowl_out_microwave'][self.action_stage['take_bowl_out_microwave'] if self.action_stage['take_bowl_out_microwave'] < len(self.delta['take_bowl_out_microwave']) else -1]
+        
+        return dpose
+    
     
     def open_microwave(self):
         gripper_open = self.franka_dof_upper_limits[7:]
@@ -1627,8 +1854,7 @@ class IsaacSim():
             # initialize
             self.stop_counter = 35
             print("open_microwave start")
-            self.delta['open_microwave'] = [0.5]
-            self.delta['open_microwave'] = [x * 2 for x in self.delta['open_microwave']]
+            self.delta['open_microwave'] = [2, 2, 2, 2, 2, 2, 1, 1, 1, 2]
             # self.delta['open_microwave'] = [0.05, 0.05, 0.05, 0.5]
             self.goal_pos_set = [hand_pos + torch.tensor([[0., 0., -0.065]], device=self.device)]
             self.goal_rot_set = [torch.tensor([[1.0, 0.0, -0.05, 0.0]], device=self.device)]
@@ -1674,6 +1900,7 @@ class IsaacSim():
             if self.is_acting['open_microwave']:
                 print("finish open_microwave")
                 self.is_acting['open_microwave'] = False
+                # self.action_stage['open_microwave'] = -1
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
         if self.action_stage['open_microwave'] > 1 and self.action_stage['open_microwave'] < 8:
@@ -1715,7 +1942,7 @@ class IsaacSim():
         if goal_dist_test <= self.goal_offset and axis_dist <= self.axis_offset and w_dist <= self.w_offset:
             self.action_stage['open_microwave'] += 1
             print(self.action_stage['open_microwave'])
-        # dpose *= self.delta['open_microwave'][self.action_stage['open_microwave'] if self.action_stage['open_microwave'] < len(self.delta['open_microwave']) else -1]
+        dpose *= self.delta['open_microwave'][self.action_stage['open_microwave'] if self.action_stage['open_microwave'] < len(self.delta['open_microwave']) else -1]
         
         # print(dpose)
         return dpose
@@ -1731,8 +1958,8 @@ class IsaacSim():
             # initialize
             self.stop_counter = 35
             print("close_microwave start")
-            self.delta['close_microwave'] = [0.5]
-            self.delta['close_microwave'] = [x * 2 for x in self.delta['close_microwave']]
+            self.delta['close_microwave'] = [2]
+            # self.delta['close_microwave'] = [x * 2 for x in self.delta['close_microwave']]
             # self.delta['close_microwave'] = [0.05, 0.05, 0.05, 0.5]
             self.goal_pos_set = [hand_pos + torch.tensor([[0., 0., -0.065]], device=self.device)]
             self.goal_rot_set = [torch.tensor([[1.0, 0.0, -0.05, 0.0]], device=self.device)]
@@ -1747,10 +1974,8 @@ class IsaacSim():
                 torch.tensor([[0.4601, 0.0769, 0.6280]], device=self.device),
                 torch.tensor([[0.5528, 0.1524, 0.6283]], device=self.device),
                 torch.tensor([[0.5865, 0.2111, 0.6281]], device=self.device),
-                torch.tensor([[0.6021, 0.3101, 0.6262]], device=self.device),
-                torch.tensor([[0.6021, 0.3101, 0.6262]], device=self.device),
-                torch.tensor([[0.6021, 0.3101, 0.6262]], device=self.device),
-                torch.tensor([[0.6021, 0.317, 0.6262]], device=self.device),
+                torch.tensor([[0.6081, 0.3025, 0.6262]], device=self.device),
+                torch.tensor([[0.5499, 0.2111, 0.6341]], device=self.device)
             ]
 
             self.goal_rot_set = [
@@ -1762,10 +1987,9 @@ class IsaacSim():
                 torch.tensor([[ 0.5088, 0.5718, 0.4091, -0.4968]], device=self.device),
                 torch.tensor([[ 0.5193, 0.5606, 0.4172, -0.4920]], device=self.device),
                 torch.tensor([[ 0.5096, 0.5654, 0.4241, -0.4906]], device=self.device),
-                torch.tensor([[ 0.5096, 0.5654, 0.4241, -0.4906]], device=self.device),
-                torch.tensor([[ 0.5096, 0.5654, 0.4241, -0.4906]], device=self.device),
-                torch.tensor([[ 0.5699, 0.4882, 0.4497, -0.4844]], device=self.device),
-                torch.tensor([[ 0.5699, 0.4882, 0.4497, -0.4844]], device=self.device),
+                torch.tensor([[ 0.5329,  0.5489,  0.4332, -0.4765]], device=self.device),
+                torch.tensor([[ 0.9963, 0.0367, 0.0521, 0.0577]], device=self.device)
+
             ]
             self.action_stage['close_microwave'] = 0
             self.is_acting['close_microwave'] = True
@@ -1778,19 +2002,19 @@ class IsaacSim():
                 self.is_acting['close_microwave'] = False
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
-        # if self.action_stage['close_microwave'] > 1 and self.action_stage['close_microwave'] < 8:
-        #     self.pos_action[:, 7:9] = gripper_close
-        # else:
-        #     self.pos_action[:, 7:9] = gripper_open
+        if self.action_stage['close_microwave'] > 0 and self.action_stage['close_microwave'] < 9:
+            self.pos_action[:, 7:9] = gripper_close
+        else:
+            self.pos_action[:, 7:9] = gripper_open
         
-        if self.action_stage['close_microwave'] == 2:
-            if self.stop_counter == 0:
-                self.action_stage['close_microwave'] += 1
-                print(self.action_stage['close_microwave'])
-            else:
-                self.stop_counter -= 1
-                print(f"stop_counter: {self.stop_counter}")
-                return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
+        # if self.action_stage['close_microwave'] == 4:
+        #     if self.stop_counter == 0:
+        #         self.action_stage['close_microwave'] += 1
+        #         print(self.action_stage['close_microwave'])
+        #     else:
+        #         self.stop_counter -= 1
+        #         print(f"stop_counter: {self.stop_counter}")
+        #         return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
         goal_pos = self.goal_pos_set[self.action_stage['close_microwave']]
         goal_rot = self.goal_rot_set[self.action_stage['close_microwave']]
@@ -1817,9 +2041,78 @@ class IsaacSim():
         if goal_dist_test <= self.goal_offset and axis_dist <= self.axis_offset and w_dist <= self.w_offset:
             self.action_stage['close_microwave'] += 1
             print(self.action_stage['close_microwave'])
-        # dpose *= self.delta['close_microwave'][self.action_stage['close_microwave'] if self.action_stage['close_microwave'] < len(self.delta['close_microwave']) else -1]
+        dpose *= self.delta['close_microwave'][self.action_stage['close_microwave'] if self.action_stage['close_microwave'] < len(self.delta['close_microwave']) else -1]
         
-        # print(dpose)
+        return dpose
+
+    def start_microwave(self):
+        gripper_open = self.franka_dof_upper_limits[7:]
+        gripper_close = self.franka_dof_lower_limits[7:]
+        hand_pos = self.rb_state_tensor[self.franka_hand_indices, :3]
+        hand_rot = self.rb_state_tensor[self.franka_hand_indices, 3:7]
+        use_container_pos = True
+        
+        if self.action_stage['start_microwave'] == -1:
+            # initialize
+            print("start_microwave start")
+            self.delta['start_microwave'] = [2, 2, 2, 2, 2, 2, 1, 1, 1, 2]
+            # self.delta['start_microwave'] = [0.05, 0.05, 0.05, 0.5]
+            self.goal_pos_set = [hand_pos + torch.tensor([[0., 0., -0.065]], device=self.device)]
+            self.goal_rot_set = [torch.tensor([[1.0, 0.0, -0.05, 0.0]], device=self.device)]
+            init_pos = hand_pos.clone()                
+            
+            # original pos: 0.3871, 0.0877, container pos: 0.43999999999999995, 0.07500000000000001
+            self.goal_pos_set = [
+                torch.tensor([[0.6581, 0.2500, 0.6262]], device=self.device),
+                torch.tensor([[0.6581, 0.3025, 0.6341]], device=self.device),
+                torch.tensor([[0.6581, 0.2500, 0.6262]], device=self.device)
+            ]
+
+            self.goal_rot_set = [
+                torch.tensor([[ 0.5329, 0.5489, 0.4332, -0.4765]], device=self.device),
+                torch.tensor([[ 0.5329, 0.5489, 0.4332, -0.4765]], device=self.device),
+                torch.tensor([[ 0.5329, 0.5489, 0.4332, -0.4765]], device=self.device)
+            ]
+            self.action_stage['start_microwave'] = 0
+            self.is_acting['start_microwave'] = True
+            return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
+        
+        elif self.action_stage['start_microwave'] == len(self.goal_pos_set):
+            # final stage
+            if self.is_acting['start_microwave']:
+                print("finish start_microwave")
+                self.is_acting['start_microwave'] = False
+            return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
+        
+        self.pos_action[:, 7:9] = gripper_close
+
+        
+        
+        goal_pos = self.goal_pos_set[self.action_stage['start_microwave']]
+        goal_rot = self.goal_rot_set[self.action_stage['start_microwave']]
+        to_goal = goal_pos - hand_pos
+        goal_dist_test = torch.norm(to_goal, dim=1).unsqueeze(-1)
+
+        l2_norm = torch.norm(to_goal, p=2)
+        to_goal = to_goal / l2_norm
+        target_square_sum = 0.005
+        to_goal = to_goal * torch.sqrt(torch.tensor(target_square_sum))
+        
+        goal_dist_move = torch.norm(to_goal, dim=1).unsqueeze(-1)
+        to_axis = goal_rot[:, :3] - hand_rot[:, :3]
+        axis_dist = torch.norm(to_axis, dim=1).unsqueeze(-1)
+        w_dist = goal_rot[:, -1] - hand_rot[:, -1]
+        w_dist = abs(w_dist)
+        
+        pos_err = torch.where(goal_dist_move > self.goal_offset, goal_pos - hand_pos, torch.tensor([0., 0., 0.], device=self.device))
+        orn_err = torch.where(axis_dist > self.axis_offset or w_dist > self.w_offset, self.orientation_error(goal_rot, hand_rot), torch.tensor([0., 0., 0.], device=self.device))
+        dpose = torch.cat([pos_err, orn_err], -1).unsqueeze(-1)
+        
+        if goal_dist_test <= self.goal_offset and axis_dist <= self.axis_offset and w_dist <= self.w_offset:
+            self.action_stage['start_microwave'] += 1
+            print(self.action_stage['start_microwave'])
+        dpose *= self.delta['start_microwave'][self.action_stage['start_microwave'] if self.action_stage['start_microwave'] < len(self.delta['start_microwave']) else -1]
+        
         return dpose
     
     def get_action_initial_state(self, action):
@@ -2020,13 +2313,67 @@ class IsaacSim():
         
         return dpose
     
-    def saycan_pipeline(self, use_vlm=False, threshold=None, semantic_only=False):
+    def none_pipeline(self):
+        """None pipeline: Do nothing"""
+        return {self.decision_pipeline.random_action(): 1}
+    
+    def vlm_pipeline(self, use_vlm=False):
+        """VLM pipeline: Get the best action from the score of VLM
+
+        Args:
+            use_vlm (bool, optional): Use VLM (GPT-4o) or not (GPT-3.5). Defaults to False.
+        """
+        rgb_path = os.path.join("observation", "rgb.png")
+        rgb_image = self.gym.get_camera_image(self.sim, self.envs[0], self.camera_handles[0], gymapi.IMAGE_COLOR).reshape(1080, 1920, 4)[:,:,:-1]
+        Image.fromarray(rgb_image).save(rgb_path)
+        semantic_score = self.decision_pipeline.get_semantic_score(self.instruction, rgb_path, self.action_sequence, use_vlm=use_vlm)
+        return semantic_score
+    
+    def sam_vlm_pipeline(self, use_vlm=False):
+        """SAM VLM pipeline: Get the best action from the score of SAM VLM
+
+        Args:
+            use_vlm (bool, optional): Use VLM (GPT-4o) or not (GPT-3.5). Defaults to False.
+        """
+        root = '/home/hcis-s17/multimodal_manipulation/scoop_env'
+        rgb_path = os.path.join("observation", "rgb.png")
+        rgb_path = os.path.join(root, rgb_path)
+        rgb_image = self.gym.get_camera_image(self.sim, self.envs[0], self.camera_handles[0], gymapi.IMAGE_COLOR).reshape(1080, 1920, 4)[:,:,:-1]
+        Image.fromarray(rgb_image).save(rgb_path)
+        segmentation_path = segmentation_process(rgb_path)
+        semantic_score = self.decision_pipeline.get_semantic_score(self.instruction, segmentation_path, self.action_sequence, use_vlm=use_vlm, segmentation_prompt=True)
+        return semantic_score
+        
+    def cot_pipeline(self):
+        """COT pipeline: Get the best action from the score of COT"""
+        
+        rgb_path = os.path.join("observation", "rgb.png")
+        rgb_image = self.gym.get_camera_image(self.sim, self.envs[0], self.camera_handles[0], gymapi.IMAGE_COLOR).reshape(1080, 1920, 4)[:,:,:-1]
+        Image.fromarray(rgb_image).save(rgb_path)
+        semantic_score = self.decision_pipeline.chain_of_thought_baseline(self.instruction, rgb_path, self.action_sequence, [])
+        return semantic_score
+    
+    def uncertainty_cot_pipeline(self, uncertainty_threshold=0., use_vlm=False):
+        """Uncertainty COT pipeline: Get the best action from the score of COT with uncertainty estimation
+
+        Args:
+            uncertainty_threshold (float, optional): Threshold of confidence level before chain of thought. Defaults to 0.
+            use_vlm (bool, optional): Use VLM (GPT-4o) or not (GPT-3.5). Defaults to False.
+        """
+        rgb_path = os.path.join("observation", "rgb.png")
+        rgb_image = self.gym.get_camera_image(self.sim, self.envs[0], self.camera_handles[0], gymapi.IMAGE_COLOR).reshape(1080, 1920, 4)[:,:,:-1]
+        Image.fromarray(rgb_image).save(rgb_path)
+        semantic_score = self.decision_pipeline.get_semantic_score(self.instruction, rgb_path, self.action_sequence, use_vlm=use_vlm)
+        action_candidate = [action for action, score in semantic_score.items() if score > uncertainty_threshold]
+        semantic_score = self.decision_pipeline.chain_of_thought(self.instruction, rgb_path, self.action_sequence, action_candidate)
+        return semantic_score
+        
+    
+    def saycan_pipeline(self, use_vlm=False):
         """SayCan pipeline: Get the best action from the the score of multiplied semantic and affordance score
         
         Args:
             use_vlm (bool, optional): Use VLM (GPT-4o) or not (GPT-3.5). Defaults to False.
-            threshold (float, optional): If pass a threshold, it is an uncertainty estimation version. Defaults to None.
-            semantic_only (bool, optional): Use only semantic score (VLM baseline). Defaults to False.
 
         Returns:
             best_action (str): The best action from the score
@@ -2041,22 +2388,16 @@ class IsaacSim():
         Image.fromarray(rgb_image).save(rgb_path)
         Image.fromarray(depth_image).save(depth_path)
         print(self.containers_list)
-        combined_score = self.decision_pipeline.get_score(
+        combined_score = self.decision_pipeline.get_combined_score(
             self.instruction, 
             rgb_path, 
             depth_path, 
             self.action_sequence,
             use_vlm=use_vlm,
-            semantic_only=semantic_only
         )
-        if threshold is not None:
-            best_action = [action for action, score in combined_score.items() if score > threshold]
-        if threshold is None or len(best_action) == 0:
-            best_action = max(combined_score, key=combined_score.get)
-        # self.instruction += best_action
-        return best_action
+        return combined_score
     
-    def our_pipeline(self, threshold, use_vlm=False):
+    def our_pipeline(self, threshold, use_vlm=False, max_replan=3):
         # self.instruction += f" {len(self.action_sequence) + 1}. "
         rgb_path = os.path.join("observation", "rgb.png")
         depth_path = os.path.join("observation", "depth.png")
@@ -2067,34 +2408,45 @@ class IsaacSim():
         Image.fromarray(rgb_image).save(rgb_path)
         Image.fromarray(depth_image).save(depth_path)
         print(self.containers_list)
-        semantic_score = self.decision_pipeline.get_score(
-            self.instruction, 
-            rgb_path, 
-            depth_path, 
-            self.action_sequence,
-            use_vlm=use_vlm,
-            semantic_only=True
-        )
-        action_candidate = [action for action, score in semantic_score.items() if score > threshold]
-        affordance_score = self.decision_pipeline.get_score(
-            self.instruction,
-            rgb_path,
-            depth_path,
-            self.action_sequence,
-            affordance_only=True,
-            action_candidate=action_candidate
-        )
-        action_candidate = list(affordance_score.keys())
-        if len(action_candidate) == 0:
-            # TODO replan
-            pass
-        elif len(action_candidate) == 1:
-            best_action = action_candidate[0]
-        else:
-            # TODO Chain of Thought
-            pass
-        return best_action
+        additional_info = ""
+        for i in range(max_replan):
+            semantic_score = self.decision_pipeline.get_semantic_score(
+                self.instruction, 
+                rgb_path, 
+                self.action_sequence, 
+                additional_info=additional_info, 
+                use_vlm=use_vlm
+            )
+            action_candidate = [action for action, score in semantic_score.items() if score > threshold]
+            affordance_score, additional_info = self.decision_pipeline.get_affordance_score_with_info(
+                rgb_path, 
+                depth_path, 
+                self.action_sequence, 
+                action_candidate
+            )
+            action_candidate = list(affordance_score.keys())
+            if len(action_candidate) == 0:
+                continue
+            elif len(action_candidate) == 1:
+                best_action = action_candidate[0]
+                break
+            else:
+                action_candidate_score = self.decision_pipeline.chain_of_thought(self.instruction, rgb_path, self.action_sequence, action_candidate)
+                best_action = max(action_candidate_score, key=action_candidate_score.get)
+        return {best_action: 1}
     
+    def gt_pipeline(self, gt_action):
+        """GT pipeline: Get the best action from the ground truth action
+
+        Args:
+            gt_action (str): Ground truth action
+
+        Returns:
+            dict: The best action
+        """
+        gt_action = gt_action if gt_action else 'DONE'
+        return {gt_action: 1}
+
     def calibration_data_collection(self, action, use_vlm=False):
         data_root = 'confidence_calibration'
         os.makedirs(f'{data_root}/question/image/', exist_ok=True)
@@ -2125,6 +2477,111 @@ class IsaacSim():
         open(user_text_path, 'w').write(user_prompt)
         open(f'{data_root}/answer.txt', 'w').write('\n'.join(answer_list))
     
+    def test_scoop(self):
+        self.reset()
+        execute_time_limit = 200 # sec
+        start_wait = 2 # sec
+        start = time()
+        self.action_start = time()
+        self.executing = False
+        test_action_list = ['take_tool (spoon)', 'scoop', 'put_food', 'DONE']
+        if self.record_video:
+            resolution = (1920, 1080)
+            codec = cv2.VideoWriter_fourcc(*'mp4v')
+            fps = 60.0
+            video_filename = os.path.join(self.log_folder, "result.mp4")
+            out = cv2.VideoWriter(video_filename, codec, fps, resolution)
+        
+        while not self.gym.query_viewer_has_closed(self.viewer):
+            self.gym.simulate(self.sim)
+            self.gym.fetch_results(self.sim, True)
+            self.gym.render_all_camera_sensors(self.sim)
+
+            self.gym.refresh_dof_state_tensor(self.sim)
+            self.gym.refresh_actor_root_state_tensor(self.sim)
+            self.gym.refresh_rigid_body_state_tensor(self.sim)
+            self.gym.refresh_jacobian_tensors(self.sim)
+            
+            
+            if not self.executing and time() - start > start_wait:
+                test_action = test_action_list.pop(0)
+                self.executing = True
+                
+            if self.record_video:
+                img = self.gym.get_camera_image(self.sim, self.envs[0], self.camera_handles[0], gymapi.IMAGE_COLOR).reshape(1080, 1920, 4)[:,:,:-1]
+                frame = np.array(img)
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                out.write(frame)
+
+            dpose = torch.tensor([[[0.],[0.],[0.],[0.],[0.],[0.]]], device=self.device)
+
+            if test_action is None:
+                pass
+            elif test_action == "scoop":
+                dpose = self.scoop()
+            elif test_action == "stir":
+                dpose = self.stir()
+            elif test_action == "fork":
+                dpose = self.fork()
+            elif test_action == "cut":
+                dpose = self.cut()
+            elif test_action == "put_food":
+                dpose = self.scoop_put()
+            elif test_action == "pull_bowl_closer":
+                dpose = self.pull_bowl_closer()
+            elif test_action == "DONE":
+                break 
+            elif "take_tool" in test_action:
+                for tool in self.tool_list:
+                    if tool in test_action:
+                        dpose = self.take_tool(tool)
+                        break
+            elif "put_tool" in test_action:
+                for tool in self.tool_list:
+                    if tool in test_action:
+                        dpose = self.put_tool(tool)
+                        break
+            elif "move" in test_action:
+                for object in self.containers_list:
+                    if object.split()[0] in test_action:
+                        dpose = self.move(object, slow=True)
+                        break
+            if test_action and time() - self.action_start > execute_time_limit or not True in self.is_acting.values():
+                # print(f"{test_action} done")s
+                self.executing = False
+                self.action_state_reset()
+                self.action_start = time()
+            
+            
+            dpose = dpose.to(self.device)
+            
+            
+            self.pos_action[:, :7] = self.dof_state[:, self.franka_dof_indices, 0].squeeze(-1)[:, :7] + self.control_ik(dpose)
+       
+            test_dof_state = self.dof_state[:, :, 0].contiguous()
+            test_dof_state[:, self.franka_dof_indices] = self.pos_action
+
+            franka_actor_indices = self.franka_indices.to(dtype=torch.int32)
+            self.gym.set_dof_position_target_tensor_indexed(
+                self.sim,
+                gymtorch.unwrap_tensor(test_dof_state),
+                gymtorch.unwrap_tensor(franka_actor_indices),
+                len(franka_actor_indices)
+            )
+
+            # update the viewer
+            self.gym.step_graphics(self.sim)
+            self.gym.draw_viewer(self.viewer, self.sim, True)
+
+            self.gym.sync_frame_time(self.sim)
+
+            self.frame += 1
+        
+        if self.record_video:
+            out.release()
+        self.gym.destroy_viewer(self.viewer)
+        self.gym.destroy_sim(self.sim)
+        
     def test_llm(self):
         self.reset()
         test_time_limit = 10 # sec
@@ -2164,7 +2621,25 @@ class IsaacSim():
         self.gym.destroy_viewer(self.viewer)
         self.gym.destroy_sim(self.sim)
     
-    def test_pipeline(self, action_sequence_answer=None, calibration_collect=False, test_type=None, threshold=0):
+    def test_pipeline(
+        self, 
+        action_sequence_answer=[], 
+        calibration_collect=False, 
+        test_type=None, 
+        threshold=None, 
+        use_vlm=False, 
+        uncertainty_threshold=0.
+    ):
+        """Interface for testing pipeline
+
+        Args:
+            action_sequence_answer (List[str], optional): List of ground truth action. Defaults to None.
+            calibration_collect (bool, optional): Set to true if need to collect calibration dataset. Defaults to False.
+            test_type (str, optional): Surpported types: lap, saycan, vlm, knowno, cot, uncertainty_cot, our. Defaults to None.
+            threshold (float, optional): Uncertainty confidence level. Defaults to 0.
+            use_vlm (bool, optional): Set to true to use VLM as planning agent. Defaults to False.
+            uncertainty_threshold (float, optional): Uncertainty confidence level for COT. Defaults to 0.
+        """
         def write_score(action_idx, total_action, human_help):
             filename = os.path.join(self.log_folder, 'result.txt')
             assert not os.path.exists(filename), FileExistsError(filename)
@@ -2174,6 +2649,7 @@ class IsaacSim():
             open(filename, 'w').write('\n'.join(self.action_sequence))
         
         assert not calibration_collect or action_sequence_answer, "Please provide sequence answer when collecting calibration data"
+        assert bool(threshold) ^ (test_type not in ['lap', 'knowno']), "Please provide threshold when using LAP or KnowNo"
         self.reset()
         execute_time_limit = 200 # sec
         start_wait = 2 # sec
@@ -2183,18 +2659,22 @@ class IsaacSim():
         best_action = None
         action_idx = 0
         total_action = len(action_sequence_answer) if action_sequence_answer else 0
-        max_sequence = 10
+        max_sequence = 10 if len(action_sequence_answer) == 0 else len(action_sequence_answer) + 2
         human_help = 0
         affordance_list = {
             'lap': 'lap',
             'saycan': 'classifier',
             'our': 'our'
         }
+        pipeline_list = {
+            'lap': 'saycan',
+            'knowno': 'vlm',
+        }
         self.decision_pipeline.set_affordance_agent(affordance_list.get(test_type, None))
         
         if self.record_video:
             resolution = (1920, 1080)
-            codec = cv2.VideoWriter_fourcc(*"mp4v")
+            codec = cv2.VideoWriter_fourcc(*'mp4v')
             fps = 60.0
             video_filename = os.path.join(self.log_folder, "result.mp4")
             out = cv2.VideoWriter(video_filename, codec, fps, resolution)
@@ -2211,35 +2691,43 @@ class IsaacSim():
             
             
             if not self.executing and time() - start > start_wait:
+                self.decision_pipeline.set_obs_id()
                 if calibration_collect:
                     best_action = action_sequence_answer[action_idx]
-                    action_idx += 1
-                    self.calibration_data_collection(best_action, use_vlm=True)
+                    self.calibration_data_collection(best_action, use_vlm=use_vlm)
                     if action_idx == total_action:
                         break
-                elif test_type == "lap" and action_sequence_answer:
-                    # allow LLM uncertainty and evaluate human help times
-                    best_action = self.saycan_pipeline(use_vlm=True, threshold=threshold)
-                    if len(best_action) > 1 and action_sequence_answer[action_idx] in best_action:
-                            best_action = action_sequence_answer[action_idx]
+                else:
+                    pipeline_name = pipeline_list.get(test_type, test_type)
+                    if hasattr(self, f"{pipeline_name}_pipeline"):
+                        pipeline_func = getattr(self, f"{pipeline_name}_pipeline")
+                        params = {
+                            "use_vlm": use_vlm,  # Fixed parameter
+                            "uncertainty_threshold": uncertainty_threshold,  # Flexible parameter
+                            "gt_action": action_sequence_answer[action_idx] if action_sequence_answer else None
+                        }
+                        param_names = inspect.signature(pipeline_func).parameters.keys()
+                        params = {k: v for k, v in params.items() if k in param_names}
+                        action_score = pipeline_func(**params)
+                    else:
+                        raise ValueError(f"Unsupported test type {test_type}")
+                
+                if threshold is not None:
+                    # allow evaluation about human help
+                    best_action = [action for action, score in action_score.items() if score > threshold]
+                    if len(best_action) == 0:
+                        # LLM have no confidence in any action
+                        best_action = [max(action_score, key=action_score.get)]
+                    if action_sequence_answer[action_idx] in best_action:
+                        best_action = action_sequence_answer[action_idx]
+                        if len(best_action) > 1:
                             human_help += 1
                     else:
-                        best_action = best_action[0]
-                    if best_action != action_sequence_answer[action_idx] or action_idx == total_action - 1:
-                        if best_action == action_sequence_answer[action_idx]:
-                            action_idx += 1
                         write_score(action_idx, total_action, human_help)
                         break
-                    action_idx += 1
-                elif test_type == "vlm":
-                    best_action = self.saycan_pipeline(use_vlm=True, semantic_only=True)
-                elif test_type == "saycan":
-                    best_action = self.saycan_pipeline(use_vlm=True)
-                elif test_type == "our":
-                    best_action = self.our_pipeline(threshold=threshold, use_vlm=True)
                 else:
-                    raise ValueError(f"Unsupported test type {test_type}")
-                    
+                    best_action = max(action_score, key=action_score.get)
+                action_idx += 1
                 print(best_action)
                 self.action_sequence.append(best_action)
                 self.executing = True
@@ -2263,7 +2751,6 @@ class IsaacSim():
             elif best_action == "cut":
                 dpose = self.cut()
             elif best_action == "put_food":
-                break
                 dpose = self.scoop_put()
             elif best_action == "pull_bowl_closer":
                 dpose = self.pull_bowl_closer()
@@ -2401,8 +2888,8 @@ class IsaacSim():
             delta = 0.05
 
             for evt in self.gym.query_viewer_action_events(self.viewer):
-                action = evt.action if (evt.value) > 0 else ""
-            action != "" and self.last_action != action and print(action)
+                self.action = evt.action if (evt.value) > 0 else ""
+            self.action != "" and self.last_action != self.action and print(action)
             
             if action == "action_reset":
                 self.action_state_reset()
@@ -2529,6 +3016,12 @@ class IsaacSim():
                 dpose = self.open_microwave()
             elif action == "close_microwave":
                 dpose = self.close_microwave()
+            elif action == "start_microwave":
+                dpose = self.start_microwave()
+            elif action == "put_bowl_into_microwave":
+                dpose = self.put_bowl_into_microwave()
+            elif action == "take_bowl_out_microwave":
+                dpose = self.take_bowl_out_microwave()
             else:
                 dpose = torch.tensor([[[0.],[0.],[0.],[0.],[0.],[0.]]])
             dpose = dpose.to(self.device)
@@ -2698,7 +3191,7 @@ class IsaacSim():
 
 
 if __name__ == "__main__":
-    config = read_yaml("./src/config/pdm.yaml", task_type='mix_type', env_idx=5)
+    config = read_yaml("./src/config/config.yaml", task_type='general_hard', env_idx=2)
     os.makedirs('temp', exist_ok=True)
     issac = IsaacSim(config, log_folder='temp')
     issac.data_collection()

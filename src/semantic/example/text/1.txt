@@ -11,8 +11,6 @@ green_bowl (with green beans)
 put_tool (spoon)
 take_tool (spoon)
 move_to_white_bowl
-cut
-fork
 scoop
 put_food
 pull_bowl_closer

@@ -80,7 +80,7 @@ Object list: {', '.join(object_list)}"""
     def extract_from_choice_prompt(self, instruction, action_sequence, choices, container_list=None):
         system_prompt = f"""You are a smart assistant tasked with identifying what food properties (extrinsic, amount, distribution) or information that should be take into consideration in a food manipulation task. You will be given some candidate actions, please think through all the choices as thorough as possible and list what I should know in order to make the choice. Please do not choose the action directly.
 {self.action_description_prompt}"""
-        action_sequence = ", ".join([f"{i+1}. {action}" for i, action in enumerate(action_seq)])
+        action_sequence = ", ".join([f"{i+1}. {action}" for i, action in enumerate(action_sequence)])
         user_prompt = f"""Instruction: {instruction}
 Previous actions: {action_sequence}
 Object list: {', '.join(container_list)}
@@ -142,7 +142,7 @@ def get_selection_score1(
         
     ## Get the important information from the image
     system_prompt, user_prompt = prompts.extract_important_information_prompt(instruction, next_action_description)
-    messages = get_messages(system_prompt, user_prompt, obs_url)
+    messages = get_messages(system_prompt, user_prompt, user_prompt=obs_url)
     important_information = call_openai_api(messages)
     
     print(important_information)
@@ -198,7 +198,7 @@ def get_selection_score2(
     
     ## Get the important information from the image
     system_prompt, user_prompt = prompts.extract_important_information_prompt(instruction, next_action_description, container_list)
-    messages = get_messages(system_prompt, user_prompt, obs_url)
+    messages = get_messages(system_prompt, user_prompt, user_prompt=obs_url)
     important_information = call_openai_api(messages)
     
     print(important_information)

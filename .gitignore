@@ -194,3 +194,7 @@ src/vild/test/
 src/affordance/ours/models
 src/affordance/ours/runs
 src/affordance/ours/image
+src/semantic/example/image/
+src/config/*/*.jpg
+test_scoop
+test_scoop.py

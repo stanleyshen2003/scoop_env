@@ -8,7 +8,12 @@ class Affordance_agent_ours(Affordance_agent):
     def __init__(self, init_object_list, action_list):
         super().__init__(init_object_list, action_list)
         self.image_root = '/home/hcis-s17/multimodal_manipulation/scoop_env/src/affordance/ours/image'
-        
+        self.additional_information = None
+    
+    def get_additional_info(self):
+        # TODO get additional information
+        return self.additional_information
+    
     def get_affordance(self, rgb_img_path, gray_scale_img, action_seq, action_candidate=[]):
         return super().get_affordance(rgb_img_path, gray_scale_img, action_seq, action_candidate)
     

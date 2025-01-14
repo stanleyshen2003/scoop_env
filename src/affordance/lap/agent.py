@@ -83,7 +83,7 @@ Answer: {answer if answer else ''}"""
         system_prompt = self.get_system_prompt()
         user_prompt = self.get_user_prompt(action)
         base64_image = encode_image(rgb_img_path)
-        messages = get_messages(system_prompt, user_prompt, base64_image)
+        messages = get_messages(system_prompt, user_prompt, user_image_url=base64_image)
         top_logprobs = call_openai_api(messages, model).choices[0].logprobs.content[0].top_logprobs
         top_logprobs = {top_logprob.token: top_logprob.logprob for top_logprob in top_logprobs}
         true_prob = np.exp(top_logprobs.get('True', float('-inf')))

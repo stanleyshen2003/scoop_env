@@ -35,7 +35,7 @@ def run(mode, config, task_type, env_idx, root, test_type=None, threshold=None):
         os.makedirs(log_folder, exist_ok=True)
         Environment = IsaacSim(env_cfg_dict=config, log_folder=log_folder, record_video=(mode == 'pipeline'))
         if mode == 'pipeline':
-            Environment.test_pipeline(config.get('answer', []), test_type=test_type, threshold=threshold)
+            Environment.test_pipeline(config.get('answer', []), test_type=test_type, threshold=threshold, use_vlm=True)
         elif mode == 'llm':
             Environment.test_llm()
             pyautogui.screenshot().save(os.path.join(log_folder, "result.jpg"))
@@ -65,6 +65,10 @@ def calibration():
 
 if __name__ == "__main__":
     root = os.environ.get('RESULT_DIR', 'experiment_log/test')
-    config_file = os.environ.get('CONFIG_FILE', 'src/config/pdm.yaml')
+    config_file = os.environ.get('CONFIG_FILE', 'src/config/config.yaml')
     test_type = os.environ.get('TEST_TYPE', None)
-    experiments('pipeline', config_file, root, test_type=test_type, threshold=0.1)
+    threshold = os.environ.get('THRESHOLD', None)
+    # specific_task = [('amount_ambiguity', 1), ('amount_ambiguity', 2), ('distance_ambiguity', 1), ('distance_ambiguity', 2)]
+    specific_task = []
+    print(test_type)
+    experiments('pipeline', config_file, root, test_type=test_type, threshold=threshold, specific_task=specific_task)
