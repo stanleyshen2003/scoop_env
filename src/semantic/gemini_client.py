@@ -48,7 +48,8 @@ Action list: {action_description}
 Initial object list: {container_list}
 Instruction: {instruction}
 Please choose one action from the action list to execute at the next iteration and output it directly.
-{generate_prompt(action_seq)}Iteration {len(action_seq)+1}:
+{generate_prompt(action_seq)}
+Iteration {len(action_seq)+1}:
     Output:"""
             }
     ]

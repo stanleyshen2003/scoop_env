@@ -48,8 +48,9 @@ def experiments(mode, config_file, root, specific_task=[], test_type=None, thres
     task_types = get_task_type_list(config_file)
     for task_type in task_types:
         for env_idx in range(1, get_task_env_num(config_file, task_type)+1):
-            if not specific_task or (task_type, env_idx) in specific_task:
+            if not specific_task or (task_type, env_idx) in specific_task or task_type in specific_task:
                 config = read_yaml(config_file, task_type=task_type, env_idx=env_idx)
+                print(f"Running {task_type} {env_idx}")
                 run(mode, config, task_type, env_idx, root, test_type=test_type, threshold=threshold)
 
 def calibration():
@@ -69,6 +70,7 @@ if __name__ == "__main__":
     test_type = os.environ.get('TEST_TYPE', None)
     threshold = os.environ.get('THRESHOLD', None)
     # specific_task = [('amount_ambiguity', 1), ('amount_ambiguity', 2), ('distance_ambiguity', 1), ('distance_ambiguity', 2)]
-    specific_task = []
-    print(test_type)
+    all_task = get_task_type_list(config_file)
+    excepted_task = ['mix_type', 'general_hard']
+    specific_task = list(set(all_task) - set(excepted_task))
     experiments('pipeline', config_file, root, test_type=test_type, threshold=threshold, specific_task=specific_task)

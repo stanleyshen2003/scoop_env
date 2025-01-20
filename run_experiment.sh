@@ -7,7 +7,7 @@ CHECK_INTERVAL=5  # Time interval between checks (in seconds)
 
 # Function to display usage
 usage() {
-    echo "Usage: $0 -e <EXP_ID> -c <CONFIG_FILE> [-l <LOG_ROOT>] [-t <MAX_TRIALS>]"
+    echo "Usage: $0 -e <EXP_ID> -c <CONFIG_FILE> -n <TEST_TYPE> [-l <LOG_ROOT>] [-t <MAX_TRIALS>]"
     echo "  -e EXP_ID: Required. Experiment ID."
     echo "  -c CONFIG_FILE: Required. Path to your config file."
     echo "  -n TEST_TYPE: Required. Type of test to run."
@@ -85,4 +85,7 @@ for ((trial=1; trial<=MAX_TRIALS; trial++)); do
 done
 
 echo "Reached maximum number of trials ($MAX_TRIALS). Exiting..."
+
+echo "Convert codec of video"
+python convert_codec.py $RESULT_DIR
 exit 1

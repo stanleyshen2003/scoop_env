@@ -198,3 +198,4 @@ src/semantic/example/image/
 src/config/*/*.jpg
 test_scoop
 test_scoop.py
+test.jpg

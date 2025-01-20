@@ -16,5 +16,5 @@ def render_all_config(config_file, show_text=False):
                 text = f"{config.get('instruction', '')}\n{answer_sequence}" if show_text else ""  
                 Environment.render_config(img_filename, text=text)
 if __name__ == '__main__':
-    config_file = 'src/config/pdm.yaml'
+    config_file = 'src/config/config.yaml'
     render_all_config(config_file, True)

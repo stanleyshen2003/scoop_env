@@ -1,8 +1,10 @@
-Scoop the beans.
+Scoop the bowl with more food into the one with smaller amount of beans.
 
 take_tool (spoon)
 move_to_white_bowl
 scoop
+move_to_green_bowl
+put_food
 DONE
 
 white_bowl (with green beans)
@@ -11,9 +13,10 @@ green_bowl (with green beans)
 put_tool (spoon)
 take_tool (spoon)
 move_to_white_bowl
+move_to_green_bowl
 scoop
 put_food
 pull_bowl_closer
 DONE
 
-# Green bowl has too few beans to scoop
+# White bowl has more beans to scoop, so you should scoop from white bowl to grenn bowl.

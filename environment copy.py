@@ -963,8 +963,6 @@ class IsaacSim():
             if(self.is_acting['take_tool']):
                 print("finish taking")
                 self.is_acting['take_tool'] = False
-                self.action_stage['take_tool'] = -1
-                self.action = 'idle'
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
         goal_pos = self.goal_pos_set[self.action_stage['take_tool']]
@@ -1032,8 +1030,6 @@ class IsaacSim():
             if(self.is_acting['put_tool']):
                 print("finish taking")
                 self.is_acting['put_tool'] = False
-                self.action_stage['put_tool'] = -1
-                self.action = 'idle'
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
         goal_pos = self.goal_pos_set[self.action_stage['put_tool']]
@@ -1144,8 +1140,6 @@ class IsaacSim():
             if self.is_acting['scoop']:
                 print("finish scoop")
                 self.is_acting['scoop'] = False
-                self.action_stage['scoop'] = -1
-                self.action = 'idle'
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
         goal_pos = self.goal_pos_set[self.action_stage['scoop']]
@@ -1231,8 +1225,6 @@ class IsaacSim():
             if self.is_acting['scoop_put']:
                 print("finish scoop_put")
                 self.is_acting['scoop_put'] = False
-                self.action_stage['scoop_put'] = -1
-                self.action = "idle"
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
         goal_pos = self.goal_pos_set[self.action_stage['scoop_put']]
@@ -1402,8 +1394,6 @@ class IsaacSim():
             if self.is_acting['stir']:
                 print("finish stirring")
                 self.is_acting['stir'] = False
-                self.action = 'idle'
-                self.action_stage['stir'] = -1
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
         if self.action_stage['stir'] <= 1 or self.action_stage['stir'] == len(self.goal_pos_set) - 1:
@@ -1475,8 +1465,6 @@ class IsaacSim():
             if self.is_acting['fork']:
                 print("finish forking")
                 self.is_acting['fork'] = False
-                self.action = 'idle'
-                self.action_stage['fork'] = -1
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         fork_offset = 3e-3
         goal_pos = self.goal_pos_set[self.action_stage['fork']]
@@ -1533,7 +1521,6 @@ class IsaacSim():
                 print("finish cut")
                 self.action_stage['cut'] = -1
                 self.is_acting['cut'] = False
-                self.action = "idle"
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
         goal_pos = self.goal_pos_set[self.action_stage['cut']]
@@ -1608,8 +1595,6 @@ class IsaacSim():
             if self.is_acting['pull_bowl_closer']:
                 print("finish pull_bowl_closer")
                 self.is_acting['pull_bowl_closer'] = False
-                self.action_stage['pull_bowl_closer'] = -1
-                self.action = 'idle'
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
         if self.action_stage['pull_bowl_closer'] > 1 and self.action_stage['pull_bowl_closer'] < 5:
@@ -1713,8 +1698,6 @@ class IsaacSim():
             if self.is_acting['put_bowl_into_microwave']:
                 print("finish put_bowl_into_microwave")
                 self.is_acting['put_bowl_into_microwave'] = False
-                self.action_stage['put_bowl_into_microwave'] = -1
-                self.action = 'idle'
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
         if (self.action_stage['put_bowl_into_microwave'] > 1 and self.action_stage['put_bowl_into_microwave'] < 8) or self.action_stage['put_bowl_into_microwave'] > 9:
@@ -1767,7 +1750,7 @@ class IsaacSim():
         if self.action_stage['take_bowl_out_microwave'] == -1:
             # initialize
             self.stop_counter = 40
-            print("take bowl outof microwave start")
+            print("put bowl into microwave start")
             self.gripper_offset_cnt = self.gripper_action_offset
             self.delta['take_bowl_out_microwave'] = [0.8]#, 0.5, 0.5, 0.5]
             self.goal_pos_set = [hand_pos + torch.tensor([[0., 0., -0.065]], device=self.device)]
@@ -1778,29 +1761,35 @@ class IsaacSim():
             
                 
             self.goal_pos_set = [
-                torch.tensor([[0.4993, 0.3182, 0.6455]], device=self.device),
-                
-                torch.tensor([[0.4986, 0.3261, 0.6287]], device=self.device),
-                
-                torch.tensor([[0.4986, 0.3261, 0.6287]], device=self.device),
-                torch.tensor([[0.4865, 0.2779, 0.6332]], device=self.device),
-                torch.tensor([[0.4865, 0.2279, 0.6332]], device=self.device),
-                torch.tensor([[0.4865, 0.1779, 0.6332]], device=self.device)
-                
+                torch.tensor([[0.4794, 0.0003, 0.6256]], device=self.device),
+                torch.tensor([[0.4794, 0.1503, 0.6256]], device=self.device),
+                torch.tensor([[0.4794, 0.2803, 0.6277]], device=self.device),
+                torch.tensor([[0.4794, 0.3203, 0.6277]], device=self.device),
+                torch.tensor([[0.4794, 0.3321, 0.6277]], device=self.device),
+                torch.tensor([[0.4794, 0.3321, 0.6700]], device=self.device),
+                torch.tensor([[0.4794, 0.2621, 0.6700]], device=self.device),
+                torch.tensor([[0.4794, 0.2621, 0.6277]], device=self.device),
+                torch.tensor([[0.4794, 0.3321, 0.6277]], device=self.device),
+                torch.tensor([[0.4794, 0.3383, 0.6277]], device=self.device)
                 
             ]
 
             self.goal_rot_set = [
-                torch.tensor([[ 0.9589, -0.0219,  0.1642, -0.2303]], device=self.device),
+                torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
+                torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
+                torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
                 
-                torch.tensor([[ 0.9491,  0.0030,  0.1802, -0.2583]], device=self.device),
-
-                
-                torch.tensor([[ 0.9491,  0.0030,  0.1802, -0.2583]], device=self.device),
-                torch.tensor([[ 0.9491,  0.0030,  0.1802, -0.2583]], device=self.device),
-                torch.tensor([[ 0.9491,  0.0030,  0.1802, -0.2583]], device=self.device),
-                torch.tensor([[ 0.9491,  0.0030,  0.1802, -0.2583]], device=self.device)
-                
+                torch.tensor([[ 0.9864,  0.0982,  0.1127, -0.0682]], device=self.device),
+                torch.tensor([[ 0.9864,  0.0982,  0.1127, -0.0682]], device=self.device),
+                torch.tensor([[ 0.9842, -0.0319,  0.0889, -0.1498]], device=self.device),
+                torch.tensor([[ 0.9842, -0.0319,  0.0889, -0.1498]], device=self.device),
+                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device)
             ]
             self.action_stage['take_bowl_out_microwave'] = 0
             self.is_acting['take_bowl_out_microwave'] = True
@@ -1811,8 +1800,6 @@ class IsaacSim():
             if self.is_acting['take_bowl_out_microwave']:
                 print("finish take_bowl_out_microwave")
                 self.is_acting['take_bowl_out_microwave'] = False
-                self.action_stage['take_bowl_out_microwave'] = -1
-                self.action = "idle"
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
         if (self.action_stage['take_bowl_out_microwave'] > 1 and self.action_stage['take_bowl_out_microwave'] < 8) or self.action_stage['take_bowl_out_microwave'] > 9:
@@ -1913,8 +1900,6 @@ class IsaacSim():
             if self.is_acting['open_microwave']:
                 print("finish open_microwave")
                 self.is_acting['open_microwave'] = False
-                self.action_stage['open_microwave'] = -1
-                self.action = 'idle'
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
         if self.action_stage['open_microwave'] > 1 and self.action_stage['open_microwave'] < 8:
@@ -2014,8 +1999,6 @@ class IsaacSim():
             if self.is_acting['close_microwave']:
                 print("finish close_microwave")
                 self.is_acting['close_microwave'] = False
-                self.action = "idle"
-                self.action_stage['close_microwave'] = -1
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
         if self.action_stage['close_microwave'] > 0 and self.action_stage['close_microwave'] < 9:
@@ -2098,8 +2081,6 @@ class IsaacSim():
             if self.is_acting['start_microwave']:
                 print("finish start_microwave")
                 self.is_acting['start_microwave'] = False
-                self.action = "idle"
-                self.action_stage['start_microwave'] = -1
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
         self.pos_action[:, 7:9] = gripper_close
@@ -2868,7 +2849,7 @@ class IsaacSim():
         start = time()
         image_freq = 1.5 # sec.
 
-        self.action = ""
+        action = ""
         current_tool = "spoon"
         
         while not self.gym.query_viewer_has_closed(self.viewer):
@@ -2906,19 +2887,19 @@ class IsaacSim():
             delta = 0.05
 
             for evt in self.gym.query_viewer_action_events(self.viewer):
-                self.action = evt.action if (evt.value) > 0 else ""
-            self.action != "" and self.last_action != self.action and print(self.action)
+                action = evt.action if (evt.value) > 0 else ""
+            action != "" and self.last_action != action and print(action)
             
-            if self.action == "action_reset":
+            if action == "action_reset":
                 self.action_state_reset()
-            elif self.action == "quit":
+            elif action == "quit":
                 break
             
             for a in self.action_list:
                 if self.is_acting[a]:
-                    if self.action in [a, ""]:
-                        self.action = a
-                    elif self.action != "save":
+                    if action in [a, ""]:
+                        action = a
+                    elif action != "save":
                         self.action_state_reset()
                         print(f"{a} terminate")
                     break
@@ -2929,68 +2910,68 @@ class IsaacSim():
                     img_num += 1
                     self.gym.write_camera_image_to_file(self.sim, self.envs[i], self.camera_handles[i], gymapi.IMAGE_COLOR, file_name)
                     start = time()
-            if "move_" in self.action:
-                destination = self.action.replace("move_", "")
+            if "move_" in action:
+                destination = action.replace("move_", "")
                 if destination == "around":
                     self.move_around()
                 else:
                     dpose = self.move(destination, slow=False)
-            elif self.action == "up":
+            elif action == "up":
                 dpose = torch.tensor([[[0.],[0.],[1.],[0.],[0.],[0.]]]) * delta
-            elif self.action == "down":
+            elif action == "down":
                 dpose = torch.tensor([[[0.],[0.],[-1.],[0.],[0.],[0.]]]) * delta
-            elif self.action == "left":
+            elif action == "left":
                 dpose = torch.tensor([[[0.],[-1.],[0.],[0.],[0.],[0.]]]) * delta
-            elif self.action == "right":
+            elif action == "right":
                 dpose = torch.tensor([[[0.],[1.],[0.],[0.],[0.],[0.]]]) * delta
-            elif self.action == "backward":
+            elif action == "backward":
                 dpose = torch.tensor([[[-1.],[0.],[0.],[0.],[0.],[0.]]]) * delta
-            elif self.action == "forward":
+            elif action == "forward":
                 dpose = torch.tensor([[[1.],[0.],[0.],[0.],[0.],[0.]]]) * delta
-            elif self.action == "turn_left":
+            elif action == "turn_left":
                 dpose = torch.tensor([[[0.],[0.],[0.],[0.],[0.],[-10.]]]) * delta
-            elif self.action == "turn_right":
+            elif action == "turn_right":
                 dpose = torch.tensor([[[0.],[0.],[0.],[0.],[0.],[10.]]]) * delta
-            elif self.action == "turn_up":
+            elif action == "turn_up":
                 dpose = torch.tensor([[[0.],[0.],[0.],[0.],[10.],[0.]]]) * delta
-            elif self.action == "turn_down":
+            elif action == "turn_down":
                 dpose = torch.tensor([[[0.],[0.],[0.],[0.],[-10.],[0.]]]) * delta
-            elif self.action == "rot_right":
+            elif action == "rot_right":
                 dpose = torch.tensor([[[0.],[0.],[0.],[1.],[0.],[0.]]]) * delta
-            elif self.action == "rot_left":
+            elif action == "rot_left":
                 dpose = torch.tensor([[[0.],[0.],[0.],[-1.],[0.],[0.]]]) * delta
-            elif self.action == "scoop":
+            elif action == "scoop":
                 dpose = self.scoop()
-            elif self.action == "stir":
+            elif action == "stir":
                 dpose = self.stir()
-            elif self.action == "scoop_put":
+            elif action == "scoop_put":
                 dpose = self.scoop_put()
-            elif self.action == "fork":
+            elif action == "fork":
                 dpose = self.fork()
-            elif self.action == "cut":
+            elif action == "cut":
                 dpose = self.cut()
-            elif self.action == "take_tool":
+            elif action == "take_tool":
                 dpose = self.take_tool(current_tool)
-            elif self.action == "put_tool":
+            elif action == "put_tool":
                 dpose = self.put_tool(current_tool)
-            elif self.action == "move_around":
+            elif action == "move_around":
                 dpose = self.move_around()
-            elif self.action == "pull_bowl_closer":
+            elif action == "pull_bowl_closer":
                 dpose = self.pull_bowl_closer()
-            elif self.action == "gripper_close":
+            elif action == "gripper_close":
                 dpose = torch.tensor([[[0.],[0.],[0.],[0.],[0.],[0.]]])
                 if torch.all(self.pos_action[:, 7:9] == gripper_close):
                     self.pos_action[:, 7:9] = gripper_open
                 elif torch.all(self.pos_action[:, 7:9] == gripper_open):
                     self.pos_action[:, 7:9] = gripper_close
-            elif self.action == "set_tool":
+            elif action == "set_tool":
                 for i, tool in enumerate(self.tool_list):
                     if tool == current_tool:
                         current_tool = self.tool_list[(i + 1) % len(self.tool_list)]
                         print(current_tool)
                         break
                 dpose = torch.tensor([[[0.],[0.],[0.],[0.],[0.],[0.]]])
-            elif self.action == "change_ball_friction":
+            elif action == "change_ball_friction":
                 for ball_handle in self.ball_handles:
                     body_shape_prop = self.gym.get_actor_rigid_shape_properties(self.env_ptr_list[0], ball_handle)
                     body_shape_prop[0].friction = 0.001
@@ -3000,11 +2981,11 @@ class IsaacSim():
                     self.gym.set_actor_rigid_shape_properties(self.env_ptr_list[0], ball_handle, body_shape_prop)
                     
                 dpose = torch.tensor([[[0.],[0.],[0.],[0.],[0.],[0.]]])
-            elif self.action == "choose action":
+            elif action == "choose action":
                 self.saycan_pipeline()
                 dpose = torch.tensor([[[0.],[0.],[0.],[0.],[0.],[0.]]])
                 
-            elif self.action == "save":
+            elif action == "save":
                 hand_pos = self.rb_state_tensor[self.franka_hand_indices, 0:3]
                 hand_rot = self.rb_state_tensor[self.franka_hand_indices, 3:7]
                 dpose = torch.tensor([[[0.],[0.],[0.],[0.],[0.],[0.]]])
@@ -3018,7 +2999,7 @@ class IsaacSim():
                     file_name = f'./observation/{self.output_folder}/image{img_num}.png'
                     img_num += 1
                     self.gym.write_camera_image_to_file(self.sim, self.envs[i], self.camera_handles[i], gymapi.IMAGE_COLOR, file_name)
-            elif self.action == "to_file":
+            elif action == "to_file":
                 pose = [i[0].numpy().squeeze(0) for i in self.record]
                 rot = [i[1].numpy().squeeze(0) for i in self.record]
                 first = pose[0]
@@ -3030,15 +3011,15 @@ class IsaacSim():
                 with open('./rot.txt', 'w') as f:
                     for row in rot:
                         f.write("[" + ", ".join(map(str, row)) + "]" + '\n')
-            elif self.action == "open_microwave":
+            elif action == "open_microwave":
                 dpose = self.open_microwave()
-            elif self.action == "close_microwave":
+            elif action == "close_microwave":
                 dpose = self.close_microwave()
-            elif self.action == "start_microwave":
+            elif action == "start_microwave":
                 dpose = self.start_microwave()
-            elif self.action == "put_bowl_into_microwave":
+            elif action == "put_bowl_into_microwave":
                 dpose = self.put_bowl_into_microwave()
-            elif self.action == "take_bowl_out_microwave":
+            elif action == "take_bowl_out_microwave":
                 dpose = self.take_bowl_out_microwave()
             else:
                 dpose = torch.tensor([[[0.],[0.],[0.],[0.],[0.],[0.]]])
@@ -3065,7 +3046,7 @@ class IsaacSim():
             self.gym.sync_frame_time(self.sim)
 
             self.frame += 1
-            self.last_action = self.action
+            self.last_action = action
 
         self.gym.destroy_viewer(self.viewer)
         self.gym.destroy_sim(self.sim)

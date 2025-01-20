@@ -20,7 +20,7 @@ def format_action_choices(action_list: List[str]):
     """
     Create a dictionary that maps action to a character
     """
-    return {action: chr(ord('A') + i) for i, action in enumerate(action_list)}
+    return {action: chr(ord('A') + i)  for i, action in enumerate(action_list)}
 
 def segmentation_process(rgb_img_path):
     """
@@ -43,9 +43,9 @@ def generate_prompt(action_seq, indent=False):
     for i, action in enumerate(action_seq):
         executed_action = " ".join([f'{j+1}. {action_seq[j]}' for j in range(i)])
         if indent:
-            ret += f"""Iteration {i+1}:
-        Output: {action}
-    """
+            ret += f"""
+    Iteration {i+1}:
+        Output: {action}"""
         else:
             ret += f"""Iteration {i+1}:
     Output: {action}
@@ -60,7 +60,7 @@ def get_action_description_prompt():
         'move_to_container': 'move to the container for further action like pulling or scooping', 
         'scoop': 'scoop the food, the speed of scooping will be affected by food state.', 
         'stir': 'stir the food.', 
-        'put_food': 'put the food on your tool into the container.', 
+        'put_food': 'put the food on your tool into the container. Note that you should move to the destination container before putting the food.', 
         'pull_bowl_closer': 'pull the nearest bowl to the center of the table', 
         'DONE': 'indicates that the instruction is done.'
     }
@@ -84,23 +84,27 @@ def get_example_prompt(use_vlm=False, selection=False):
         example_container_list = content[2].split('\n')
         example_action_list = content[3].split('\n')
         if len(content) > 4:
-            example_environment = content[4]
+            example_environment = content[4].replace('\n', '\n        ')
         
         example_action_seq = [preprocess_action(action) for action in example_action_seq]
         example_action_list = [preprocess_action(action) for action in example_action_list]
         example_container_list = [preprocess_object(container) for container in example_container_list]
         example_action_dict = format_action_choices(example_action_list)
+        # print(example_action_dict)
         if selection:
-            example_action_seq = [example_action_dict[action] for action in example_action_seq]
+            # example_action_seq = [example_action_dict[action] for action in example_action_seq] only character
+            example_action_seq = [f"{example_action_dict[action]}. {action}" for action in example_action_seq]
             example_action_list = [f'{selection}. {action}' for action, selection in example_action_dict.items()]
-        system_prompt += f"""
-    Example {example_id}:
-        Environment description: \n{example_environment}
+        system_prompt += f"""Example {example_id}:
+    Action list: {example_action_list}
+    Initial object list: {example_container_list}
+    Instruction: {example_instruction}
+    {generate_prompt(example_action_seq, indent=True)}
+    
+    Explanation:
+        {example_environment}
 
-        Action list: {example_action_list}
-        Initial object list: {example_container_list}
-        Instruction: {example_instruction}
-        {generate_prompt(example_action_seq, indent=True)}"""
+"""
         if use_vlm and os.path.exists(img_file):
             system_image_url.append(encode_image(img_file))
         example_id += 1
@@ -127,7 +131,7 @@ def get_user_prompt(instruction, action_seq, action_dict, container_list, additi
     action_seq = [preprocess_action(action) for action in action_seq]
     
     action_choices = [f"{v}. {k}" for k, v in action_dict.items()]
-    action_seq_choices = [action_dict[action] for action in action_seq]
+    action_seq_choices = [f"{action_dict[action]}. {action}" for action in action_seq]
     additional_info = f"Please also consider some additional information: {additional_info}" if additional_info else ""
     segmentation_prompt = "Please focus on the segmentation result of the robot to make the decision." if segmentation else ""
     user_prompt = f"""
@@ -239,5 +243,6 @@ if __name__ == '__main__':
     # print(system_prompt)
     # for i, url in enumerate(system_image_url):
     #     img = decode_image(url, f'test_{i + 1}.png')
-    response = segmentation_process('/home/hcis-s17/multimodal_manipulation/scoop_env/src/semantic/output.png')
-    print(response)
+    # response = segmentation_process('/home/hcis-s17/multimodal_manipulation/scoop_env/src/semantic/output.png')
+    # print(response)
+    print(get_example_prompt(use_vlm=True, selection=True)[0])

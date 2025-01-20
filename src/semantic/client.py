@@ -42,7 +42,8 @@ Instruction: {instruction}
 You should also take the previous actions into consideration when choosing actions.
 Please choose one action from the action list to execute at iteration {len(action_seq)+1}?
 Please ONLY tell me the name of the action.
-{generate_prompt(action_seq)}Iteration {len(action_seq)+1}: """
+{generate_prompt(action_seq)}
+Iteration {len(action_seq)+1}: """
             }
         ]
     ],
