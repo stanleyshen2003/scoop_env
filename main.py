@@ -69,8 +69,18 @@ if __name__ == "__main__":
     config_file = os.environ.get('CONFIG_FILE', 'src/config/config.yaml')
     test_type = os.environ.get('TEST_TYPE', None)
     threshold = os.environ.get('THRESHOLD', None)
+    task_type = os.environ.get('TASK_TYPE', None)
+    env_idx = os.environ.get('ENV_IDX', 1)
+    env_idx = int(env_idx) if env_idx else 1
+    
     # specific_task = [('amount_ambiguity', 1), ('amount_ambiguity', 2), ('distance_ambiguity', 1), ('distance_ambiguity', 2)]
     all_task = get_task_type_list(config_file)
     excepted_task = ['mix_type', 'general_hard']
     specific_task = list(set(all_task) - set(excepted_task))
-    experiments('pipeline', config_file, root, test_type=test_type, threshold=threshold, specific_task=specific_task)
+    # experiments('pipeline', config_file, root, test_type=test_type, threshold=threshold, specific_task=specific_task)
+    
+    mode = 'pipeline'
+    if not specific_task or (task_type, env_idx) in specific_task or task_type in specific_task:
+        config = read_yaml(config_file, task_type=task_type, env_idx=env_idx)
+        print(f"Running {task_type} {env_idx}")
+        run(mode, config, task_type, env_idx, root, test_type=test_type, threshold=threshold)

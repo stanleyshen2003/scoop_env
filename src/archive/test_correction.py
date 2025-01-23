@@ -217,8 +217,8 @@ def get_selection_score2(
 if __name__ == '__main__':
     instruction = "I need one scoop of green beans, and I'm in a hurry. Can you make it quick?"
     container_list = ['white_bowl (with green beans)', 'red_bowl (with green beans)', 'skyblue_bowl (with green beans)', 'blue_bowl (with black beans)', 'yellow_bowl (empty)']
-    action_list = ['scoop', 'fork', 'cut', 'stir', 'put_food', 'pull_bowl_closer', 'DONE', 'take_tool (spoon)', 'take_tool (fork)', 'take_tool (knife)', 'put_tool (spoon)', 'put_tool (fork)', 'put_tool (knife)', 'move_to_white_bowl', 'move_to_red_bowl', 'move_to_skyblue_bowl', 'move_to_blue_bowl', 'move_to_yellow_bowl']
-    action_seq = ['take_tool (spoon)']
+    action_list = ['scoop', 'fork', 'cut', 'stir', 'put_food', 'pull_bowl_closer', 'DONE', 'grasp_spoon', 'take_tool (fork)', 'take_tool (knife)', 'put_spoon_back', 'put_tool (fork)', 'put_tool (knife)', 'move_to_white_bowl', 'move_to_red_bowl', 'move_to_skyblue_bowl', 'move_to_blue_bowl', 'move_to_yellow_bowl']
+    action_seq = ['grasp_spoon']
     use_vlm = True
     log_folder = "experiment_log/correction2/" + '{date:%Y-%m-%d_%H:%M:%S}'.format( date=datetime.datetime.now())
     obs_id = 1

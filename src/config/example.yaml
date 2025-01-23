@@ -1,38 +1,55 @@
 example:
   1: 
-    instruction: Scoop the beans as quickly as you can.
-    answer: ['take_tool (spoon)', 'move_to_gray_bowl', 'scoop', 'DONE']
+    instruction: Try your best to get more beans into the empty bowl in one scoop. Then heat the beans with microwave.
+    answer: ['grasp_spoon', 'move_to_gray_bowl', 'scoop', 'DONE']
     tool: [spoon]
     containers:   
     - x: 0.54
       y: 0.24
       type: bowl
       color: green
+      colorcode: lightgreen
       food:
         type: ball
-        color: [green]
+        color: [mung]
+        colorcode: [darkgreen]
         amount: 20
         position: [1, 1]
     - x: 0.39
       y: 0.08
       type: bowl
       color: white
+      colorcode: white
       food:
         type: ball
-        color: [green]
+        color: [mung]
+        colorcode: [darkgreen]
         amount: 1600
         position: [1, 1] 
+    - x: 0.4
+      y: -0.2
+      type: bowl
+      color: blue
+      colorcode: skyblue
+      food:
+        type: None
+        color: [darkgreen]
+        colorcode: [darkgreen]
+        amount: 1200
+        position: [1, 1]
   2: # distance + tool_block
     instruction: Scoop the beans quickly.
-    answer: ['move_to_orange_bowl', 'pull_bowl_closer', 'take_tool (spoon)', 'move_to_orange_bowl', 'scoop', 'DONE']
+    answer: ['move_to_orange_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_orange_bowl', 'scoop', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.42
       y: -0.23
       type: bowl
       color: blue
+      colorcode: lightblue
       food:
         type: ball
+        colorcode: [red]
         color: [darkred]
         amount: 1200
         position: [1, 1]
@@ -40,8 +57,22 @@ example:
       y: 0.3
       type: bowl
       color: white
+      colorcode: white
       food:
         type: ball
-        color: [darkgreen]
+        color: [mung]
+        colorcode: [darkgreen]
         amount: 1200
         position: [1, 1]
+    - x: 0.35
+      y: 0.05
+      type: bowl
+      color: gray
+      colorcode: gray
+      food:
+        type: None
+        color: [darkgreen]
+        colorcode: [darkgreen]
+        amount: 1200
+        position: [1, 1]
+

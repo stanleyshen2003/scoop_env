@@ -2502,7 +2502,7 @@ class IsaacSim():
         start = time()
         self.action_start = time()
         self.executing = False
-        test_action_list = ['take_tool (spoon)', 'scoop', 'put_food', 'DONE']
+        test_action_list = ['grasp_spoon', 'scoop', 'put_food', 'DONE']
         if self.record_video:
             resolution = (1920, 1080)
             codec = cv2.VideoWriter_fourcc(*'mp4v')
@@ -2772,18 +2772,23 @@ class IsaacSim():
                 dpose = self.scoop_put()
             elif best_action == "pull_bowl_closer":
                 dpose = self.pull_bowl_closer()
+            elif best_action == 'grasp_spoon':
+                dpose = self.take_tool('spoon')
+            elif best_action == 'put_spoon_back':
+                dpose = self.put_tool('spoon')
+            elif best_action == 'open_microwave':
+                dpose = self.open_microwave()
+            elif best_action == 'close_microwave':
+                dpose = self.close_microwave()
+            elif best_action == 'start_microwave':
+                dpose = self.start_microwave()
+            elif best_action == 'put_bowl_into_microwave':
+                dpose = self.put_bowl_into_microwave()
+            elif best_action == 'take_bowl_out_microwave':
+                raise NotImplementedError("Not implemented yet")
+                dpose = self.take_bowl_out_microwave()
             elif best_action == "DONE" or len(self.action_sequence) >= max_sequence:
                 break 
-            elif "take_tool" in best_action:
-                for tool in self.tool_list:
-                    if tool in best_action:
-                        dpose = self.take_tool(tool)
-                        break
-            elif "put_tool" in best_action:
-                for tool in self.tool_list:
-                    if tool in best_action:
-                        dpose = self.put_tool(tool)
-                        break
             elif "move" in best_action:
                 for object in self.containers_list:
                     if object.split()[0] in best_action:

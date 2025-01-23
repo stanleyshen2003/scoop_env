@@ -1,8 +1,8 @@
 general_easy:
   # general scooping
   1:
-    instruction: Please put two scoops of bean into the empty bowl.
-    answer: ['take_tool (spoon)', 'move_to_purple_bowl', 'scoop', 'move_to_blue_bowl', 'put_food', 'move_to_purple_bowl', 'scoop', 'move_to_blue_bowl', 'put_food', 'DONE']
+    instruction: Please place two scoops of bean into the empty bowl.
+    answer: ['grasp_spoon', 'move_to_purple_bowl', 'scoop', 'move_to_blue_bowl', 'put_food', 'move_to_purple_bowl', 'scoop', 'move_to_blue_bowl', 'put_food', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.42
@@ -28,8 +28,8 @@ general_easy:
         amount: 0
         position: [1, 1]
   2:
-    instruction: Put some green beans into the empty bowl.
-    answer: ['take_tool (spoon)', 'move_to_white_bowl', 'scoop', 'move_to_blue_bowl', 'put_food', 'DONE']
+    instruction: Please place one scoop of green beans into the empty bowl.
+    answer: ['grasp_spoon', 'move_to_white_bowl', 'scoop', 'move_to_blue_bowl', 'put_food', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.56
@@ -69,7 +69,7 @@ general_easy:
 general_hard:
   1: # cannot stir
     instruction: Scoop all the bean into the empty bowl once and mix the beans in the empty bowl.
-    answer: ['take_tool (spoon)', 'move_to_purple_bowl', 'scoop', 'move_to_blue_bowl', 'put_food', 'move_to_pink_bowl', 'scoop', 'move_to_blue_bowl', 'put_food', 'move_to_white_bowl', 'scoop', 'move_to_blue_bowl', 'put_food', 'move_to_gray_bowl', 'scoop', 'move_to_blue_bowl', 'put_food', 'stir', 'DONE']
+    answer: ['grasp_spoon', 'move_to_purple_bowl', 'scoop', 'move_to_blue_bowl', 'put_food', 'move_to_pink_bowl', 'scoop', 'move_to_blue_bowl', 'put_food', 'move_to_white_bowl', 'scoop', 'move_to_blue_bowl', 'put_food', 'move_to_gray_bowl', 'scoop', 'move_to_blue_bowl', 'put_food', 'stir', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.45
@@ -128,8 +128,8 @@ general_hard:
         amount: 0
         position: [1, 1]
   2: # cannot stir
-    instruction: Put two red beans and one green bean into the blue bowl please. Mix them and heat them up.
-    answer: ['take_tool (spoon)', 'move_to_pink_bowl', 'scoop', 'move_to_blue_bowl', 'put_food', 'move_to_white_bowl', 'scoop', 'move_to_blue_bowl', 'put_food', 'move_to_white_bowl', 'scoop', 'move_to_blue_bowl', 'put_food', 'stir', 'put_tool (spoon)', 'open_microwave', 'move_to_blue_bowl', 'put_bowl_into_microwave', 'close_microwave', 'start_microwave', 'open_microwave', 'take_bowl_out_microwave', 'DONE']
+    instruction: Place two scoop of red beans and one scoop of green bean into the blue bowl. Mix them and heat them up.
+    answer: ['grasp_spoon', 'move_to_pink_bowl', 'scoop', 'move_to_blue_bowl', 'put_food', 'move_to_white_bowl', 'scoop', 'move_to_blue_bowl', 'put_food', 'move_to_white_bowl', 'scoop', 'move_to_blue_bowl', 'put_food', 'stir', 'put_spoon_back', 'open_microwave', 'move_to_blue_bowl', 'put_bowl_into_microwave', 'close_microwave', 'start_microwave', 'open_microwave', 'take_bowl_out_microwave', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.45
@@ -169,8 +169,8 @@ general_hard:
 amount_ambiguity:
   # different amounts of the beans
   1: 
-    instruction: Put some beans into the empty bowl as fast as you can.
-    answer: ['take_tool (spoon)', 'move_to_gray_bowl', 'scoop', 'move_to_white_bowl', 'put_food', 'DONE']
+    instruction: Can you transfer some beans into the empty bowl in one scoop? Try to get as many as you can.
+    answer: ['grasp_spoon', 'move_to_gray_bowl', 'scoop', 'move_to_white_bowl', 'put_food', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.54
@@ -207,8 +207,8 @@ amount_ambiguity:
         amount: 1600
         position: [1, 1] 
   2: 
-    instruction: Please give me some beans. My bowl is the pink one. I want the food that has more quantity.
-    answer: ['take_tool (spoon)', 'move_to_yello_bowl', 'scoop', 'move_to_pink_bowl', 'put_food', 'DONE']
+    instruction: Please scoop beans in the bowl with more items into my pink bowl.
+    answer: ['grasp_spoon', 'move_to_yello_bowl', 'scoop', 'move_to_pink_bowl', 'put_food', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.48
@@ -247,8 +247,8 @@ amount_ambiguity:
 distance_ambiguity:
   # different distance of beans
   1:
-    instruction: My bowl is blue. Please give me a scoop of green bean. Please do it faster.
-    answer: ['take_tool (spoon)', 'move_to_white_bowl', 'scoop', 'move_to_blue_bowl', 'put_food', 'DONE']
+    instruction: Scoop beans from the nearest bowl into the blue bowl.
+    answer: ['grasp_spoon', 'move_to_white_bowl', 'scoop', 'move_to_blue_bowl', 'put_food', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.6
@@ -285,8 +285,8 @@ distance_ambiguity:
         amount: 0
         position: [1, 1]
   2:
-    instruction: Put a scoop of red beans into the empty bowl as fast as possible.
-    answer: ['take_tool (spoon)', 'move_to_blue_bowl', 'scoop', 'move_to_white_bowl', 'put_food', 'DONE']
+    instruction: Scoop food items from the nearest bowl to the empty bowl.
+    answer: ['grasp_spoon', 'move_to_blue_bowl', 'scoop', 'move_to_white_bowl', 'put_food', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.8
@@ -336,8 +336,8 @@ distance_ambiguity:
 obstacles:
   # the bowl block the tool
   1:
-    instruction: Scoop some beans into the empty bowl.
-    answer: ['move_to_purple_bowl', 'pull_bowl_closer', 'take_tool (spoon)', 'move_to_purple_bowl', 'scoop', 'move_to_green_bowl', 'put_food', 'DONE']
+    instruction: Scoop beans into the empty bowl.
+    answer: ['move_to_purple_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_purple_bowl', 'scoop', 'move_to_green_bowl', 'put_food', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.38
@@ -363,8 +363,8 @@ obstacles:
         amount: 0
         position: [1, 1]
   2:
-    instruction: I would like one scoop of beans into the empty bowl. Please also heat them up.
-    answer: ['move_to_green_bowl', 'pull_bowl_closer', 'take_tool (spoon)', 'move_to_gray_bowl', 'scoop', 'move_to_green_bowl', 'put_food', 'put_tool (spoon)', 'open_microwave', 'move_to_green_bowl', 'put_bowl_into_microwave', 'start_microwave', 'open_microwave', 'take_bowl_out_microwave', 'DONE'] # not done!! ['move_to_green_bowl', 'pull_bowl_closer', 'take_tool (spoon)', 'DONE']
+    instruction: Could you place a scoop of beans into the empty bowl and heat them up, please?
+    answer: ['move_to_green_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_gray_bowl', 'scoop', 'move_to_green_bowl', 'put_food', 'put_spoon_back', 'open_microwave', 'move_to_green_bowl', 'put_bowl_into_microwave', 'start_microwave'] # , 'open_microwave', 'take_bowl_out_microwave', 'DONE'] # not done!! ['move_to_green_bowl', 'pull_bowl_closer', 'grasp_spoon', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.45
@@ -392,8 +392,8 @@ obstacles:
 distance:
   # the bowl are too far to scoops
   1:
-    instruction: Please put a scoop of red bean into the empty bowl.
-    answer: ['move_to_pink_bowl', 'pull_bowl_closer', 'take_tool (spoon)', 'move_to_pink_bowl', 'scoop', 'move_to_green_bowl', 'put_food', 'DONE']
+    instruction: Please place a scoop of red bean into the empty bowl.
+    answer: ['move_to_pink_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_pink_bowl', 'scoop', 'move_to_green_bowl', 'put_food', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.7
@@ -418,9 +418,9 @@ distance:
         colorcode: [darkred]
         amount: 0
         position: [1, 1]
-  2: # 不能拉但可以挖
-    instruction: A scoop of green bean, thanks a lot. Just put it into the empty bowl.
-    answer: ['move_to_white_bowl', 'pull_bowl_closer', 'take_tool (spoon)', 'move_to_white_bowl', 'scoop', 'move_to_gray_bowl', 'put_food', 'DONE']
+  2:
+    instruction: Scoop some beans into the empty bowl
+    answer: ['move_to_white_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_white_bowl', 'scoop', 'move_to_gray_bowl', 'put_food', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.67
@@ -459,7 +459,7 @@ distance:
 mix_type:
   1: # general + tool_block 
     instruction: Scoop the green beans.
-    answer: ['move_to_blue_bowl', 'pull_bowl_closer', 'take_tool (spoon)', 'move_to_blue_bowl', 'scoop', 'DONE']
+    answer: ['move_to_blue_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_blue_bowl', 'scoop', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.42
@@ -486,7 +486,7 @@ mix_type:
         position: [1, 1]
   2: # tool_block + amount_ambiguity
     instruction: I want a spoon of the beans.
-    answer: ['move_to_orange_bowl', 'pull_bowl_closer', 'take_tool (spoon)', 'move_to_green_bowl', 'scoop', 'DONE']
+    answer: ['move_to_orange_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_green_bowl', 'scoop', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.42
@@ -524,7 +524,7 @@ mix_type:
         position: [1, 1]
   3: # amount_ambiguity + distance_ambiguity
     instruction: Scoop the beans as soon as possible.
-    answer: ['move_to_darkgray_bowl', 'pull_bowl_closer', 'take_tool (spoon)', 'move_to_brown_bowl', 'scoop', 'DONE']
+    answer: ['move_to_darkgray_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_brown_bowl', 'scoop', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.4
@@ -574,7 +574,7 @@ mix_type:
   4: # distance + amount_ambiguity
   # cannot pull the bowl closer
     instruction: Scoop the beans.
-    answer: ['move_to_yellow_bowl', 'pull_bowl_closer', 'take_tool (spoon)', 'move_to_yellow_bowl', 'scoop', 'DONE']
+    answer: ['move_to_yellow_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_yellow_bowl', 'scoop', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.7
@@ -601,7 +601,7 @@ mix_type:
         position: [1, 1]
   5: # distance_ambiguity + amount_ambiguity + tool_block
     instruction: Scoop the beans quickly.
-    answer: ['move_to_orange_bowl', 'pull_bowl_closer', 'take_tool (spoon)', 'move_to_orange_bowl', 'scoop', 'DONE']
+    answer: ['move_to_orange_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_orange_bowl', 'scoop', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.42

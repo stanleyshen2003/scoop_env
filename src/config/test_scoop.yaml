@@ -2,7 +2,7 @@ general:
   # general scooping
   1: 
     instruction: Scoop the beans.
-    answer: ['take_tool (spoon)', 'move_to_red_bowl', 'scoop']
+    answer: ['grasp_spoon', 'move_to_red_bowl', 'scoop']
     tool: [spoon]
     containers:
     - x: 0.45

@@ -4,7 +4,7 @@
 LOG_ROOT="experiment_log"  # Default path to experiment logs
 MAX_TRIALS=5  # Default number of trials
 CHECK_INTERVAL=5  # Time interval between checks (in seconds)
-
+NOW_TIME=$(LC_TIME=en_US.utf8 date +%Y%m%d_%H%M%S)
 # Function to display usage
 usage() {
     echo "Usage: $0 -e <EXP_ID> -c <CONFIG_FILE> -n <TEST_TYPE> [-l <LOG_ROOT>] [-t <MAX_TRIALS>]"
@@ -37,54 +37,30 @@ if [ -z "$EXP_ID" ] || [ -z "$CONFIG_FILE" ] || [ -z "$TEST_TYPE" ]; then
 fi
 
 # Path to results folder
-RESULT_DIR="$LOG_ROOT/$TEST_TYPE"_"$EXP_ID"
+RESULT_DIR="${LOG_ROOT}/${TEST_TYPE}_${NOW_TIME}_${EXP_ID}"
 echo "Results will be saved in $RESULT_DIR"
 
 # Export environment variables for other scripts
 export RESULT_DIR=$RESULT_DIR
-export CONFIG_FILE=$CONFIG_FILE
+export CONFIG_FILE=${CONFIG_FILE:-src/config/config.yaml}
 export TEST_TYPE=$TEST_TYPE
+
+
+CONFIGURATIONS=$(yq 'to_entries | .[:] | map(.key as $parent | .value | to_entries | .[:] | map([$parent, .key])) | flatten' $CONFIG_FILE | sed '/^#/d; s/ #.*//' | sed 's/- //')
+config_array=($CONFIGURATIONS)
 
 # Prepare the experiment
 echo "Preparing the experiment..."
 python prepare_experiment.py
 
-# Trial loop
-for ((trial=1; trial<=MAX_TRIALS; trial++)); do
-    echo "Trial $trial of $MAX_TRIALS: Checking results..."
-
-    all_done=true
-    for folder in "$RESULT_DIR"/*; do
-        done=false
-        for subfolder in "$folder"/*; do
-            if [ -d "$subfolder" ]; then  # Check if it's a directory
-                if [ -f "$subfolder/result_sequence.txt" ]; then
-                    done=true
-                    break 
-                fi
-            fi
-        done
-        if ! $done; then
-            all_done=false
-            break
-        fi
-    done
-
-    if $all_done; then
-        echo "All experiments are complete. Exiting..."
-        # ./zip_result.sh
-        exit 0
-    fi
-    
+for ((i = 0; i < ${#config_array[@]}; i+=2)); do
+    export TASK_TYPE=${config_array[i]}
+    export ENV_IDX=${config_array[i+1]}
+    echo "Running task $TASK_TYPE with environment $ENV_IDX"
     python main.py
-
-    if [ $trial -lt $MAX_TRIALS ]; then
-        echo "Waiting for $CHECK_INTERVAL seconds before the next trial..."
-        sleep $CHECK_INTERVAL
-    fi
 done
 
-echo "Reached maximum number of trials ($MAX_TRIALS). Exiting..."
+# echo "Reached maximum number of trials ($MAX_TRIALS). Exiting..."
 
 echo "Convert codec of video"
 python convert_codec.py $RESULT_DIR

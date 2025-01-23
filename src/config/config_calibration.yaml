@@ -1,7 +1,7 @@
 simple:
   1:
     instruction: Scoop the beans to the green bowl.
-    answer: ['take_tool (spoon)', 'move_to_pink_bowl', 'scoop', 'move_to_green_bowl', 'put_food', 'put_tool (spoon)', 'DONE']
+    answer: ['grasp_spoon', 'move_to_pink_bowl', 'scoop', 'move_to_green_bowl', 'put_food', 'put_spoon_back', 'DONE']
     tool: [spoon]
     containers:
     - x: None
