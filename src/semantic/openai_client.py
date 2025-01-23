@@ -207,8 +207,8 @@ def get_calibration_data(
 if __name__ == '__main__':
     instruction = "Stir the beans in the bowl, then scoop it to the round plate."
     object_list = ["red_bowl (empty)", "white_round_plate (empty)", "green_bowl (with beans)"]
-    action_list = ['take_tool (spoon)', 'take_tool (fork)', 'put_tool (spoon)', 'put_tool (fork)', 'move_to_green_bowl', 'move_to_red_bowl', 'move_to_white_round_plate', 'scoop', 'fork', 'cut', 'move', 'stir', 'put_food', 'DONE']
-    action_seq = ['take_tool (spoon)', 'move_to_green_bowl', 'stir', 'scoop', 'move_to_white_round_plate', 'put_food', 'put_tool (spoon)']
+    action_list = ['grasp_spoon', 'take_tool (fork)', 'put_spoon_back', 'put_tool (fork)', 'move_to_green_bowl', 'move_to_red_bowl', 'move_to_white_round_plate', 'scoop', 'fork', 'cut', 'move', 'stir', 'put_food', 'DONE']
+    action_seq = ['grasp_spoon', 'move_to_green_bowl', 'stir', 'scoop', 'move_to_white_round_plate', 'put_food', 'put_spoon_back']
     print("SELECTION\n\n")
     system_prompt, user_prompt, answer = get_calibration_data(instruction, 'take_tool (fork)', action_list, object_list, action_seq, True)
     print(system_prompt)

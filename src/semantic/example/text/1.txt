@@ -1,22 +1,37 @@
-Scoop the bowl with more food into the one with smaller amount of beans.
+Try your best to get more beans into the empty bowl in one scoop. Then heat the beans with microwave.
 
-take_tool (spoon)
+grasp_spoon
 move_to_white_bowl
 scoop
-move_to_green_bowl
+move_to_blue_bowl
 put_food
+put_spoon_back
+move_to_green_bowl
+pull_bowl_closer
+open_microwave
+move_to_blue_bowl
+put_bowl_into_microwave
+close_microwave
+start_microwave
 DONE
 
-white_bowl (with green beans)
-green_bowl (with green beans)
+white_bowl (with mung beans)
+green_bowl (with mung beans)
+blue_bowl (empty)
 
-put_tool (spoon)
-take_tool (spoon)
+put_spoon_back
+grasp_spoon
 move_to_white_bowl
 move_to_green_bowl
+move_to_blue_bowl
 scoop
 put_food
 pull_bowl_closer
+open_microwave
+close_microwave
+start_microwave
+put_bowl_into_microwave
 DONE
 
-# White bowl has more beans to scoop, so you should scoop from white bowl to grenn bowl.
+# White bowl has more beans to scoop, so you should scoop from white bowl to green bowl.
+# Green bowl is too close to the microwave door, potentially obstructing the door from opening during execution.

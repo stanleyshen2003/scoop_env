@@ -10,12 +10,12 @@ fork
 move_to_blue_bowl
 put_food
 put_tool (fork)
-take_tool (spoon)
+grasp_spoon
 move_to_yellow_bowl
 scoop
 move_to_blue_bowl
 put_food
-put_tool (spoon)
+put_spoon_back
 DONE
 
 blue_bowl (empty)
@@ -23,12 +23,12 @@ white_cutting_board (with butter)
 yellow_bowl (with green beans)
 white_round_plate (empty)
 
-put_tool (spoon)
+put_spoon_back
 put_tool (fork)
 put_tool (knife)
 take_tool (knife)
 take_tool (fork)
-take_tool (spoon)
+grasp_spoon
 move_to_blue_bowl
 move_to_yellow_bowl
 move_to_white_cutting_board

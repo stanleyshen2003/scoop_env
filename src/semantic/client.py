@@ -7,9 +7,9 @@ def get_semantic(instruction: str, container_list=None, action_list=["scoop", "f
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect(('140.113.215.115', 9999))
     example_instruction = "Use knife to cut the food and fork it into the empty bowl, then put some beans on the food."
-    example_action_seq = ["take_tool (knife)", "move_to_white_cutting_board", "cut", "put_tool (knife)", "take_tool (fork)", "move_to_white_cutting_board", "fork", "move_to_blue_bowl", "put_food", "put_tool (fork)", "take_tool (spoon)", "move_to_yellow_bowl", "scoop","move_to_blue_bowl", "put_food", "put_tool (spoon)", "DONE"]
+    example_action_seq = ["take_tool (knife)", "move_to_white_cutting_board", "cut", "put_tool (knife)", "take_tool (fork)", "move_to_white_cutting_board", "fork", "move_to_blue_bowl", "put_food", "put_tool (fork)", "grasp_spoon", "move_to_yellow_bowl", "scoop","move_to_blue_bowl", "put_food", "put_spoon_back", "DONE"]
     example_container_list = ["blue_bowl (empty)", "white_cutting_board (with butter)", "yellow_bowl (with green beans)", "white_round_plate (empty)"]
-    example_action_list = ["put_tool (spoon)", "put_tool (fork)", "put_tool (knife)", "take_tool (knife)", "take_tool (fork)", "take_tool (spoon)", "move_to_blue_bowl", "move_to_yellow_bowl", "move_to_white_cutting_board", "move_to_white_round_plate", "cut", "fork", "scoop", "put_food", "DONE"]
+    example_action_list = ["put_spoon_back", "put_tool (fork)", "put_tool (knife)", "take_tool (knife)", "take_tool (fork)", "grasp_spoon", "move_to_blue_bowl", "move_to_yellow_bowl", "move_to_white_cutting_board", "move_to_white_round_plate", "cut", "fork", "scoop", "put_food", "DONE"]
     example_action_seq = [action.replace('(', '').replace(')', '').replace('_', ' ') for action in example_action_seq]
     example_action_list = [action.replace('(', '').replace(')', '').replace('_', ' ') for action in example_action_list]
     example_container_list = [container.replace('_', ' ') for container in example_container_list]
@@ -82,6 +82,6 @@ Iteration {len(action_seq)+1}: """
 if __name__ == '__main__':
     instruction = "Stir the beans in the bowl, then scoop it to the round plate."
     object_list = ["red_bowl (empty)", "white_round_plate (empty)", "green_bowl (with beans)"]
-    action_list = ['take_tool (spoon)', 'take_tool (fork)', 'move_to_green_bowl', 'move_to_red_bowl', 'move_to_white_round_plate', 'scoop', 'fork', 'cut', 'move', 'stir', 'put_food', 'DONE']
-    semantic = get_semantic(instruction, object_list, action_list=action_list, action_seq=['take_tool (spoon)'])
+    action_list = ['grasp_spoon', 'take_tool (fork)', 'move_to_green_bowl', 'move_to_red_bowl', 'move_to_white_round_plate', 'scoop', 'fork', 'cut', 'move', 'stir', 'put_food', 'DONE']
+    semantic = get_semantic(instruction, object_list, action_list=action_list, action_seq=['grasp_spoon'])
     print(semantic)
