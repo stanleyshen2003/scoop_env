@@ -34,7 +34,7 @@ def cot1(
     
     ## Logging
     os.makedirs(log_folder, exist_ok=True)
-    with open(os.path.join(log_folder, "1_next_action_description.txt"), 'w') as f:
+    with open(os.path.join(log_folder, f"{obs_id}_next_action_description.txt"), 'w') as f:
         f.write('\n'.join([
             '\n[SYS]\n' + system_prompt, 
             '\n[USER]\n' + user_prompt, 
@@ -49,7 +49,7 @@ def cot1(
     print(important_information)
     
     ## Logging
-    with open(os.path.join(log_folder, "2_important_information.txt"), 'w') as f:
+    with open(os.path.join(log_folder, f"{obs_id}_important_information.txt"), 'w') as f:
         f.write('\n'.join([
             '\n[SYS]\n' + system_prompt, 
             '\n[USER]\n' + user_prompt, 
@@ -89,7 +89,7 @@ def cot2(
     
     ## Logging
     os.makedirs(log_folder, exist_ok=True)
-    with open(os.path.join(log_folder, f"cot_next_action_description_{obs_id}.txt"), 'w') as f:
+    with open(os.path.join(log_folder, f"{obs_id}_cot_next_action_description.txt"), 'w') as f:
         f.write('\n'.join([
             '\n[SYS]\n' + system_prompt, 
             '\n[USER]\n' + user_prompt, 
@@ -104,7 +104,7 @@ def cot2(
     print(important_information)
     
     ## Logging
-    with open(os.path.join(log_folder, f"cot_important_information_{obs_id}.txt"), 'w') as f:
+    with open(os.path.join(log_folder, f"{obs_id}_cot_important_information.txt"), 'w') as f:
         f.write('\n'.join([
             '\n[SYS]\n' + system_prompt, 
             '\n[USER]\n' + user_prompt, 
@@ -119,7 +119,7 @@ def cot2(
     top_logprobs = {top_logprob.token: top_logprob.logprob for top_logprob in top_logprobs}
     action_candidate_probs = {action_description[action]: np.exp(top_logprobs.get(action_dict[action], float('-inf'))) for action in action_candidate}
     action_candidate_probs = sort_scores_dict(action_candidate_probs)
-    with open(os.path.join(log_folder, f"cot_final_choice_{obs_id}.txt"), 'w') as f:
+    with open(os.path.join(log_folder, f"{obs_id}_cot_final_choice.txt"), 'w') as f:
         f.write('\n'.join([
             '\n[SYS]\n' + system_prompt, 
             '\n[USER]\n' + user_prompt, 
@@ -129,7 +129,6 @@ def cot2(
         ]))
     
     return action_candidate_probs
-
 
 def cot_baseline1(
     instruction: str, 
@@ -141,7 +140,12 @@ def cot_baseline1(
     log_folder=None,
     obs_id=None,
 ) -> dict:
-    
+    '''
+    Chain of Thought baseline 1
+    1. summarize the important information to make the next decision given the instruction and the current action sequence (no image)
+    2. extract the important information from the image to make the next decision given the instruction and the current action sequence (with image)
+    3. make decision (with example and image input in user prompt)
+    '''
     decode_image(obs_url, f"{log_folder}/observation_{obs_id}.png")
     action_description = {preprocess_action(action): action for action in action_list}
     action_dict = format_action_choices(list(action_description.keys()))
@@ -155,7 +159,7 @@ def cot_baseline1(
     
     ## Logging
     os.makedirs(log_folder, exist_ok=True)
-    with open(os.path.join(log_folder, f"cot_next_action_description_{obs_id}.txt"), 'w') as f:
+    with open(os.path.join(log_folder, f"{obs_id}_cot_next_action_description.txt"), 'w') as f:
         f.write('\n'.join([
             '\n[SYS]\n' + system_prompt, 
             '\n[USER]\n' + user_prompt, 
@@ -169,7 +173,7 @@ def cot_baseline1(
     
     
     ## Logging
-    with open(os.path.join(log_folder, f"cot_important_information_{obs_id}.txt"), 'w') as f:
+    with open(os.path.join(log_folder, f"{obs_id}_cot_important_information.txt"), 'w') as f:
         f.write('\n'.join([
             '\n[SYS]\n' + system_prompt, 
             '\n[USER]\n' + user_prompt, 
@@ -178,7 +182,7 @@ def cot_baseline1(
     
     # difference between cot2 and cot_baseline1
     system_prompt, user_prompt = choose_from_information(instruction, important_information, action_candidate, action_dict, container_list)
-    example_prompt, example_image_url = get_example_prompt(True, True)
+    example_prompt, example_image_url = get_example_prompt(with_image=True, selection=True)
     user_prompt = f"Here are some decision making examples {example_prompt}" + user_prompt
     messages = get_messages(system_prompt, user_prompt, user_image_url=example_image_url)
     
@@ -188,7 +192,67 @@ def cot_baseline1(
     top_logprobs = {top_logprob.token: top_logprob.logprob for top_logprob in top_logprobs}
     action_candidate_probs = {action_description[action]: np.exp(top_logprobs.get(action_dict[action], float('-inf'))) for action in action_candidate}
     action_candidate_probs = sort_scores_dict(action_candidate_probs)
-    with open(os.path.join(log_folder, f"cot_final_choice_{obs_id}.txt"), 'w') as f:
+    with open(os.path.join(log_folder, f"{obs_id}_cot_final_choice.txt"), 'w') as f:
+        f.write('\n'.join([
+            '\n[SYS]\n' + system_prompt, 
+            '\n[USER]\n' + user_prompt, 
+            '\n[ANS]\n' + final_choice,
+            '\n[TOP_LOGPROBS]\n' + str(top_logprobs),
+            '\n[PROBS]\n' + str(action_candidate_probs)
+        ]))
+    
+    return action_candidate_probs
+
+
+def cot_baseline2(
+    instruction: str, 
+    container_list, 
+    action_list,
+    action_seq=None, 
+    obs_url=None,
+    action_candidate=[],
+    log_folder=None,
+    obs_id=None,
+) -> dict:
+    '''
+    Chain of Thought baseline 2
+    1. make LLM think what goal should be achieved next given the instruction and the current action sequence (with image)
+    2. make decision based on the next goal description(use original system & user prompt, no image)
+    '''
+    
+    decode_image(obs_url, f"{log_folder}/observation_{obs_id}.png")
+    action_description = {preprocess_action(action): action for action in action_list}
+    action_dict = format_action_choices(list(action_description.keys()))
+    action_candidate = [preprocess_action(action) for action in action_candidate]
+    
+
+    ## Get the important information from the image
+    system_prompt, user_prompt = next_goal_description_prompt(instruction, action_seq, container_list)
+    messages = get_messages(system_prompt, user_prompt, user_image_url=obs_url)
+    next_goal_description = call_openai_api(messages).choices[0].message.content
+    
+    
+    ## Logging
+    with open(os.path.join(log_folder, f"{obs_id}_cot_next_goal_description.txt"), 'w') as f:
+        f.write('\n'.join([
+            '\n[SYS]\n' + system_prompt, 
+            '\n[USER]\n' + user_prompt, 
+            '\n[ANS]\n' + next_goal_description
+        ]))
+    
+    base_prompt = "The following information presents goals and corresponding explanations extracted from the instruction, action sequence, and image. Make decisions based on this information. "
+    additional_info = base_prompt + next_goal_description
+    system_prompt, _ = get_system_prompt(with_obs=False, selection=True, with_example=True)
+    user_prompt = get_user_prompt(instruction, action_seq, action_dict, container_list, additional_info=additional_info)
+    messages = get_messages(system_prompt, user_prompt)
+    
+    response = call_openai_api(messages)
+    final_choice = response.choices[0].message.content
+    top_logprobs = response.choices[0].logprobs.content[0].top_logprobs
+    top_logprobs = {top_logprob.token: top_logprob.logprob for top_logprob in top_logprobs}
+    action_candidate_probs = {action_description[action]: np.exp(top_logprobs.get(action_dict[action], float('-inf'))) for action in action_candidate}
+    action_candidate_probs = sort_scores_dict(action_candidate_probs)
+    with open(os.path.join(log_folder, f"{obs_id}_cot_final_choice.txt"), 'w') as f:
         f.write('\n'.join([
             '\n[SYS]\n' + system_prompt, 
             '\n[USER]\n' + user_prompt, 

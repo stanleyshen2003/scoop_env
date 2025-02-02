@@ -2363,7 +2363,7 @@ class IsaacSim():
         return semantic_score
         
     def cot_pipeline(self):
-        """COT pipeline: Get the best action from the score of COT"""
+        """COT pipeline: Get the best action from the score of Chain of Thought"""
         
         rgb_path = os.path.join("observation", "rgb.png")
         rgb_image = self.gym.get_camera_image(self.sim, self.envs[0], self.camera_handles[0], gymapi.IMAGE_COLOR).reshape(1080, 1920, 4)[:,:,:-1]
@@ -2502,7 +2502,7 @@ class IsaacSim():
         start = time()
         self.action_start = time()
         self.executing = False
-        test_action_list = ['grasp_spoon', 'scoop', 'put_food', 'DONE']
+        test_action_list = ['grasp_spoon', 'scoop', 'drop_food', 'DONE']
         if self.record_video:
             resolution = (1920, 1080)
             codec = cv2.VideoWriter_fourcc(*'mp4v')
@@ -2543,7 +2543,7 @@ class IsaacSim():
                 dpose = self.fork()
             elif test_action == "cut":
                 dpose = self.cut()
-            elif test_action == "put_food":
+            elif test_action == "drop_food":
                 dpose = self.scoop_put()
             elif test_action == "pull_bowl_closer":
                 dpose = self.pull_bowl_closer()
@@ -2768,7 +2768,7 @@ class IsaacSim():
                 dpose = self.fork()
             elif best_action == "cut":
                 dpose = self.cut()
-            elif best_action == "put_food":
+            elif best_action == "drop_food":
                 dpose = self.scoop_put()
             elif best_action == "pull_bowl_closer":
                 dpose = self.pull_bowl_closer()

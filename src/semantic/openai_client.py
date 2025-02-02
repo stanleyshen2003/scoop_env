@@ -107,11 +107,12 @@ def get_selection_score(
     action_list=["scoop", "move", "stir", "DONE"],
     action_seq=None, 
     use_vlm=False, 
-    obs_url=None,
+    current_obs_url=None,
     additional_info="",
     log_folder=None,
     obs_id=None,
-    example_with_image=True,
+    example_with_image=False,
+    example_in_system=True,
     segmentation_prompt=False
 ) -> dict:
     
@@ -123,33 +124,37 @@ def get_selection_score(
     print("log_folder", log_folder)
     print("obs_id", obs_id)
     
+    assert not (example_with_image and example_in_system), "Cannot have both example_with_image and example_in_system"
     action_description = {preprocess_action(action): action for action in action_list}
     action_dict = format_action_choices(list(action_description.keys()))
-    system_prompt, _ = get_system_prompt(use_vlm, selection=True, with_example=not example_with_image)
-    user_prompt = get_user_prompt(instruction, action_seq, action_dict, object_list, additional_info, segmentation=segmentation_prompt)
-    if example_with_image:
+    system_prompt, _ = get_system_prompt(with_obs=use_vlm, selection=True, with_example=example_in_system)
+    current_user_prompt = get_user_prompt(instruction, action_seq, action_dict, object_list, additional_info=additional_info, segmentation=segmentation_prompt)
+    
+    if not example_in_system:
         example_prompt, example_img_url = get_example_prompt(use_vlm, selection=True)
-        user_prompt = example_prompt + user_prompt
-        obs_url = example_img_url + [obs_url]
+        user_prompt = example_prompt + current_user_prompt
+        obs_url = example_img_url if example_with_image else []
+    else:
+        user_prompt = current_user_prompt
+        obs_url = []
+    if current_obs_url is not None:
+        obs_url.append(current_obs_url)
         
     model = 'gpt-4o' if use_vlm else 'gpt-3.5-turbo'
-    if use_vlm:
-        assert obs_url is not None, "Observation url could not be None"
-        description_system_prompt = "You are a robot arm in food manipulation scneario. You should focus on your gripper. You need to describe the food manipulation table top scenario from the image."
-        description_user_prompt = "Describe the food manipulation table top scenario from the image. Including what the robot are holding, spoon, knife, fork, or None"
-        scenario_prompt = get_messages(description_system_prompt, description_user_prompt, user_image_url=obs_url[-1])
-        scenario_description = call_openai_api(scenario_prompt, model).choices[0].message.content
-        messages = get_messages(system_prompt, user_prompt, user_image_url=obs_url)
-    else:
-        scenario_description = ''
-        messages = get_messages(system_prompt, user_prompt)
+    # description_system_prompt = "You are a robot arm in food manipulation scneario. You should focus on your gripper. You need to describe the food manipulation table top scenario from the image."
+    # description_user_prompt = "Describe the food manipulation table top scenario from the image. Including what the robot are holding, spoon, knife, fork, or None"
+    # scenario_prompt = get_messages(description_system_prompt, description_user_prompt, user_image_url=obs_url[-1])
+    # scenario_description = call_openai_api(scenario_prompt, model).choices[0].message.content
+    scenario_description = ''
+    messages = get_messages(system_prompt, user_prompt, user_image_url=obs_url)
     
     response = call_openai_api(messages, model)
     response_content = response.choices[0].message.content
     top_logprobs = response.choices[0].logprobs.content[0].top_logprobs
     top_logprobs = {top_logprob.token: top_logprob.logprob for top_logprob in top_logprobs}
     
-    explanation_prompt = get_messages(system_prompt, user_prompt + f"{response_content} \nPlease explain why you choose the action.", user_image_url=obs_url)
+    explanation_system_prompt = "You are a robot arm in food manipulation scneario. You should focus on your gripper. You need to explain why you choose the action."
+    explanation_prompt = get_messages(explanation_system_prompt, current_user_prompt + f"{response_content} \nPlease explain why you choose the last action.", user_image_url=current_obs_url)
     explanation = call_openai_api(explanation_prompt, model).choices[0].message.content
     
     print(messages[0]["content"][0]['text'])

@@ -5,12 +5,12 @@ from src.affordance.agents import *
 from src.semantic import *
 from src.utils import *
 from src.cot_prompt import cot2 as cot # replace to other version
-from src.cot_prompt import cot_baseline1 as cot_baseline # replace to other version
+from src.cot_prompt import cot_baseline2 as cot_baseline # replace to other version
 
 def get_action_list(tool_list, object_list):
-    action_list = ["scoop", "stir", "put_food", "pull_bowl_closer", "DONE"]
-    action_list.extend([f"take_tool ({tool})" for tool in tool_list])
-    action_list.extend([f"put_tool ({tool})" for tool in tool_list])
+    action_list = ["scoop", "stir", "drop_food", "pull_bowl_closer", "open_microwave", "close_microwave", "start_microwave", "put_bowl_into_microwave", "DONE"]
+    action_list.extend([f"grasp_{tool}" for tool in tool_list])
+    action_list.extend([f"put_{tool}_back" for tool in tool_list])
     action_list.extend([f"move_to_{object.split(' (')[0]}" for object in object_list])
     return action_list
 
@@ -117,21 +117,23 @@ class Decision_pipeline():
         segmentation_prompt=False
     ):
         obs_image = None
-        base64_image = encode_image(observation_rgb_path)
         if use_vlm:
+            base64_image = encode_image(observation_rgb_path)
             obs_image = base64_image
             cv2.imwrite(os.path.join(self.log_folder, f'observation_{self.obs_id}.png'), cv2.imread(observation_rgb_path))
         semantic = get_selection_score_openai(
-            instruction, 
-            self.init_object_list, 
-            self.action_list, 
-            action_sequence, 
-            use_vlm,
-            obs_image,
+            instruction=instruction, 
+            object_list=self.init_object_list, 
+            action_list=self.action_list, 
+            action_seq=action_sequence, 
+            use_vlm=use_vlm,
+            current_obs_url=obs_image,
             additional_info=additional_info,
             log_folder=self.log_folder, 
             obs_id=self.obs_id,
             segmentation_prompt=segmentation_prompt,
+            example_with_image=False,
+            example_in_system=False,
         )
         # semantic = get_semantic_gemini(instruction, object_list, action_list, action_sequence)
         print(f"semantic {max(semantic, key=semantic.get)}")
