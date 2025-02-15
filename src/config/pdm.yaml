@@ -94,7 +94,7 @@ amount_ambiguity:
         color: [darkred]
         amount: 200
         position: [1, 1]
-distance_ambiguity:
+spatial_proximity:
   # different distance of beans
   1:
     instruction: Scoop the beans quickly.
@@ -285,7 +285,7 @@ mix_type:
         color: [darkgreen]
         amount: 300
         position: [1, 1]
-  3: # amount_ambiguity + distance_ambiguity
+  3: # amount_ambiguity + spatial_proximity
     instruction: Scoop the beans as soon as possible.
     answer: ['move_to_darkgray_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_brown_bowl', 'scoop', 'DONE']
     tool: [spoon]
@@ -349,7 +349,7 @@ mix_type:
         color: [darkgreen]
         amount: 50
         position: [1, 1]
-  5: # distance_ambiguity + amount_ambiguity + tool_block
+  5: # spatial_proximity + amount_ambiguity + tool_block
     instruction: Scoop the beans quickly.
     answer: ['move_to_orange_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_orange_bowl', 'scoop', 'DONE']
     tool: [spoon]

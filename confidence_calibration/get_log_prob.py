@@ -48,7 +48,7 @@ def read_question(idx, new_system_prompt=False):
     if not new_system_prompt:
         system_content = [{"type": "text", "text": ''.join(open(system_text_path).readlines())}]
     else:
-        system_prompt, _ = get_system_prompt(with_obs=True, selection=True, with_example=False)
+        system_prompt = get_system_prompt(selection=True, with_example=False, additional_info=['Current Observation'])
         example_prompt, example_img_url = get_example_prompt(with_image=True, selection=True)
         system_content = [{"type": "text", "text": system_prompt}]
         user_prompt = example_prompt + user_prompt

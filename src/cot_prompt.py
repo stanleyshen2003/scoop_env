@@ -240,23 +240,34 @@ def cot_baseline2(
             '\n[ANS]\n' + next_goal_description
         ]))
     
-    base_prompt = "The following information presents goals and corresponding explanations extracted from the instruction, action sequence, and image. Make decisions based on this information. "
-    additional_info = base_prompt + next_goal_description
-    system_prompt, _ = get_system_prompt(with_obs=False, selection=True, with_example=True)
+    additional_info = {
+        'Goal Description': next_goal_description
+    }
+    system_prompt = get_system_prompt(selection=True, with_example=True, additional_info=list(additional_info.keys()))
     user_prompt = get_user_prompt(instruction, action_seq, action_dict, container_list, additional_info=additional_info)
     messages = get_messages(system_prompt, user_prompt)
     
     response = call_openai_api(messages)
-    final_choice = response.choices[0].message.content
+    response_content = response.choices[0].message.content
+    final_choice = response_content.split('\n')[0].split('. ')
     top_logprobs = response.choices[0].logprobs.content[0].top_logprobs
     top_logprobs = {top_logprob.token: top_logprob.logprob for top_logprob in top_logprobs}
+    character_action_map_error = False
+    if len(final_choice) == 2:
+        action = ' '.join(final_choice[1].split())
+        character = final_choice[0]
+        if action in action_dict.keys() and character != action_dict[action]:
+            wrong_score = top_logprobs.pop(action_dict[action], float('-inf'))
+            top_logprobs[action_dict[action]] = top_logprobs.pop(character)
+            top_logprobs[character] = wrong_score
+            character_action_map_error = True
     action_candidate_probs = {action_description[action]: np.exp(top_logprobs.get(action_dict[action], float('-inf'))) for action in action_candidate}
     action_candidate_probs = sort_scores_dict(action_candidate_probs)
-    with open(os.path.join(log_folder, f"{obs_id}_cot_final_choice.txt"), 'w') as f:
+    with open(os.path.join(log_folder, f"{obs_id}_cot_final_choice{'_mapping_error' if character_action_map_error else ''}.txt"), 'w') as f:
         f.write('\n'.join([
             '\n[SYS]\n' + system_prompt, 
             '\n[USER]\n' + user_prompt, 
-            '\n[ANS]\n' + final_choice,
+            '\n[ANS]\n' + response_content,
             '\n[TOP_LOGPROBS]\n' + str(top_logprobs),
             '\n[PROBS]\n' + str(action_candidate_probs)
         ]))

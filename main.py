@@ -73,7 +73,7 @@ if __name__ == "__main__":
     env_idx = os.environ.get('ENV_IDX', 1)
     env_idx = int(env_idx) if env_idx else 1
     
-    # specific_task = [('amount_ambiguity', 1), ('amount_ambiguity', 2), ('distance_ambiguity', 1), ('distance_ambiguity', 2)]
+    # specific_task = [('amount_ambiguity', 1), ('amount_ambiguity', 2), ('spatial_proximity', 1), ('spatial_proximity', 2)]
     all_task = get_task_type_list(config_file)
     excepted_task = ['mix_type', 'general_hard']
     specific_task = list(set(all_task) - set(excepted_task))

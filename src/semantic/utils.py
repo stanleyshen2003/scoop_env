@@ -125,8 +125,17 @@ def get_example_prompt(with_image=False, selection=False):
         example_id += 1
     return system_prompt, system_image_url
 
-def get_system_prompt(with_obs=False, with_additional_info=False, selection=False, with_example=True):
-    system_image_url = []
+def get_system_prompt(selection=False, with_example=True, additional_info=[]):
+    '''
+    Generate the system prompt for the user to make a decision
+    Args:
+        selection: whether to use character selection for the action list
+        with_example: whether to include examples in the prompt
+        additional_info: additional information to include in the prompt, format: List[name of information], including Current Observation, Goal Description
+    Returns:
+        system_prompt: the text content of the system prompt
+        system_image_url: the url of the image used in the examples
+    '''
     base_prompt = """# Scenario
 You are a robotic arm specialized in food manipulation tasks. Your mission is to complete the assigned task step-by-step by selecting the most appropriate actions from the provided list. Your decisions should balance precision, safety, efficiency, and task progression.
 Take the previous actionns into consideration and choose the best action for the current iteration from the action list.
@@ -140,8 +149,13 @@ If an action risks a collision or task failure, pull the bowl to a safer locatio
 Avoid scooping from bowls with insufficient food (e.g., only a few beans).
 If a bowl is too far, pull it closer before attempting to scoop.
 """
-    obs_prompt = "Current Observation: An image of the robot's current environment.\n" if with_obs else ""
-    additional_info_prompt = "Additional important information: A detailed description of the environment and task. Please consider this information when making your decision.\n" if with_additional_info else ""
+    additional_info_description = {
+        'Current Observation': "An image of the robot's current environment.",
+        'Goal Description': "A description of the subgoal that the robot must accomplish in next iteration.",
+        "Additional important information": "A detailed description of the environment and task. Please consider this information when making your decision."
+    }
+    additional_info_prompt = '\n'.join([f"{name}: {additional_info_description[name]}" for name in additional_info])
+    additional_info_prompt += '\n' if additional_info else ''
     system_prompt = f"""{base_prompt}
 # Action Description
 {get_action_description_prompt()}
@@ -152,7 +166,7 @@ Action List: A list of all actions that the robot can perform, formatted as char
 Initial Object List: A detailed inventory of objects present in the environment, formatted as container_name (food inside).
 Instruction: The high-level task or goal that the robot must accomplish.
 Iterative Previous Actions: A chronological record of the actions the robot has executed in prior iterations.
-{additional_info_prompt}{obs_prompt}
+{additional_info_prompt}
 # Input Format
 You will be provided with several examples, each illustrating a unique scenario in the format described above.
 Following these, another scenario will be presented, requiring you to deduce and choose the next optimal action.
@@ -165,25 +179,26 @@ Format the second line of your response strictly as: Explanation: (your explanat
 """
     if with_example:
         system_prompt += "\n# Examples\n"
-        example_system_prompt, system_image_url = get_example_prompt(with_image=False, selection=selection)
+        example_system_prompt, _ = get_example_prompt(with_image=False, selection=selection)
         system_prompt += example_system_prompt
-    return system_prompt, system_image_url
+    return system_prompt
 
-def get_user_prompt(instruction, action_seq, action_dict, container_list, additional_info, segmentation=False) -> str:
+def get_user_prompt(instruction, action_seq, action_dict, container_list, additional_info={}, segmentation=False) -> str:
     container_list = [preprocess_object(container) for container in container_list]
     action_seq = [preprocess_action(action) for action in action_seq]
     
     action_choices = [f"{v}. {k}" for k, v in action_dict.items()]
     action_seq_choices = [f"{action_dict[action]}. {action}" for action in action_seq]
     
-    additional_info = f"Additional important information: {additional_info}\n" if additional_info else ""
+    additional_info_prompt = '\n'.join([f"{name}: {info}" for name, info in additional_info.items()]) if additional_info else ''
+    additional_info_prompt += '\n' if additional_info else ''
     segmentation_prompt = "Please focus on the segmentation result of the robot to make the decision.\n" if segmentation else ""
     
     user_prompt = f"""Your task:
     Action list: {action_choices}
     Initial object list: {container_list}
     Instruction: {instruction}
-    {additional_info}{segmentation_prompt}{generate_prompt(action_seq_choices, indent=True)}
+    {additional_info_prompt}{segmentation_prompt}{generate_prompt(action_seq_choices, indent=True)}
     Iteration {len(action_seq_choices)+1}:
         Output: """
     return user_prompt

@@ -1,0 +1,155 @@
+obstacles:
+  7:
+    instruction: Place a scoop of chocolate beans in the green bowl and heat it up with the microwave.
+    answer: [move_to_green_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl, scoop, move_to_green_bowl, drop_food,
+      put_spoon_back, open_microwave, move_to_green_bowl,
+      put_bowl_into_microwave, close_microwave, start_microwave, DONE]
+    tool: [spoon]
+    containers:
+    - x: 0.3580278218171031
+      y: -0.15327423012502561
+      type: bowl
+      color: blue
+      colorcode: cornflowerblue
+      food:
+        type: ball
+        color: [chocolate]
+        colorcode: [black]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.48
+      y: 0.32641765817878626
+      type: bowl
+      color: green
+      colorcode: darkgreen
+      food:
+        type: None
+        color: []
+        colorcode: []
+        amount: 0
+        position: [1, 1]
+  8:
+    instruction: I want a scoop of red beans in the white bowl heated using the microwave.
+    answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_yellow_bowl, scoop, move_to_white_bowl, drop_food,
+      put_spoon_back, open_microwave, move_to_white_bowl,
+      put_bowl_into_microwave, close_microwave, start_microwave, DONE]
+    tool: [spoon]
+    containers:
+    - x: 0.56
+      y: -0.25
+      type: bowl
+      color: yellow
+      colorcode: darkgoldenrod
+      food:
+        type: ball
+        color: [red]
+        colorcode: [darkred]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.5209171393381984
+      y: 0.33886391626247575
+      type: bowl
+      color: white
+      colorcode: antiquewhite
+      food:
+        type: None
+        color: []
+        colorcode: []
+        amount: 0
+        position: [1, 1]
+  9:
+    instruction: Heat up a scoop of mung beans in the yellow bowl.
+    answer: [move_to_yellow_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl, scoop, move_to_yellow_bowl, drop_food,
+      put_spoon_back, open_microwave, move_to_yellow_bowl,
+      put_bowl_into_microwave, close_microwave, start_microwave, DONE]
+    tool: [spoon]
+    containers:
+    - x: 0.3576436613219363
+      y: -0.1247558055049526
+      type: bowl
+      color: white
+      colorcode: white
+      food:
+        type: ball
+        color: [mung]
+        colorcode: [darkgreen]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.6235750072060599
+      y: 0.307968988967734
+      type: bowl
+      color: yellow
+      colorcode: darkgoldenrod
+      food:
+        type: None
+        color: []
+        colorcode: []
+        amount: 0
+        position: [1, 1]
+  10:
+    instruction: Please scoop the red beans to the purple bowl and heat it up.
+    answer: [move_to_pink_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl, scoop, move_to_purple_bowl, drop_food,
+      put_spoon_back, open_microwave, move_to_purple_bowl,
+      put_bowl_into_microwave, close_microwave, start_microwave, DONE]
+    tool: [spoon]
+    containers:
+    - x: 0.35228385107392193
+      y: -0.1274235658397856
+      type: bowl
+      color: white
+      colorcode: antiquewhite
+      food:
+        type: ball
+        color: [red]
+        colorcode: [darkred]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.60
+      y: -0.20
+      type: bowl
+      color: purple
+      colorcode: violet
+      food:
+        type: None
+        color: []
+        colorcode: []
+        amount: 0
+        position: [1, 1]
+    - x: 0.620854221062065
+      y: 0.30458038130743216
+      type: bowl
+      color: pink
+      colorcode: pink
+      food:
+        type: None
+        color: []
+        colorcode: []
+        amount: 0
+        position: [1, 1]
+  12:
+    instruction: Could you place a scoop of beans into the empty bowl and heat them up, please?
+    answer: ['move_to_green_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_gray_bowl', 'scoop', 'move_to_green_bowl', 'drop_food', 'put_spoon_back', 'open_microwave', 'move_to_green_bowl', 'put_bowl_into_microwave', 'start_microwave'] # , 'open_microwave', 'take_bowl_out_microwave', 'DONE'] # not done!! ['move_to_green_bowl', 'pull_bowl_closer', 'grasp_spoon', 'DONE']
+    tool: [spoon]
+    containers:
+    - x: 0.45
+      y: -0.2
+      type: bowl
+      color: gray
+      colorcode: gray
+      food:
+        type: ball
+        color: [red]
+        colorcode: [darkred]
+        amount: 2000
+        position: [1, 1]
+    - x: 0.5
+      y: 0.28
+      type: bowl
+      color: green
+      colorcode: green
+      food:
+        type: None
+        color: [red]
+        colorcode: [darkred]
+        amount: 0
+        position: [1, 1]

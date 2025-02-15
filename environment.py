@@ -621,7 +621,7 @@ class IsaacSim():
     
     def add_microwave(self, env_ptr):
         microwave_handle = self.gym.create_actor(env_ptr, self.microwave_asset, self.microwave_pose, 'microwave', 0, 8)
-        self.gym.set_actor_scale(env_ptr, microwave_handle, 0.3)
+        self.gym.set_actor_scale(env_ptr, microwave_handle, 0.28)
         self.gym.set_actor_dof_properties(env_ptr, microwave_handle, self.microwave_dof_props)
         self.microwave_door_indices = self.gym.find_actor_dof_index(env_ptr, microwave_handle, 'door', gymapi.DOMAIN_SIM)
         self.microwave_door_indices = to_torch(self.microwave_door_indices, dtype=torch.long, device=self.device)
@@ -1585,7 +1585,6 @@ class IsaacSim():
                 init_pos + torch.tensor([[-0.07, -0.07, 0.7836]], device=self.device),
                 init_pos + torch.tensor([[-0.07, -0.07,  0.57]], device=self.device),
                 init_pos + torch.tensor([[-0.07, -0.07,  0.57]], device=self.device),
-                # init_pos + torch.tensor([[-0.2, -0.3,  0.57]], device=self.device)
                 torch.tensor([[0.45,0,0.62]], device=self.device),
                 torch.tensor([[0.45,0,0.62]], device=self.device),
                 torch.tensor([[0.45,0,0.8]], device=self.device),
@@ -1691,7 +1690,7 @@ class IsaacSim():
                 torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
                 torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
                 torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
-                
+
                 torch.tensor([[ 0.9864,  0.0982,  0.1127, -0.0682]], device=self.device),
                 torch.tensor([[ 0.9864,  0.0982,  0.1127, -0.0682]], device=self.device),
                 torch.tensor([[ 0.9842, -0.0319,  0.0889, -0.1498]], device=self.device),
@@ -1775,33 +1774,24 @@ class IsaacSim():
             init_pos = hand_pos.clone()
             init_pos[:, 2] = 0
             
-            
-                
             self.goal_pos_set = [
                 torch.tensor([[0.4993, 0.3182, 0.6455]], device=self.device),
-                
                 torch.tensor([[0.4986, 0.3261, 0.6287]], device=self.device),
-                
                 torch.tensor([[0.4986, 0.3261, 0.6287]], device=self.device),
                 torch.tensor([[0.4865, 0.2779, 0.6332]], device=self.device),
                 torch.tensor([[0.4865, 0.2279, 0.6332]], device=self.device),
                 torch.tensor([[0.4865, 0.1779, 0.6332]], device=self.device)
-                
-                
             ]
 
             self.goal_rot_set = [
                 torch.tensor([[ 0.9589, -0.0219,  0.1642, -0.2303]], device=self.device),
-                
                 torch.tensor([[ 0.9491,  0.0030,  0.1802, -0.2583]], device=self.device),
-
-                
                 torch.tensor([[ 0.9491,  0.0030,  0.1802, -0.2583]], device=self.device),
                 torch.tensor([[ 0.9491,  0.0030,  0.1802, -0.2583]], device=self.device),
                 torch.tensor([[ 0.9491,  0.0030,  0.1802, -0.2583]], device=self.device),
                 torch.tensor([[ 0.9491,  0.0030,  0.1802, -0.2583]], device=self.device)
-                
             ]
+            
             self.action_stage['take_bowl_out_microwave'] = 0
             self.is_acting['take_bowl_out_microwave'] = True
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
@@ -1865,7 +1855,7 @@ class IsaacSim():
         
         if self.action_stage['open_microwave'] == -1:
             # initialize
-            self.stop_counter = 35
+            self.stop_counter = 70
             print("open_microwave start")
             self.delta['open_microwave'] = [2, 2, 2, 2, 2, 2, 1, 1, 1, 2]
             # self.delta['open_microwave'] = [0.05, 0.05, 0.05, 0.5]
@@ -1877,10 +1867,14 @@ class IsaacSim():
             self.goal_pos_set = [
                 torch.tensor([[0.5815, 0.2740, 0.63]], device=self.device),
 
-                torch.tensor([[0.6021, 0.3101, 0.6262]], device=self.device),
-                torch.tensor([[0.6021, 0.3101, 0.6262]], device=self.device),
-                torch.tensor([[0.6021, 0.3101, 0.6262]], device=self.device),
-
+                # torch.tensor([[0.6021, 0.3101, 0.6262]], device=self.device),
+                # torch.tensor([[0.6021, 0.3101, 0.6262]], device=self.device),
+                # torch.tensor([[0.6021, 0.3101, 0.6262]], device=self.device),
+                
+                torch.tensor([[0.6021, 0.321, 0.6262]], device=self.device),
+                torch.tensor([[0.6021, 0.321, 0.6262]], device=self.device),
+                torch.tensor([[0.6021, 0.321, 0.6262]], device=self.device),
+                
                 # torch.tensor([[0.58, 0.3053, 0.6002]], device=self.device)
                 torch.tensor([[0.5865, 0.2111, 0.6281]], device=self.device),
                 torch.tensor([[0.5528, 0.1524, 0.6283]], device=self.device),
@@ -2497,7 +2491,7 @@ class IsaacSim():
     
     def test_scoop(self):
         self.reset()
-        execute_time_limit = 200 # sec
+        action_time_limit = 200 # sec
         start_wait = 2 # sec
         start = time()
         self.action_start = time()
@@ -2564,7 +2558,7 @@ class IsaacSim():
                     if object.split()[0] in test_action:
                         dpose = self.move(object, slow=True)
                         break
-            if test_action and time() - self.action_start > execute_time_limit or not True in self.is_acting.values():
+            if test_action and time() - self.action_start > action_time_limit or not True in self.is_acting.values():
                 # print(f"{test_action} done")s
                 self.executing = False
                 self.action_state_reset()
@@ -2669,7 +2663,7 @@ class IsaacSim():
         assert not calibration_collect or action_sequence_answer, "Please provide sequence answer when collecting calibration data"
         assert bool(threshold) ^ (test_type not in ['lap', 'knowno']), "Please provide threshold when using LAP or KnowNo"
         self.reset()
-        execute_time_limit = 200 # sec
+        action_time_limit = 120 # sec
         start_wait = 2 # sec
         start = time()
         self.action_start = time()
@@ -2794,7 +2788,7 @@ class IsaacSim():
                     if object.split()[0] in best_action:
                         dpose = self.move(object, slow=True)
                         break
-            if best_action and time() - self.action_start > execute_time_limit or not True in self.is_acting.values():
+            if best_action and time() - self.action_start > action_time_limit or not (True in self.is_acting.values()):
                 # print(f"{best_action} done")s
                 self.executing = False
                 self.action_state_reset()
@@ -2851,6 +2845,7 @@ class IsaacSim():
                 rgb_img = Image.fromarray(rgb_img)
                 myFont = ImageFont.truetype('FreeMono.ttf', 36) 
                 I1 = ImageDraw.Draw(rgb_img)
+                # split text to multiple lines if too long
                 I1.text((28, 36), text, font=myFont, fill=(0, 0, 128))
                 rgb_img.save(file_path)
                 break

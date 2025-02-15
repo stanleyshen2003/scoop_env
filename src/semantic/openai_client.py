@@ -39,7 +39,7 @@ def get_semantic(
     
     action_description = {preprocess_action(action): action for action in action_list}
     action_dict = format_action_choices(list(action_description.keys()))
-    system_prompt, system_image_url = get_system_prompt(use_vlm)
+    system_prompt = get_system_prompt(use_vlm)
     user_prompt = get_user_prompt(instruction, action_seq, action_dict, object_list)
     model = 'gpt-4o' if use_vlm else 'gpt-3.5-turbo'
     if use_vlm:
@@ -48,7 +48,7 @@ def get_semantic(
         description_user_prompt = "Describe the food manipulation table top scenario from the image. Including what the robot are holding, spoon, knife, fork, or None"
         scenario_prompt = get_messages(description_system_prompt, description_user_prompt, user_image_url=obs_url)
         scenario_description = call_openai_api(scenario_prompt, model).choices[0].message.content
-        messages = get_messages(system_prompt, user_prompt, system_image_url=system_image_url, user_image_url=obs_url)
+        messages = get_messages(system_prompt, user_prompt, user_image_url=obs_url)
     else:
         scenario_description = ''
         messages = get_messages(system_prompt, user_prompt)
@@ -127,7 +127,7 @@ def get_selection_score(
     assert not (example_with_image and example_in_system), "Cannot have both example_with_image and example_in_system"
     action_description = {preprocess_action(action): action for action in action_list}
     action_dict = format_action_choices(list(action_description.keys()))
-    system_prompt, _ = get_system_prompt(with_obs=use_vlm, selection=True, with_example=example_in_system)
+    system_prompt = get_system_prompt(selection=True, with_example=example_in_system, additional_info=['Current Observation'] if use_vlm else [])
     current_user_prompt = get_user_prompt(instruction, action_seq, action_dict, object_list, additional_info=additional_info, segmentation=segmentation_prompt)
     
     if not example_in_system:
@@ -203,7 +203,7 @@ def get_calibration_data(
     action_description = {preprocess_action(action): action for action in action_list}
     action_dict = format_action_choices(list(action_description.keys()))
     
-    system_prompt, _ = get_system_prompt(use_vlm, True)
+    system_prompt = get_system_prompt(selection=True, with_example=True, additional_info=['Current Observation'] if use_vlm else [])
     user_prompt = get_user_prompt(instruction, action_seq, action_dict, object_list)
     answer = action_dict[preprocess_action(action)]
     return system_prompt, user_prompt, answer

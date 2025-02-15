@@ -214,7 +214,7 @@ amount_ambiguity:
         color: [darkred]
         amount: 600
         position: [1, 1]
-distance_ambiguity:
+spatial_proximity:
   # different distance of beans
   1:
     instruction: Scoop the beans quickly.

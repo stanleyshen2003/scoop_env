@@ -29,7 +29,7 @@ general_easy:
         position: [1, 1]
   2:
     instruction: Please place one scoop of mung beans into the empty bowl.
-    answer: ['grasp_spoon', 'move_to_white_bowl', 'scoop', 'move_to_blue_bowl', 'drop_food', 'DONE']
+    answer: ['grasp_spoon', 'move_to_white_bowl', 'scoop', 'move_to_blue_bowl', 'drop_food', 'put_spoon_back', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.56
@@ -244,7 +244,7 @@ amount_ambiguity:
         colorcode: [darkred]
         amount: 0
         position: [1, 1]
-distance_ambiguity:
+spatial_proximity:
   # different distance of beans
   1:
     instruction: Scoop beans from the nearest bowl into the blue bowl.
@@ -364,7 +364,7 @@ obstacles:
         position: [1, 1]
   2:
     instruction: Could you place a scoop of beans into the empty bowl and heat them up, please?
-    answer: ['move_to_green_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_gray_bowl', 'scoop', 'move_to_green_bowl', 'drop_food', 'put_spoon_back', 'open_microwave', 'move_to_green_bowl', 'put_bowl_into_microwave', 'start_microwave'] # , 'open_microwave', 'take_bowl_out_microwave', 'DONE'] # not done!! ['move_to_green_bowl', 'pull_bowl_closer', 'grasp_spoon', 'DONE']
+    answer: ['grasp_spoon', 'move_to_gray_bowl', 'scoop', 'move_to_green_bowl', 'drop_food', 'put_spoon_back', 'move_to_green_bowl', 'pull_bowl_closer', 'open_microwave', 'move_to_green_bowl', 'put_bowl_into_microwave', 'start_microwave'] # , 'open_microwave', 'take_bowl_out_microwave', 'DONE'] # not done!! ['move_to_green_bowl', 'pull_bowl_closer', 'grasp_spoon', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.45
@@ -522,7 +522,7 @@ mix_type:
         colorcode: [darkgreen]
         amount: 300
         position: [1, 1]
-  3: # amount_ambiguity + distance_ambiguity
+  3: # amount_ambiguity + spatial_proximity
     instruction: Scoop the beans as soon as possible.
     answer: ['move_to_darkgray_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_brown_bowl', 'scoop', 'DONE']
     tool: [spoon]
@@ -599,7 +599,7 @@ mix_type:
         colorcode: [darkgreen]
         amount: 50
         position: [1, 1]
-  5: # distance_ambiguity + amount_ambiguity + tool_block
+  5: # spatial_proximity + amount_ambiguity + tool_block
     instruction: Scoop the beans quickly.
     answer: ['move_to_orange_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_orange_bowl', 'scoop', 'DONE']
     tool: [spoon]

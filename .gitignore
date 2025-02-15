@@ -193,9 +193,9 @@ confidence_calibration/answer/
 src/vild/test/
 src/affordance/ours/models
 src/affordance/ours/runs
-src/affordance/ours/image
-src/semantic/example/image/
-src/config/*/*.jpg
+src/config/rendered/
 test_scoop
 test_scoop.py
 test.jpg
+temp.txt
+image/
