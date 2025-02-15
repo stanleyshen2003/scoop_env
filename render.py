@@ -11,7 +11,7 @@ def render_all_config(config_file, show_text=False, force=False):
         os.system(f'rm -rf {file_root}')
     os.makedirs(file_root, exist_ok=True)
     for task_type in task_types:
-        for env_idx in range(1, get_task_env_num(config_file, task_type)+1):
+        for env_idx in range(22, get_task_env_num(config_file, task_type)+1):
             print(f"{'='*20}\n{task_type.upper()} {env_idx}\n{'='*20}")
             config = read_yaml(config_file, task_type=task_type, env_idx=env_idx)
             img_filename = os.path.join(file_root, f"{task_type}_{env_idx}.jpg")
@@ -24,6 +24,6 @@ def render_all_config(config_file, show_text=False, force=False):
                 text = f"{instruction}\n{answer_sequence}" if show_text else ""  
                 Environment.render_config(img_filename, text=text)
 if __name__ == '__main__':
-    config_name = 'obstacles' # 'general_easy',  'spatial_proximity', 'amount_ambiguity', 'distance', 'obstacles'
+    config_name = 'general_easy' # 'general_easy',  'spatial_proximity', 'amount_ambiguity', 'distance', 'obstacles'
     config_file = f'src/config/{config_name}.yaml'
-    render_all_config(config_file, show_text=True, force=True)
+    render_all_config(config_file, show_text=False, force=False)

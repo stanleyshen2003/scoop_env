@@ -19,6 +19,7 @@ def format(config):
     for key, value in config.items():
         for key2, value2 in value.items():
             ans = value2['answer']
+            formatted_config += f"{'='*10} {key2} {'='*10}\n"
             for i, a in enumerate(ans):
                 formatted_config += f"{i+1}. {a}\n"
             formatted_config += "\n"
@@ -27,5 +28,5 @@ def format(config):
 
 
 if __name__ == '__main__':
-    config = load_config('src/config/obstacles.yaml')
+    config = load_config('src/config/amount_ambiguity.yaml')
     format(config)
