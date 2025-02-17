@@ -28,5 +28,5 @@ def format(config):
 
 
 if __name__ == '__main__':
-    config = load_config('src/config/amount_ambiguity.yaml')
+    config = load_config('src/config/spatial_relationship.yaml')
     format(config)

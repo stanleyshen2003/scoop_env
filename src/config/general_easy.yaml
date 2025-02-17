@@ -79,8 +79,8 @@ general_easy:
         position: [1, 1]
   3:
     instruction: 'Place two scoops of mung beans to the empty bowl.'
-    answer: [grasp_spoon, move_to_blue_bowl, scoop, move_to_grey_bowl, drop_food,
-      move_to_blue_bowl, scoop, move_to_grey_bowl, drop_food, put_spoon_back, DONE]
+    answer: [grasp_spoon, move_to_blue_bowl, scoop, move_to_white_bowl, drop_food,
+      move_to_blue_bowl, scoop, move_to_white_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
     containers:
     - x: 0.4473437589809517
@@ -401,7 +401,7 @@ general_easy:
   13:
     instruction: 'Place a scoop of red beans to the white bowl.'
     answer: [grasp_spoon, move_to_orange_bowl, scoop, move_to_white_bowl, drop_food,
-      move_to_orange_bowl, scoop, move_to_white_bowl, drop_food, put_spoon_back, DONE]
+      put_spoon_back, DONE]
     tool: [spoon]
     containers:
     - x: 0.5519688900124955
@@ -440,7 +440,7 @@ general_easy:
   14:
     instruction: 'Place a scoop of red beans to the white bowl.'
     answer: [grasp_spoon, move_to_yellow_bowl, scoop, move_to_white_bowl, drop_food,
-      move_to_yellow_bowl, scoop, move_to_white_bowl, drop_food, put_spoon_back, DONE]
+      put_spoon_back, DONE]
     tool: [spoon]
     containers:
     - x: 0.5519688900124955
@@ -479,7 +479,7 @@ general_easy:
   15:
     instruction: 'Place a scoop of red beans to the white bowl.'
     answer: [grasp_spoon, move_to_orange_bowl, scoop, move_to_white_bowl, drop_food,
-      move_to_orange_bowl, scoop, move_to_white_bowl, drop_food, put_spoon_back, DONE]
+      put_spoon_back, DONE]
     tool: [spoon]
     containers:
     - x: 0.5519688900124955

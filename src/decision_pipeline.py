@@ -133,7 +133,7 @@ class Decision_pipeline():
             obs_id=self.obs_id,
             segmentation_prompt=segmentation_prompt,
             example_with_image=False,
-            example_in_system=False,
+            example_in_system=True,
         )
         # semantic = get_semantic_gemini(instruction, object_list, action_list, action_sequence)
         print(f"semantic {max(semantic, key=semantic.get)}")

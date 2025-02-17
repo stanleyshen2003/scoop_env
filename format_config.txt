@@ -1,0 +1,297 @@
+1. Instruction - Scoop the beans from the bowl in the center of the table and place it in the blue bowl.
+2. Instruction - Scoop the beans from the bowl in the center of the table and place it in the blue bowl.
+3. Instruction - Scoop the beans from the bowl in the center of the table and place it in the grey bowl.
+4. Instruction - Scoop the beans near the holder to the empty bowl.
+5. Instruction - Scoop the beans near the holder to the empty bowl.
+6. Instruction - Scoop the beans near the holder to the empty bowl.
+7. Instruction - Place beans from the bowl near the blue bowl to the blue bowl.
+8. Instruction - Place beans from the bowl near the empty bowl to the empty bowl.
+9. Instruction - Place beans from the bowl near the blue bowl to the blue bowl.
+10. Instruction - Place beans from the white bowl to the bowl nearest to the microwave.
+11. Instruction - Place beans from the green bowl to the bowl nearest to the microwave.
+12. Instruction - Place beans from the white bowl to the bowl nearest to the microwave.
+13. Instruction - Scoop the beans from the bowl which is the closest to the robot gripper and place it in the empty bowl.
+14. Instruction - Scoop the beans from the bowl which is the closest to the robot gripper and place it in the empty bowl.
+15. Instruction - Scoop the beans from the bowl which is the closest to the robot gripper and place it in the empty bowl.
+16. Instruction - Place beans from the bowl in the center of the table to the grey bowl.
+17. Instruction - Place beans from the bowl in the center of the table to the empty bowl.
+18. Instruction - Place beans from the bowl in the center of the table to the pink bowl.
+19. Instruction - Please scoop the beans from the bowl near the gripper and place it in the empty bowl next to the microwave.
+20. Instruction - Please transfer a scoop of red bean in the empty bowl next to the microwave.
+21. Instruction - Scoop speckled beans from the bowl near the robot gripper to the orange bowl.
+22. Instruction - Scoop speckled beans from the bowl near the robot gripper to the empty bowl.
+23. Instruction - Scoop the speckled beans into the empty container. Please use the bowls nearest to the gripper.
+24. Instruction - Scoop the red beans into the empty container. Please use the bowls nearest to the gripper.
+25. Instruction - Transfer the beans from the blue bowl to the bowl next to the tool holder.
+26. Instruction - Transfer the beans from the purlple bowl to the bowl next to the tool holder.
+27. Instruction - Scoop beans from the bowl nearest to the microwave into the blue bowl.
+28. Instruction - Scoop beans from the bowl nearest to the microwave into the blue bowl.
+29. Instruction - Scoop food items from the bowl closest to the empty bowl and transfer them into the empty bowl.
+30. Instruction - Scoop food items from the bowl closest to the empty bowl and transfer them into the empty bowl.
+
+========== 1 ==========
+1. grasp_spoon
+2. move_to_white_bowl
+3. scoop
+4. move_to_blue_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 2 ==========
+1. grasp_spoon
+2. move_to_white_bowl
+3. scoop
+4. move_to_blue_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 3 ==========
+1. grasp_spoon
+2. move_to_blue_bowl
+3. scoop
+4. move_to_blue_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 4 ==========
+1. grasp_spoon
+2. move_to_white_bowl
+3. scoop
+4. move_to_blue_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 5 ==========
+1. grasp_spoon
+2. move_to_white_bowl
+3. scoop
+4. move_to_blue_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 6 ==========
+1. grasp_spoon
+2. move_to_white_bowl
+3. scoop
+4. move_to_blue_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 7 ==========
+1. grasp_spoon
+2. move_to_purple_bowl
+3. scoop
+4. move_to_blue_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 8 ==========
+1. grasp_spoon
+2. move_to_purple_bowl
+3. scoop
+4. move_to_blue_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 9 ==========
+1. grasp_spoon
+2. move_to_white_bowl
+3. scoop
+4. move_to_blue_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 10 ==========
+1. grasp_spoon
+2. move_to_white_bowl
+3. scoop
+4. move_to_grey_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 11 ==========
+1. grasp_spoon
+2. move_to_green_bowl
+3. scoop
+4. move_to_grey_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 12 ==========
+1. grasp_spoon
+2. move_to_white_bowl
+3. scoop
+4. move_to_yellow_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 13 ==========
+1. grasp_spoon
+2. move_to_orange_bowl
+3. scoop
+4. move_to_purple_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 14 ==========
+1. grasp_spoon
+2. move_to_orange_bowl
+3. scoop
+4. move_to_purple_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 15 ==========
+1. grasp_spoon
+2. move_to_white_bowl
+3. scoop
+4. move_to_purple_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 16 ==========
+1. grasp_spoon
+2. move_to_green_bowl
+3. scoop
+4. move_to_grey_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 17 ==========
+1. grasp_spoon
+2. move_to_green_bowl
+3. scoop
+4. move_to_white_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 18 ==========
+1. grasp_spoon
+2. move_to_yellow_bowl
+3. scoop
+4. move_to_pink_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 19 ==========
+1. grasp_spoon
+2. move_to_blue_bowl
+3. scoop
+4. move_to_white_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 20 ==========
+1. grasp_spoon
+2. move_to_blue_bowl
+3. scoop
+4. move_to_white_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 21 ==========
+1. grasp_spoon
+2. move_to_purple_bowl
+3. scoop
+4. move_to_orange_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 22 ==========
+1. grasp_spoon
+2. move_to_red_bowl
+3. scoop
+4. move_to_green_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 23 ==========
+1. grasp_spoon
+2. move_to_red_bowl
+3. scoop
+4. move_to_white_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 24 ==========
+1. grasp_spoon
+2. move_to_red_bowl
+3. scoop
+4. move_to_white_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 25 ==========
+1. grasp_spoon
+2. move_to_blue_bowl
+3. scoop
+4. move_to_pink_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 26 ==========
+1. grasp_spoon
+2. move_to_purlple_bowl
+3. scoop
+4. move_to_blue_bowl
+5. drop_food
+6. put_spoon_back
+7. DONE
+
+========== 27 ==========
+1. grasp_spoon
+2. move_to_white_bowl
+3. scoop
+4. move_to_blue_bowl
+5. drop_food
+6. DONE
+
+========== 28 ==========
+1. grasp_spoon
+2. move_to_white_bowl
+3. scoop
+4. move_to_blue_bowl
+5. drop_food
+6. DONE
+
+========== 29 ==========
+1. grasp_spoon
+2. move_to_blue_bowl
+3. scoop
+4. move_to_white_bowl
+5. drop_food
+6. DONE
+
+========== 30 ==========
+1. grasp_spoon
+2. move_to_blue_bowl
+3. scoop
+4. move_to_white_bowl
+5. drop_food
+6. DONE
+

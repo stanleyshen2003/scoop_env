@@ -530,7 +530,7 @@ amount_ambiguity:
         position: [1, 1]
   14:
     instruction: Place beans from the fuller bowl into the empty bowl in one scoop.
-    answer: [grasp_spoon, move_to_white_bowl, scoop, move_to_blue_bowl, drop_food,
+    answer: [grasp_spoon, move_to_white_bowl, scoop, move_to_yellow_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
     containers:
@@ -569,7 +569,7 @@ amount_ambiguity:
         position: [1, 1]
   15:
     instruction: Place beans from the fuller bowl into the empty bowl in one scoop.
-    answer: [grasp_spoon, move_to_red_bowl, scoop, move_to_pink_bowl, drop_food,
+    answer: [grasp_spoon, move_to_red_bowl, scoop, move_to_white_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
     containers:
@@ -764,7 +764,7 @@ amount_ambiguity:
         position: [1, 1]
   20:
     instruction: Scoop green beans as many as you can into my green bowl in one scoop.
-    answer: [grasp_spoon, move_to_white_bowl, scoop, move_to_orange_bowl, drop_food,
+    answer: [grasp_spoon, move_to_white_bowl, scoop, move_to_green_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
     containers:
@@ -842,7 +842,7 @@ amount_ambiguity:
         position: [1, 1]
   22:
     instruction: Please scoop food in the bowl with more items into my orange bowl.
-    answer: [grasp_spoon, move_to_white_bowl, scoop, move_to_orange_bowl, drop_food,
+    answer: [grasp_spoon, move_to_green_bowl, scoop, move_to_orange_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
     containers:
@@ -881,7 +881,7 @@ amount_ambiguity:
         position: [1, 1]
   23:
     instruction: Please scoop food in the bowl with more items into my pink bowl.
-    answer: [grasp_spoon, move_to_white_bowl, scoop, move_to_pink_bowl, drop_food,
+    answer: [grasp_spoon, move_to_green_bowl, scoop, move_to_pink_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
     containers:
@@ -1174,7 +1174,7 @@ amount_ambiguity:
         position: [1, 1]
   30: 
     instruction: Please scoop beans in the bowl with more items into my blue bowl.
-    answer: ['grasp_spoon', 'move_to_yello_bowl', 'scoop', 'move_to_pink_bowl', 'drop_food', 'DONE']
+    answer: ['grasp_spoon', 'move_to_yellow_bowl', 'scoop', 'move_to_blue_bowl', 'drop_food', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.48
