@@ -382,8 +382,8 @@ class IsaacSim():
             if food_config['type'] == "None":
                 food = "(empty)"
             elif food_config['type'] == "ball":
-                food_colors = " and ".join(self.env_cfg_dict["containers"][i]["food"]["color"])
-                food = f"(with {food_colors} beans)"                
+                food_colors = " and ".join(self.env_cfg_dict["containers"][i]["food"]["foodname"])
+                food = f"(with {food_colors})"                
             else:
                 food = f"(with {self.env_cfg_dict['containers'][i]['food']})"
                 
@@ -536,7 +536,7 @@ class IsaacSim():
             food_config = self.env_cfg_dict["containers"][i]["food"]
             if food_config['type'] == "ball":
                 total_amount = int(food_config['amount'])
-                color_num = len(food_config["color"])
+                color_num = len(food_config["foodname"])
                 x_config, y_config = food_config.get('position', [None, None])
                 ball_amount_max = min(10, total_amount)
                 ran = ball_spacing * 0.18 * ball_amount_max
@@ -2456,6 +2456,7 @@ class IsaacSim():
         Returns:
             dict: The best action
         """
+        print(self.decision_pipeline.init_object_list)
         gt_action = gt_action if gt_action else 'DONE'
         return {gt_action: 1}
 

@@ -10,7 +10,7 @@ simple:
       color: pink
       food:
         type: ball
-        color: [red]
+        foodname: [red]
         amount: 1600
         position: [1, 1]
     - x: None
@@ -19,6 +19,6 @@ simple:
       color: green
       food:
         type: None
-        color: [red, purple]
+        foodname: [red, purple]
         amount: 0
         position: [1, 1]

@@ -1,6 +1,6 @@
 distance:
   1:
-    instruction: Place some mung beans into the blue bowl.
+    instruction: Place some sweet potato balls into the blue bowl.
     answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
       scoop, move_to_blue_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -12,8 +12,8 @@ distance:
       colorcode: antiquewhite
       food:
         type: ball
-        color: [mung]
-        colorcode: [darkgreen]
+        foodname: [sweet potato balls]
+        colorcode: [darkorange]
         amount: 1600
         position: [1, 1]
     - x: 0.5242868350317109
@@ -23,7 +23,7 @@ distance:
       colorcode: navy
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -34,14 +34,14 @@ distance:
       colorcode: mediumpurple
       food:
         type: ball
-        color: [red]
-        colorcode: [darkred]
+        foodname: [white tanyuan]
+        colorcode: [white]
         amount: 1600
         position: [1, 1]
   2:
-    instruction: Place some mung beans into the blue bowl.
-    answer: [move_to_red_bowl, pull_bowl_closer, grasp_spoon, move_to_red_bowl,
-      scoop, move_to_blue_bowl, drop_food, put_spoon_back, DONE]
+    instruction: Place some taro balls into the blue bowl.
+    answer: [move_to_red_bowl, pull_bowl_closer, grasp_spoon, move_to_red_bowl, scoop,
+      move_to_blue_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
     containers:
     - x: 0.718807468361423
@@ -51,8 +51,8 @@ distance:
       colorcode: darkred
       food:
         type: ball
-        color: [mung]
-        colorcode: [darkgreen]
+        foodname: [taro balls]
+        colorcode: [plum]
         amount: 1600
         position: [1, 1]
     - x: 0.5242868350317109
@@ -62,7 +62,7 @@ distance:
       colorcode: cornflowerblue
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -73,12 +73,12 @@ distance:
       colorcode: mediumpurple
       food:
         type: ball
-        color: [red]
-        colorcode: [darkred]
+        foodname: [bubble]
+        colorcode: [black]
         amount: 1200
         position: [1, 1]
   3:
-    instruction: Place some mung beans into the blue bowl.
+    instruction: Place some kidney beans into the blue bowl.
     answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
       scoop, move_to_blue_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -90,8 +90,8 @@ distance:
       colorcode: antiquewhite
       food:
         type: ball
-        color: [mung]
-        colorcode: [darkgreen]
+        foodname: [kidney beans]
+        colorcode: [darkkhaki]
         amount: 1600
         position: [1, 1]
     - x: 0.5242868350317109
@@ -101,12 +101,12 @@ distance:
       colorcode: cornflowerblue
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
   4:
-    instruction: Please scoop some beans to the white bowl.
+    instruction: Please scoop some tanyuan to the white bowl.
     answer: [move_to_blue_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
       scoop, move_to_white_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -118,8 +118,8 @@ distance:
       colorcode: cornflowerblue
       food:
         type: ball
-        color: [speckled]
-        colorcode: [peru]
+        foodname: [red tanyuan]
+        colorcode: [lightcoral]
         amount: 1600
         position: [1, 1]
     - x: 0.5184694011794374
@@ -129,7 +129,7 @@ distance:
       colorcode: papayawhip
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -140,7 +140,7 @@ distance:
       colorcode: green
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -157,8 +157,8 @@ distance:
       colorcode: mediumpurple
       food:
         type: ball
-        color: [speckled]
-        colorcode: [peru]
+        foodname: [mung beans]
+        colorcode: [darkkhaki]
         amount: 1600
         position: [1, 1]
     - x: 0.5184694011794374
@@ -168,7 +168,7 @@ distance:
       colorcode: papayawhip
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -179,12 +179,12 @@ distance:
       colorcode: green
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
   6:
-    instruction: Please scoop some beans to the white bowl.
+    instruction: Please scoop some tanyuan to the white bowl.
     answer: [move_to_purple_bowl, pull_bowl_closer, grasp_spoon, move_to_purple_bowl,
       scoop, move_to_white_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -196,8 +196,8 @@ distance:
       colorcode: mediumpurple
       food:
         type: ball
-        color: [mung]
-        colorcode: [darkgreen]
+        foodname: [white tanyuan]
+        colorcode: [white]
         amount: 1600
         position: [1, 1]
     - x: 0.5184694011794374
@@ -207,7 +207,7 @@ distance:
       colorcode: papayawhip
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -218,12 +218,12 @@ distance:
       colorcode: green
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
   7:
-    instruction: Transfer some red beans to the empty bowl.
+    instruction: Transfer some sweet potato balls to the empty bowl.
     answer: [move_to_green_bowl, pull_bowl_closer, grasp_spoon, move_to_green_bowl,
       scoop, move_to_purple_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -235,8 +235,8 @@ distance:
       colorcode: palegreen
       food:
         type: ball
-        color: [red]
-        colorcode: [darkred]
+        foodname: [sweet potato balls]
+        colorcode: [darkorange]
         amount: 1600
         position: [1, 1]
     - x: 0.4043663444108435
@@ -246,7 +246,7 @@ distance:
       colorcode: mediumpurple
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -257,12 +257,12 @@ distance:
       colorcode: white
       food:
         type: ball
-        color: [mung]
-        colorcode: [darkgreen]
+        foodname: [red tanyuan]
+        colorcode: [lightcoral]
         amount: 1600
         position: [1, 1]
   8:
-    instruction: Transfer some red beans to the empty bowl.
+    instruction: Transfer some white tanyuan to the empty bowl.
     answer: [move_to_blue_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
       scoop, move_to_purple_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -274,8 +274,8 @@ distance:
       colorcode: cornflowerblue
       food:
         type: ball
-        color: [red]
-        colorcode: [darkred]
+        foodname: [white tanyuan]
+        colorcode: [white]
         amount: 1600
         position: [1, 1]
     - x: 0.4043663444108435
@@ -285,7 +285,7 @@ distance:
       colorcode: mediumpurple
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -296,12 +296,12 @@ distance:
       colorcode: white
       food:
         type: ball
-        color: [mung]
-        colorcode: [darkgreen]
+        foodname: [sweet potato balls]
+        colorcode: [darkorange]
         amount: 1600
         position: [1, 1]
   9:
-    instruction: Transfer some green beans to the empty bowl.
+    instruction: Transfer some kidney beans to the empty bowl.
     answer: [move_to_green_bowl, pull_bowl_closer, grasp_spoon, move_to_green_bowl,
       scoop, move_to_red_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -313,8 +313,8 @@ distance:
       colorcode: palegreen
       food:
         type: ball
-        color: [green]
-        colorcode: [darkgreen]
+        foodname: [kidney beans]
+        colorcode: [darkkhaki]
         amount: 1600
         position: [1, 1]
     - x: 0.4043663444108435
@@ -324,7 +324,7 @@ distance:
       colorcode: darkred
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -335,12 +335,12 @@ distance:
       colorcode: white
       food:
         type: ball
-        color: [speckled]
-        colorcode: [peru]
+        foodname: [white tanyuan]
+        colorcode: [white]
         amount: 1600
         position: [1, 1]
   10:
-    instruction: Put a scoop of speckled beans into the red bowl please.
+    instruction: Put a scoop of red tanyuan into the red bowl please.
     answer: [move_to_blue_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
       scoop, move_to_red_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -352,8 +352,8 @@ distance:
       colorcode: cornflowerblue
       food:
         type: ball
-        color: [speckled]
-        colorcode: [peru]
+        foodname: [red tanyuan]
+        colorcode: [lightcoral]
         amount: 1600
         position: [1, 1]
     - x: 0.4247792080598537
@@ -363,7 +363,7 @@ distance:
       colorcode: darkred
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -374,12 +374,12 @@ distance:
       colorcode: darkgreen
       food:
         type: ball
-        color: [red]
-        colorcode: [darkred]
+        foodname: [kidney beans]
+        colorcode: [darkkhaki]
         amount: 200
         position: [1, 1]
   11:
-    instruction: Put a scoop of speckled beans into the empty bowl please.
+    instruction: Put a scoop of mung beans into the empty bowl please.
     answer: [move_to_blue_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
       scoop, move_to_white_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -391,8 +391,8 @@ distance:
       colorcode: cornflowerblue
       food:
         type: ball
-        color: [speckled]
-        colorcode: [peru]
+        foodname: [mung beans]
+        colorcode: [darkkhaki]
         amount: 1600
         position: [1, 1]
     - x: 0.4247792080598537
@@ -402,7 +402,7 @@ distance:
       colorcode: white
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -413,8 +413,8 @@ distance:
       colorcode: darkgreen
       food:
         type: ball
-        color: [red]
-        colorcode: [darkred]
+        foodname: [red tanyuan]
+        colorcode: [lightcoral]
         amount: 1600
         position: [1, 1]
   12:
@@ -430,8 +430,8 @@ distance:
       colorcode: cornflowerblue
       food:
         type: ball
-        color: [mung]
-        colorcode: [darkgreen]
+        foodname: [mung beans]
+        colorcode: [darkkhaki]
         amount: 1600
         position: [1, 1]
     - x: 0.4247792080598537
@@ -441,7 +441,7 @@ distance:
       colorcode: darkred
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -452,12 +452,12 @@ distance:
       colorcode: darkgreen
       food:
         type: ball
-        color: [red]
-        colorcode: [darkred]
+        foodname: [red beans]
+        colorcode: [brown]
         amount: 200
         position: [1, 1]
   13:
-    instruction: Place a scoop of mung beans into the empty bowl.
+    instruction: Place a scoop of white tanyuan into the empty bowl.
     answer: [move_to_blue_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
       scoop, move_to_white_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -469,8 +469,8 @@ distance:
       colorcode: navy
       food:
         type: ball
-        color: [mung]
-        colorcode: [darkgreen]
+        foodname: [white tanyuan]
+        colorcode: [white]
         amount: 1600
         position: [1, 1]
     - x: 0.4702187212307981
@@ -480,7 +480,7 @@ distance:
       colorcode: lightgrey
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -491,12 +491,12 @@ distance:
       colorcode: green
       food:
         type: ball
-        color: [red]
-        colorcode: [darkred]
+        foodname: [purple sweet potato balls]
+        colorcode: [indigo]
         amount: 800
         position: [1, 1]
   14:
-    instruction: Place a scoop of speckled beans into the empty bowl.
+    instruction: Place a scoop of white tanyuan into the empty bowl.
     answer: [move_to_blue_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
       scoop, move_to_white_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -508,8 +508,8 @@ distance:
       colorcode: cornflowerblue
       food:
         type: ball
-        color: [speckled]
-        colorcode: [peru]
+        foodname: [white tanyuan]
+        colorcode: [white]
         amount: 1600
         position: [1, 1]
     - x: 0.4702187212307981
@@ -519,7 +519,7 @@ distance:
       colorcode: lightgrey
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -530,12 +530,12 @@ distance:
       colorcode: green
       food:
         type: ball
-        color: [red]
-        colorcode: [darkred]
+        foodname: [purple sweet potato balls]
+        colorcode: [indigo]
         amount: 800
         position: [1, 1]
   15:
-    instruction: Place a scoop of red beans into the empty bowl.
+    instruction: Place a scoop of sweet potato balls into the empty bowl.
     answer: [move_to_blue_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
       scoop, move_to_green_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -547,8 +547,8 @@ distance:
       colorcode: navy
       food:
         type: ball
-        color: [red]
-        colorcode: [darkred]
+        foodname: [sweet potato balls]
+        colorcode: [darkorange]
         amount: 1600
         position: [1, 1]
     - x: 0.4702187212307981
@@ -558,12 +558,12 @@ distance:
       colorcode: green
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
   16:
-    instruction: Scoop speckled beans into the empty bowl please.
+    instruction: Scoop sweet potato balls into the empty bowl please.
     answer: [move_to_pink_bowl, pull_bowl_closer, grasp_spoon, move_to_pink_bowl,
       scoop, move_to_grey_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -575,8 +575,8 @@ distance:
       colorcode: pink
       food:
         type: ball
-        color: [speckled]
-        colorcode: [peru]
+        foodname: [sweet potato balls]
+        colorcode: [darkorange]
         amount: 1600
         position: [1, 1]
     - x: 0.470931795274238
@@ -586,7 +586,7 @@ distance:
       colorcode: slategrey
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -597,12 +597,12 @@ distance:
       colorcode: cornflowerblue
       food:
         type: ball
-        color: [red]
-        colorcode: [darkred]
+        foodname: [purple sweet potato balls]
+        colorcode: [indigo]
         amount: 800
         position: [1, 1]
   17:
-    instruction: Scoop speckled beans into the empty bowl please.
+    instruction: Scoop taro balls into the empty bowl please.
     answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
       scoop, move_to_red_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -614,8 +614,8 @@ distance:
       colorcode: white
       food:
         type: ball
-        color: [speckled]
-        colorcode: [peru]
+        foodname: [taro balls]
+        colorcode: [plum]
         amount: 1600
         position: [1, 1]
     - x: 0.470931795274238
@@ -625,7 +625,7 @@ distance:
       colorcode: darkred
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -636,12 +636,12 @@ distance:
       colorcode: cornflowerblue
       food:
         type: ball
-        color: [red]
-        colorcode: [darkred]
+        foodname: [red tanyuan]
+        colorcode: [lightcoral]
         amount: 800
         position: [1, 1]
   18:
-    instruction: Scoop speckled beans into the empty bowl please.
+    instruction: Scoop white tanyuan into the empty bowl please.
     answer: [move_to_pink_bowl, pull_bowl_closer, grasp_spoon, move_to_pink_bowl,
       scoop, move_to_grey_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -653,8 +653,8 @@ distance:
       colorcode: pink
       food:
         type: ball
-        color: [speckled]
-        colorcode: [peru]
+        foodname: [white tanyuan]
+        colorcode: [white]
         amount: 1600
         position: [1, 1]
     - x: 0.470931795274238
@@ -664,7 +664,7 @@ distance:
       colorcode: slategrey
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -681,8 +681,8 @@ distance:
       colorcode: antiquewhite
       food:
         type: ball
-        color: [speckled]
-        colorcode: [peru]
+        foodname: [mung beans]
+        colorcode: [darkkhaki]
         amount: 1600
         position: [1, 1]
     - x: 0.36461166197268696
@@ -692,7 +692,7 @@ distance:
       colorcode: deepskyblue
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -709,8 +709,8 @@ distance:
       colorcode: antiquewhite
       food:
         type: ball
-        color: [red]
-        colorcode: [darkred]
+        foodname: [kidney beans]
+        colorcode: [darkkhaki]
         amount: 1400
         position: [1, 1]
     - x: 0.36461166197268696
@@ -720,7 +720,7 @@ distance:
       colorcode: darkgreen
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -737,8 +737,8 @@ distance:
       colorcode: papayawhip
       food:
         type: ball
-        color: [speckled]
-        colorcode: [peru]
+        foodname: [kidney beans]
+        colorcode: [darkkhaki]
         amount: 1600
         position: [1, 1]
     - x: 0.37281732563381137
@@ -748,12 +748,12 @@ distance:
       colorcode: violet
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
   22:
-    instruction: Please scoop beans into the empty bowl.
+    instruction: Please scoop tanyuan into the empty bowl.
     answer: [move_to_blue_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
       scoop, move_to_white_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -765,8 +765,8 @@ distance:
       colorcode: cornflowerblue
       food:
         type: ball
-        color: [mung]
-        colorcode: [darkgreen]
+        foodname: [white tanyuan]
+        colorcode: [white]
         amount: 1600
         position: [1, 1]
     - x: 0.37281732563381137
@@ -776,7 +776,7 @@ distance:
       colorcode: white
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -793,8 +793,8 @@ distance:
       colorcode: slategrey
       food:
         type: ball
-        color: [mung]
-        colorcode: [darkgreen]
+        foodname: [mung beans]
+        colorcode: [darkkhaki]
         amount: 1600
         position: [1, 1]
     - x: 0.5428882633302237
@@ -804,12 +804,12 @@ distance:
       colorcode: violet
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
   24:
-    instruction: Transfer a scoop of beans in the blue bowl to the purple bowl.
+    instruction: Transfer a scoop of taro balls in the blue bowl to the purple bowl.
     answer: [move_to_blue_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
       scoop, move_to_purple_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -821,8 +821,8 @@ distance:
       colorcode: cornflowerblue
       food:
         type: ball
-        color: [red]
-        colorcode: [darkred]
+        foodname: [taro balls]
+        colorcode: [plum]
         amount: 1600
         position: [1, 1]
     - x: 0.5428882633302237
@@ -832,7 +832,7 @@ distance:
       colorcode: violet
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -849,8 +849,8 @@ distance:
       colorcode: navy
       food:
         type: ball
-        color: [speckled]
-        colorcode: [peru]
+        foodname: [red tanyuan]
+        colorcode: [lightcoral]
         amount: 1600
         position: [1, 1]
     - x: 0.4343304409260512
@@ -860,7 +860,7 @@ distance:
       colorcode: violet
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -877,8 +877,8 @@ distance:
       colorcode: cornflowerblue
       food:
         type: ball
-        color: [mung]
-        colorcode: [darkgreen]
+        foodname: [white tanyuan]
+        colorcode: [white]
         amount: 1200
         position: [1, 1]
     - x: 0.4343304409260512
@@ -888,13 +888,14 @@ distance:
       colorcode: violet
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
   27:
-    instruction: Please place a scoop of red bean into the empty bowl.
-    answer: ['move_to_pink_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_pink_bowl', 'scoop', 'move_to_green_bowl', 'drop_food', 'DONE']
+    instruction: Please place a scoop of taro balls into the empty bowl.
+    answer: [move_to_pink_bowl, pull_bowl_closer, grasp_spoon, move_to_pink_bowl,
+      scoop, move_to_green_bowl, drop_food, DONE]
     tool: [spoon]
     containers:
     - x: 0.76
@@ -904,8 +905,8 @@ distance:
       colorcode: pink
       food:
         type: ball
-        color: [red]
-        colorcode: [darkred]
+        foodname: [taro balls]
+        colorcode: [plum]
         amount: 1200
         position: [1, 1]
     - x: 0.4
@@ -915,13 +916,14 @@ distance:
       colorcode: green
       food:
         type: None
-        color: [red]
-        colorcode: [darkred]
+        foodname: [mung beans]
+        colorcode: [darkkhaki]
         amount: 0
         position: [1, 1]
   28:
-    instruction: Please place a scoop of red bean into the empty bowl.
-    answer: ['move_to_white_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_white_bowl', 'scoop', 'move_to_blue_bowl', 'drop_food', 'DONE']
+    instruction: Please place a scoop of bubble into the empty bowl.
+    answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
+      scoop, move_to_blue_bowl, drop_food, DONE]
     tool: [spoon]
     containers:
     - x: 0.76
@@ -931,8 +933,8 @@ distance:
       colorcode: white
       food:
         type: ball
-        color: [red]
-        colorcode: [darkred]
+        foodname: [bubble]
+        colorcode: [black]
         amount: 1200
         position: [1, 1]
     - x: 0.4
@@ -942,13 +944,14 @@ distance:
       colorcode: cornflowerblue
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
   29:
-    instruction: Scoop some mung beans into the empty bowl.
-    answer: ['move_to_white_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_white_bowl', 'scoop', 'move_to_gray_bowl', 'drop_food', 'DONE']
+    instruction: Scoop some sweet potato balls into the empty bowl.
+    answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
+      scoop, move_to_gray_bowl, drop_food, DONE]
     tool: [spoon]
     containers:
     - x: 0.705
@@ -958,8 +961,8 @@ distance:
       colorcode: white
       food:
         type: ball
-        color: [mung]
-        colorcode: [darkgreen]
+        foodname: [sweet potato balls]
+        colorcode: [darkorange]
         amount: 1400
         position: [1, 1]
     - x: 0.45
@@ -969,8 +972,8 @@ distance:
       colorcode: darkgray
       food:
         type: None
-        color: [red]
-        colorcode: [darkred]
+        foodname: [sweet potato balls]
+        colorcode: [darkorange]
         amount: 0
         position: [1, 1]
     - x: 0.4
@@ -980,13 +983,14 @@ distance:
       colorcode: cornflowerblue
       food:
         type: ball
-        color: [red]
-        colorcode: [darkred]
+        foodname: [red tanyuan]
+        colorcode: [lightcoral]
         amount: 1200
         position: [1, 1]
   30:
     instruction: Scoop some mung beans into the empty bowl.
-    answer: ['move_to_white_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_white_bowl', 'scoop', 'move_to_gray_bowl', 'drop_food', 'DONE']
+    answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
+      scoop, move_to_gray_bowl, drop_food, DONE]
     tool: [spoon]
     containers:
     - x: 0.705
@@ -996,8 +1000,8 @@ distance:
       colorcode: white
       food:
         type: ball
-        color: [mung]
-        colorcode: [darkgreen]
+        foodname: [mung beans]
+        colorcode: [darkkhaki]
         amount: 1400
         position: [1, 1]
     - x: 0.45
@@ -1007,7 +1011,7 @@ distance:
       colorcode: darkgray
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]

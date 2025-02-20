@@ -12,7 +12,7 @@ distance:
       colorcode: antiquewhite
       food:
         type: ball
-        color: [mung]
+        foodname: [mung]
         colorcode: [darkgreen]
         amount: 1600
         position: [1, 1]
@@ -23,7 +23,7 @@ distance:
       colorcode: navy
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -40,7 +40,7 @@ distance:
       colorcode: indigo
       food:
         type: ball
-        color: [speckled]
+        foodname: [speckled]
         colorcode: [peru]
         amount: 1600
         position: [1, 1]
@@ -51,7 +51,7 @@ distance:
       colorcode: papayawhip
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -68,7 +68,7 @@ distance:
       colorcode: palegreen
       food:
         type: ball
-        color: [red]
+        foodname: [red]
         colorcode: [darkred]
         amount: 1600
         position: [1, 1]
@@ -79,7 +79,7 @@ distance:
       colorcode: mediumpurple
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -96,7 +96,7 @@ distance:
       colorcode: cornflowerblue
       food:
         type: ball
-        color: [speckled]
+        foodname: [speckled]
         colorcode: [peru]
         amount: 1600
         position: [1, 1]
@@ -107,7 +107,7 @@ distance:
       colorcode: darkred
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -124,7 +124,7 @@ distance:
       colorcode: darkslateblue
       food:
         type: ball
-        color: [speckled]
+        foodname: [speckled]
         colorcode: [peru]
         amount: 1600
         position: [1, 1]
@@ -135,7 +135,7 @@ distance:
       colorcode: lightgrey
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -152,7 +152,7 @@ distance:
       colorcode: pink
       food:
         type: ball
-        color: [speckled]
+        foodname: [speckled]
         colorcode: [peru]
         amount: 1600
         position: [1, 1]
@@ -163,7 +163,7 @@ distance:
       colorcode: slategrey
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -180,7 +180,7 @@ distance:
       colorcode: antiquewhite
       food:
         type: ball
-        color: [speckled]
+        foodname: [speckled]
         colorcode: [peru]
         amount: 1600
         position: [1, 1]
@@ -191,7 +191,7 @@ distance:
       colorcode: deepskyblue
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -208,7 +208,7 @@ distance:
       colorcode: papayawhip
       food:
         type: ball
-        color: [speckled]
+        foodname: [speckled]
         colorcode: [peru]
         amount: 1600
         position: [1, 1]
@@ -219,7 +219,7 @@ distance:
       colorcode: violet
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -236,7 +236,7 @@ distance:
       colorcode: slategrey
       food:
         type: ball
-        color: [mung]
+        foodname: [mung]
         colorcode: [darkgreen]
         amount: 1600
         position: [1, 1]
@@ -247,7 +247,7 @@ distance:
       colorcode: violet
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -264,7 +264,7 @@ distance:
       colorcode: navy
       food:
         type: ball
-        color: [speckled]
+        foodname: [speckled]
         colorcode: [peru]
         amount: 1600
         position: [1, 1]
@@ -275,7 +275,7 @@ distance:
       colorcode: violet
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]

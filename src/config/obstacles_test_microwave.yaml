@@ -13,7 +13,7 @@ obstacles:
       colorcode: cornflowerblue
       food:
         type: ball
-        color: [chocolate]
+        foodname: [chocolate]
         colorcode: [black]
         amount: 1600
         position: [1, 1]
@@ -24,7 +24,7 @@ obstacles:
       colorcode: darkgreen
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -42,7 +42,7 @@ obstacles:
       colorcode: darkgoldenrod
       food:
         type: ball
-        color: [red]
+        foodname: [red]
         colorcode: [darkred]
         amount: 1600
         position: [1, 1]
@@ -53,7 +53,7 @@ obstacles:
       colorcode: antiquewhite
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -71,7 +71,7 @@ obstacles:
       colorcode: white
       food:
         type: ball
-        color: [mung]
+        foodname: [mung]
         colorcode: [darkgreen]
         amount: 1600
         position: [1, 1]
@@ -82,7 +82,7 @@ obstacles:
       colorcode: darkgoldenrod
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -100,7 +100,7 @@ obstacles:
       colorcode: antiquewhite
       food:
         type: ball
-        color: [red]
+        foodname: [red]
         colorcode: [darkred]
         amount: 1600
         position: [1, 1]
@@ -111,7 +111,7 @@ obstacles:
       colorcode: violet
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -122,7 +122,7 @@ obstacles:
       colorcode: pink
       food:
         type: None
-        color: []
+        foodname: []
         colorcode: []
         amount: 0
         position: [1, 1]
@@ -138,7 +138,7 @@ obstacles:
       colorcode: gray
       food:
         type: ball
-        color: [red]
+        foodname: [red]
         colorcode: [darkred]
         amount: 2000
         position: [1, 1]
@@ -149,7 +149,7 @@ obstacles:
       colorcode: green
       food:
         type: None
-        color: [red]
+        foodname: [red]
         colorcode: [darkred]
         amount: 0
         position: [1, 1]

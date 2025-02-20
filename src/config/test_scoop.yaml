@@ -11,7 +11,7 @@ general:
       color: red
       food:
         type: ball
-        color: [darkred]
+        foodname: [darkred]
         amount: 2000
         position: [1, 1]
     - x: 0.61
@@ -20,6 +20,6 @@ general:
       color: orange
       food:
         type: None
-        color: [darkred, purple]
+        foodname: [darkred, purple]
         amount: 0
         position: [1, 1]

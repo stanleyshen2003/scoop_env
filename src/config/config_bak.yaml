@@ -9,7 +9,7 @@ simple:
       color: pink
       food:
         type: ball
-        color: [red]
+        foodname: [red]
         amount: 1200
         position: [1, 1]
     - x: None
@@ -18,7 +18,7 @@ simple:
       color: green
       food:
         type: None
-        color: [red, purple]
+        foodname: [red, purple]
         amount: 0
         position: [1, 1]
   2:
@@ -31,7 +31,7 @@ simple:
       color: yellow
       food:
         type: ball
-        color: [black, white]
+        foodname: [black, white]
         amount: 1200
         position: [1, 1]
     - x: None
@@ -40,7 +40,7 @@ simple:
       color: white
       food:
         type: None
-        color: [black, darkgreen]
+        foodname: [black, darkgreen]
         amount: 0
         position: [1, 1]
   3:
@@ -67,7 +67,7 @@ simple:
       color: black
       food:
         type: ball
-        color: [red]
+        foodname: [red]
         amount: 1200
         position: [1, 1]
     - x: None
@@ -76,7 +76,7 @@ simple:
       color: green
       food:
         type: None
-        color: [red, purple]
+        foodname: [red, purple]
         amount: 20
         position: [1, 1]
   5:
@@ -89,7 +89,7 @@ simple:
       color: white
       food:
         type: None
-        color: [white]
+        foodname: [white]
         amount: 0
         position: [1, 1]
     - x: None
@@ -98,7 +98,7 @@ simple:
       color: white
       food:
         type: ball
-        color: [black]
+        foodname: [black]
         amount: 200
         position: [1, 1]
   6:
@@ -111,7 +111,7 @@ simple:
       color: pink
       food:
         type: ball
-        color: [red]
+        foodname: [red]
         amount: 2000
         position: [1, 1]
     - x: 0.38
@@ -120,7 +120,7 @@ simple:
       color: green
       food:
         type: ball
-        color: [red]
+        foodname: [red]
         amount: 2000
         position: [1, 1]
     - x: 0.7
@@ -129,7 +129,7 @@ simple:
       color: yellow
       food:
         type: None
-        color: [black]
+        foodname: [black]
         amount: None
         position: [1, 1]
 medium:
@@ -143,7 +143,7 @@ medium:
       color: blue
       food:
         type: ball
-        color: [black, white]
+        foodname: [black, white]
         amount: 1200
         position: [1, 1]
     - x: 0.3
@@ -152,7 +152,7 @@ medium:
       color: gray
       food:
         type: forked_food
-        color: [black]
+        foodname: [black]
         amount: 1600
         position: [1, 1]
     - x: 0.35
@@ -170,7 +170,7 @@ medium:
       color: white
       food:
         type: ball
-        color: [red]
+        foodname: [red]
         amount: 1600
         position: [1, 1]
     - x: 0.35
@@ -179,7 +179,7 @@ medium:
       color: gray
       food:
         type: None
-        color: [black]
+        foodname: [black]
         amount: 1600
         position: [1, 1]
     - x: 0.35
@@ -202,7 +202,7 @@ medium:
       color: blue
       food:
         type: ball
-        color: [red]
+        foodname: [red]
         amount: 1600
         position: [1, 1]
     - x: 0.35
@@ -211,7 +211,7 @@ medium:
       color: red
       food:
         type: None
-        color: [black]
+        foodname: [black]
         amount: 1600
         position: [1, 1]
     - x: 0.35
@@ -229,7 +229,7 @@ medium:
       color: pink
       food:
         type: ball
-        color: [white, black]
+        foodname: [white, black]
         amount: 1600
         position: [1, 1]
     - x: None
@@ -238,7 +238,7 @@ medium:
       color: gray
       food:
         type: None
-        color: [black]
+        foodname: [black]
         amount: 1600
         position: [1, 1]
     - x: None
@@ -256,7 +256,7 @@ medium:
       color: darkgray
       food:
         type: ball
-        color: [black]
+        foodname: [black]
         amount: 1600
         position: [1, 1]
     - x: None
@@ -265,7 +265,7 @@ medium:
       color: lightblue
       food:
         type: None
-        color: [green, pink]
+        foodname: [green, pink]
         amount: 1600
         position: [1, 1]
     - x: None
@@ -283,7 +283,7 @@ medium:
       color: darkgray
       food:
         type: ball
-        color: [green]
+        foodname: [green]
         amount: 1200
         position: [1, 1]
     - x: None
@@ -292,7 +292,7 @@ medium:
       color: lightblue
       food:
         type: ball
-        color: [red]
+        foodname: [red]
         amount: 800
         position: [1, 1]
     - x: None
@@ -310,7 +310,7 @@ medium:
       color: darkgray
       food:
         type: ball
-        color: [green]
+        foodname: [green]
         amount: 2700
         position: [1, 1]
     - x: None
@@ -319,7 +319,7 @@ medium:
       color: lightblue
       food:
         type: ball
-        color: [green]
+        foodname: [green]
         amount: 800
         position: [1, 1]
     - x: None
@@ -328,7 +328,7 @@ medium:
       color: purple
       food:
         type: ball
-        color: [red]
+        foodname: [red]
         amount: 1600
         position: [1, 1]
   8:
@@ -341,7 +341,7 @@ medium:
       color: gray
       food:
         type: ball
-        color: [green]
+        foodname: [green]
         amount: 1200
         position: [1, 1]
     - x: 0.5
@@ -350,7 +350,7 @@ medium:
       color: lightgray
       food:
         type: None
-        color: [green]
+        foodname: [green]
         amount: 1200
         position: [1, 1]
   9:
@@ -363,7 +363,7 @@ medium:
       color: red
       food:
         type: ball
-        color: [green]
+        foodname: [green]
         amount: 1200
         position: [1, 1]
 hard:
@@ -377,7 +377,7 @@ hard:
       color: white
       food:
         type: ball
-        color: [brown]
+        foodname: [brown]
         amount: 1200
         position: [1, 1]
     - x: None
@@ -405,7 +405,7 @@ hard:
       color: white
       food:
         type: ball
-        color: [green, red]
+        foodname: [green, red]
         amount: 1200
         position: [1, 1]
     - x: None
@@ -414,7 +414,7 @@ hard:
       color: gray
       food:
         type: None
-        color: [green]
+        foodname: [green]
         amount: 1200
         position: [1, 1]
     - x: None
@@ -423,7 +423,7 @@ hard:
       color: black
       food:
         type: None
-        color: [green]
+        foodname: [green]
         amount: 1200
         position: [1, 1]
     - x: None
@@ -432,7 +432,7 @@ hard:
       color: darkgray
       food:
         type: None
-        color: [green]
+        foodname: [green]
         amount: 1200
         position: [1, 1]
   3:
@@ -445,7 +445,7 @@ hard:
       color: yellow
       food:
         type: ball
-        color: [darkred, black]
+        foodname: [darkred, black]
         amount: 1200
         position: [1, 1]
     - x: None
@@ -454,7 +454,7 @@ hard:
       color: black
       food:
         type: ball
-        color: [lightyellow]
+        foodname: [lightyellow]
         amount: 1100
         position: [1, 1]
     - x: None
@@ -463,7 +463,7 @@ hard:
       color: purple
       food:
         type: None
-        color: [green]
+        foodname: [green]
         amount: 1200
         position: [1, 1]
   4:
@@ -476,7 +476,7 @@ hard:
       color: white
       food:
         type: ball
-        color: [darkgreen]
+        foodname: [darkgreen]
         amount: 1200
         position: [1, 1]
     - x: None
@@ -495,7 +495,7 @@ hard:
       color: gray
       food:
         type: ball
-        color: [green]
+        foodname: [green]
         amount: 1200
         position: [1, 1]
     - x: None
@@ -504,7 +504,7 @@ hard:
       color: lightgray
       food:
         type: ball
-        color: [red]
+        foodname: [red]
         amount: 1200
         position: [1, 1]
     - x: None
@@ -513,7 +513,7 @@ hard:
       color: darkgray
       food:
         type: ball
-        color: [black]
+        foodname: [black]
         amount: 1200
         position: [1, 1]
     - x: None
@@ -522,7 +522,7 @@ hard:
       color: white
       food:
         type: None
-        color: [green]
+        foodname: [green]
         amount: 1200
         position: [1, 1]
   6:
@@ -540,7 +540,7 @@ hard:
       color: darkblue
       food:
         type: ball
-        color: [green]
+        foodname: [green]
         amount: 1200
         position: [1, 1]
   7:
@@ -553,7 +553,7 @@ hard:
       color: white
       food:
         type: ball
-        color: [green]
+        foodname: [green]
         amount: 1600
         position: [1, 1]
     - x: 0.54
@@ -562,7 +562,7 @@ hard:
       color: white
       food:
         type: ball
-        color: [darkred]
+        foodname: [darkred]
         amount: 1600
         position: [1, 1]
     - x: 0.4
@@ -571,7 +571,7 @@ hard:
       color: white
       food:
         type: ball
-        color: [salmon]
+        foodname: [salmon]
         amount: 1800
         position: [1, 1]
     - x: 0.66
@@ -580,7 +580,7 @@ hard:
       color: white
       food:
         type: ball
-        color: [black]
+        foodname: [black]
         amount: 1400
         position: [1, 1]
     - x: 0.7
@@ -589,7 +589,7 @@ hard:
       color: yellow
       food:
         type: None
-        color: [black]
+        foodname: [black]
         amount: None
         position: [1, 1]
   8:
@@ -602,7 +602,7 @@ hard:
       color: white
       food:
         type: ball
-        color: [green]
+        foodname: [green]
         amount: 1600
         position: [1, 1]
     - x: 0.54
@@ -611,7 +611,7 @@ hard:
       color: white
       food:
         type: ball
-        color: [darkred]
+        foodname: [darkred]
         amount: 1600
         position: [1, 1]
     - x: 0.4
@@ -620,7 +620,7 @@ hard:
       color: gray
       food:
         type: ball
-        color: [green]
+        foodname: [green]
         amount: 300
         position: [1, 1]
     - x: 0.66
@@ -629,7 +629,7 @@ hard:
       color: white
       food:
         type: ball
-        color: [black]
+        foodname: [black]
         amount: 1400
         position: [1, 1]
     - x: 0.7
@@ -638,7 +638,7 @@ hard:
       color: yellow
       food:
         type: None
-        color: [black]
+        foodname: [black]
         amount: None
         position: [1, 1]
   9:
@@ -651,7 +651,7 @@ hard:
       color: white
       food:
         type: ball
-        color: [green]
+        foodname: [green]
         amount: 20
         position: [1, 1]
     - x: 0.54
@@ -660,7 +660,7 @@ hard:
       color: red
       food:
         type: ball
-        color: [green]
+        foodname: [green]
         amount: 30
         position: [1, 1]
     - x: 0.35
@@ -669,7 +669,7 @@ hard:
       color: skyblue
       food:
         type: ball
-        color: [green]
+        foodname: [green]
         amount: 1600
         position: [1, 1]
     - x: 0.66
@@ -678,7 +678,7 @@ hard:
       color: blue
       food:
         type: ball
-        color: [black]
+        foodname: [black]
         amount: 300
         position: [1, 1]
     - x: 0.7
@@ -687,7 +687,7 @@ hard:
       color: yellow
       food:
         type: None
-        color: [black]
+        foodname: [black]
         amount: None
         position: [1, 1]
   10:
@@ -700,7 +700,7 @@ hard:
       color: white
       food:
         type: ball
-        color: [green]
+        foodname: [green]
         amount: 1600
         position: [1, 1]
     - x: 0.54
@@ -709,7 +709,7 @@ hard:
       color: black
       food:
         type: ball
-        color: [green]
+        foodname: [green]
         amount: 100
         position: [1, 1]
     - x: 0.4
@@ -718,7 +718,7 @@ hard:
       color: pink
       food:
         type: ball
-        color: [green]
+        foodname: [green]
         amount: 10
         position: [1, 1]
     - x: 0.7
@@ -727,7 +727,7 @@ hard:
       color: purple
       food:
         type: ball
-        color: [green]
+        foodname: [green]
         amount: 1400
         position: [1, 1]
     - x: 0.7
@@ -736,7 +736,7 @@ hard:
       color: yellow
       food:
         type: None
-        color: [black]
+        foodname: [black]
         amount: None
         position: [1, 1]
   11:
@@ -749,7 +749,7 @@ hard:
       color: white
       food:
         type: ball
-        color: [green]
+        foodname: [green]
         amount: 1
         position: [2, 0]
     - x: 0.54
@@ -758,7 +758,7 @@ hard:
       color: black
       food:
         type: ball
-        color: [green]
+        foodname: [green]
         amount: 100
         position: [2, 2]
     - x: 0.4
@@ -767,7 +767,7 @@ hard:
       color: pink
       food:
         type: ball
-        color: [green]
+        foodname: [green]
         amount: 1200
         position: [0, 0]
     - x: 0.7
@@ -776,7 +776,7 @@ hard:
       color: purple
       food:
         type: ball
-        color: [green]
+        foodname: [green]
         amount: 1200
         position: [1, 1]
     - x: 0.7
@@ -785,6 +785,6 @@ hard:
       color: yellow
       food:
         type: None
-        color: [black]
+        foodname: [black]
         amount: None
         position: [1, 1]

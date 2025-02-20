@@ -1,297 +1,357 @@
-1. Instruction - Scoop the beans from the bowl in the center of the table and place it in the blue bowl.
-2. Instruction - Scoop the beans from the bowl in the center of the table and place it in the blue bowl.
-3. Instruction - Scoop the beans from the bowl in the center of the table and place it in the grey bowl.
-4. Instruction - Scoop the beans near the holder to the empty bowl.
-5. Instruction - Scoop the beans near the holder to the empty bowl.
-6. Instruction - Scoop the beans near the holder to the empty bowl.
-7. Instruction - Place beans from the bowl near the blue bowl to the blue bowl.
-8. Instruction - Place beans from the bowl near the empty bowl to the empty bowl.
-9. Instruction - Place beans from the bowl near the blue bowl to the blue bowl.
-10. Instruction - Place beans from the white bowl to the bowl nearest to the microwave.
-11. Instruction - Place beans from the green bowl to the bowl nearest to the microwave.
-12. Instruction - Place beans from the white bowl to the bowl nearest to the microwave.
-13. Instruction - Scoop the beans from the bowl which is the closest to the robot gripper and place it in the empty bowl.
-14. Instruction - Scoop the beans from the bowl which is the closest to the robot gripper and place it in the empty bowl.
-15. Instruction - Scoop the beans from the bowl which is the closest to the robot gripper and place it in the empty bowl.
-16. Instruction - Place beans from the bowl in the center of the table to the grey bowl.
-17. Instruction - Place beans from the bowl in the center of the table to the empty bowl.
-18. Instruction - Place beans from the bowl in the center of the table to the pink bowl.
-19. Instruction - Please scoop the beans from the bowl near the gripper and place it in the empty bowl next to the microwave.
-20. Instruction - Please transfer a scoop of red bean in the empty bowl next to the microwave.
-21. Instruction - Scoop speckled beans from the bowl near the robot gripper to the orange bowl.
-22. Instruction - Scoop speckled beans from the bowl near the robot gripper to the empty bowl.
-23. Instruction - Scoop the speckled beans into the empty container. Please use the bowls nearest to the gripper.
-24. Instruction - Scoop the red beans into the empty container. Please use the bowls nearest to the gripper.
-25. Instruction - Transfer the beans from the blue bowl to the bowl next to the tool holder.
-26. Instruction - Transfer the beans from the purlple bowl to the bowl next to the tool holder.
-27. Instruction - Scoop beans from the bowl nearest to the microwave into the blue bowl.
-28. Instruction - Scoop beans from the bowl nearest to the microwave into the blue bowl.
-29. Instruction - Scoop food items from the bowl closest to the empty bowl and transfer them into the empty bowl.
-30. Instruction - Scoop food items from the bowl closest to the empty bowl and transfer them into the empty bowl.
+1. **Instruction - Transfer one scoop of toppings into the empty bowl, grabbing as many as possible.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_blue_bowl
+	3. scoop
+	4. move_to_white_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_1](https://hackmd.io/_uploads/SyVTl8Xqkx.jpg)
 
-========== 1 ==========
-1. grasp_spoon
-2. move_to_white_bowl
-3. scoop
-4. move_to_blue_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+2. **Instruction - Transfer one scoop of beans into the empty bowl, grabbing as many as possible.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_blue_bowl
+	3. scoop
+	4. move_to_white_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_2](https://hackmd.io/_uploads/rkN6lIQ51g.jpg)
 
-========== 2 ==========
-1. grasp_spoon
-2. move_to_white_bowl
-3. scoop
-4. move_to_blue_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+3. **Instruction - Transfer one scoop of food items into the empty bowl, grabbing as many as possible.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_blue_bowl
+	3. scoop
+	4. move_to_white_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_3](https://hackmd.io/_uploads/SyEpgUmqyx.jpg)
 
-========== 3 ==========
-1. grasp_spoon
-2. move_to_blue_bowl
-3. scoop
-4. move_to_blue_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+4. **Instruction - Fill the white bowl with toppings in one scoop, trying to collect the most you can.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_blue_bowl
+	3. scoop
+	4. move_to_white_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_4](https://hackmd.io/_uploads/HygmaxU751l.jpg)
 
-========== 4 ==========
-1. grasp_spoon
-2. move_to_white_bowl
-3. scoop
-4. move_to_blue_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+5. **Instruction - Fill the white bowl with food items in one scoop, trying to collect the most you can.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_blue_bowl
+	3. scoop
+	4. move_to_white_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_5](https://hackmd.io/_uploads/HJgrpx87q1x.jpg)
 
-========== 5 ==========
-1. grasp_spoon
-2. move_to_white_bowl
-3. scoop
-4. move_to_blue_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+6. **Instruction - Fill the white bowl with tanyuan in one scoop, trying to collect the most you can.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_red_bowl
+	3. scoop
+	4. move_to_white_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_6](https://hackmd.io/_uploads/B1NpxLQq1e.jpg)
 
-========== 6 ==========
-1. grasp_spoon
-2. move_to_white_bowl
-3. scoop
-4. move_to_blue_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+7. **Instruction - Move as many toppings as you can into the empty bowl in one scoop.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_blue_bowl
+	3. scoop
+	4. move_to_white_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_7](https://hackmd.io/_uploads/rJ46gUQ5ke.jpg)
 
-========== 7 ==========
-1. grasp_spoon
-2. move_to_purple_bowl
-3. scoop
-4. move_to_blue_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+8. **Instruction - Move as many taro balls as you can into the empty bowl in one scoop.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_blue_bowl
+	3. scoop
+	4. move_to_white_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_8](https://hackmd.io/_uploads/SyeVTlL7qye.jpg)
 
-========== 8 ==========
-1. grasp_spoon
-2. move_to_purple_bowl
-3. scoop
-4. move_to_blue_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+9. **Instruction - Move as many food items as you can into the empty bowl in one scoop.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_blue_bowl
+	3. scoop
+	4. move_to_white_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_9](https://hackmd.io/_uploads/H1Q6xLX9ke.jpg)
 
-========== 9 ==========
-1. grasp_spoon
-2. move_to_white_bowl
-3. scoop
-4. move_to_blue_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+10. **Instruction - Scoop the toppings from the fuller bowl and drop them into my pink bowl.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_blue_bowl
+	3. scoop
+	4. move_to_pink_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_10](https://hackmd.io/_uploads/S1ETeImqyl.jpg)
 
-========== 10 ==========
-1. grasp_spoon
-2. move_to_white_bowl
-3. scoop
-4. move_to_grey_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+11. **Instruction - Scoop the toppings from the fuller bowl and drop them into the empty bowl.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_blue_bowl
+	3. scoop
+	4. move_to_pink_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_11](https://hackmd.io/_uploads/SkQTl87cyl.jpg)
 
-========== 11 ==========
-1. grasp_spoon
-2. move_to_green_bowl
-3. scoop
-4. move_to_grey_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+12. **Instruction - Scoop the food items from the fuller bowl and drop them into my white bowl.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_blue_bowl
+	3. scoop
+	4. move_to_white_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_12](https://hackmd.io/_uploads/S146eLQqkx.jpg)
 
-========== 12 ==========
-1. grasp_spoon
-2. move_to_white_bowl
-3. scoop
-4. move_to_yellow_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+13. **Instruction - Place bubble from the fuller bowl into the empty bowl in one scoop.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_white_bowl
+	3. scoop
+	4. move_to_pink_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_13](https://hackmd.io/_uploads/HJQ6lU7cke.jpg)
 
-========== 13 ==========
-1. grasp_spoon
-2. move_to_orange_bowl
-3. scoop
-4. move_to_purple_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+14. **Instruction - Place toppings from the fuller bowl into the empty bowl in one scoop.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_white_bowl
+	3. scoop
+	4. move_to_yellow_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_14](https://hackmd.io/_uploads/Syx4pxLXqkx.jpg)
 
-========== 14 ==========
-1. grasp_spoon
-2. move_to_orange_bowl
-3. scoop
-4. move_to_purple_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+15. **Instruction - Place food items from the fuller bowl into the empty bowl in one scoop.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_red_bowl
+	3. scoop
+	4. move_to_white_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_15](https://hackmd.io/_uploads/BJx4ax879Jx.jpg)
 
-========== 15 ==========
-1. grasp_spoon
-2. move_to_white_bowl
-3. scoop
-4. move_to_purple_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+16. **Instruction - Place tanyuan from the bowl with more items into the blue bowl.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_white_bowl
+	3. scoop
+	4. move_to_blue_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_16](https://hackmd.io/_uploads/rJQTg8Qc1e.jpg)
 
-========== 16 ==========
-1. grasp_spoon
-2. move_to_green_bowl
-3. scoop
-4. move_to_grey_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+17. **Instruction - Place beans from the bowl with more items into the blue bowl.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_white_bowl
+	3. scoop
+	4. move_to_blue_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_17](https://hackmd.io/_uploads/r1QTxUm5yg.jpg)
 
-========== 17 ==========
-1. grasp_spoon
-2. move_to_green_bowl
-3. scoop
-4. move_to_white_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+18. **Instruction - Place beans from the bowl with more items into the blue bowl.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_white_bowl
+	3. scoop
+	4. move_to_blue_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_18](https://hackmd.io/_uploads/SJSTxUQ5Jl.jpg)
 
-========== 18 ==========
-1. grasp_spoon
-2. move_to_yellow_bowl
-3. scoop
-4. move_to_pink_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+19. **Instruction - Scoop taro balls as many as you can into my orange bowl in one scoop.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_white_bowl
+	3. scoop
+	4. move_to_orange_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_19](https://hackmd.io/_uploads/B1XpeIm5yg.jpg)
 
-========== 19 ==========
-1. grasp_spoon
-2. move_to_blue_bowl
-3. scoop
-4. move_to_white_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+20. **Instruction - Scoop purple sweet potato balls as many as you can into my green bowl in one scoop.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_white_bowl
+	3. scoop
+	4. move_to_green_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_20](https://hackmd.io/_uploads/HyQTeUmckx.jpg)
 
-========== 20 ==========
-1. grasp_spoon
-2. move_to_blue_bowl
-3. scoop
-4. move_to_white_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+21. **Instruction - Scoop some food items as many as you can into my orange bowl in one scoop.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_white_bowl
+	3. scoop
+	4. move_to_orange_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_21](https://hackmd.io/_uploads/rkQpx8Xc1e.jpg)
 
-========== 21 ==========
-1. grasp_spoon
-2. move_to_purple_bowl
-3. scoop
-4. move_to_orange_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+22. **Instruction - Please scoop food in the bowl with more items into my orange bowl.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_green_bowl
+	3. scoop
+	4. move_to_orange_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_22](https://hackmd.io/_uploads/H1XTgLQcyx.jpg)
 
-========== 22 ==========
-1. grasp_spoon
-2. move_to_red_bowl
-3. scoop
-4. move_to_green_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+23. **Instruction - Please scoop food in the bowl with more items into my pink bowl.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_green_bowl
+	3. scoop
+	4. move_to_pink_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_23](https://hackmd.io/_uploads/H1NalL791e.jpg)
 
-========== 23 ==========
-1. grasp_spoon
-2. move_to_red_bowl
-3. scoop
-4. move_to_white_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+24. **Instruction - Please transfer as many beans as you can from the bowl containing more items to the empty bowl.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_purple_bowl
+	3. scoop
+	4. move_to_yellow_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_24](https://hackmd.io/_uploads/BkxV6l8m51e.jpg)
 
-========== 24 ==========
-1. grasp_spoon
-2. move_to_red_bowl
-3. scoop
-4. move_to_white_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+25. **Instruction - Please transfer as many beans as you can from the bowl containing more items to the empty bowl.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_purple_bowl
+	3. scoop
+	4. move_to_yellow_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_25](https://hackmd.io/_uploads/H1EalL7qke.jpg)
 
-========== 25 ==========
-1. grasp_spoon
-2. move_to_blue_bowl
-3. scoop
-4. move_to_pink_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+26. **Instruction - Scoop kidney beans from the bowl with more items to the empty bowl.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_purple_bowl
+	3. scoop
+	4. move_to_white_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_26](https://hackmd.io/_uploads/HJe4TlLQqkg.jpg)
 
-========== 26 ==========
-1. grasp_spoon
-2. move_to_purlple_bowl
-3. scoop
-4. move_to_blue_bowl
-5. drop_food
-6. put_spoon_back
-7. DONE
+27. **Instruction - Scoop white tanyuan from the bowl with more items to the empty bowl.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_purple_bowl
+	3. scoop
+	4. move_to_blue_bowl
+	5. drop_food
+	6. put_spoon_back
+	7. DONE
+	:::
+	![amount_ambiguity_27](https://hackmd.io/_uploads/H14axLQq1x.jpg)
 
-========== 27 ==========
-1. grasp_spoon
-2. move_to_white_bowl
-3. scoop
-4. move_to_blue_bowl
-5. drop_food
-6. DONE
+28. **Instruction - Can you transfer some toppings into the empty bowl in one scoop? Try to get as many as you can.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_gray_bowl
+	3. scoop
+	4. move_to_white_bowl
+	5. drop_food
+	6. DONE
+	:::
+	![amount_ambiguity_28](https://hackmd.io/_uploads/ByVagLQcJg.jpg)
 
-========== 28 ==========
-1. grasp_spoon
-2. move_to_white_bowl
-3. scoop
-4. move_to_blue_bowl
-5. drop_food
-6. DONE
+29. **Instruction - Please scoop food in the bowl with more items into my pink bowl.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_yello_bowl
+	3. scoop
+	4. move_to_pink_bowl
+	5. drop_food
+	6. DONE
+	:::
+	![amount_ambiguity_29](https://hackmd.io/_uploads/rJVaxLQ91e.jpg)
 
-========== 29 ==========
-1. grasp_spoon
-2. move_to_blue_bowl
-3. scoop
-4. move_to_white_bowl
-5. drop_food
-6. DONE
-
-========== 30 ==========
-1. grasp_spoon
-2. move_to_blue_bowl
-3. scoop
-4. move_to_white_bowl
-5. drop_food
-6. DONE
+30. **Instruction - Please scoop tanyuan in the bowl with more items into my blue bowl.**
+	:::spoiler Expected sequence
+	1. grasp_spoon
+	2. move_to_yellow_bowl
+	3. scoop
+	4. move_to_blue_bowl
+	5. drop_food
+	6. DONE
+	:::
+	![amount_ambiguity_30](https://hackmd.io/_uploads/r1Npg8XqJg.jpg)
 

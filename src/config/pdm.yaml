@@ -11,7 +11,7 @@ general:
       color: pink
       food:
         type: ball
-        color: [darkred]
+        foodname: [darkred]
         amount: 1400
         position: [1, 1]
     - x: 0.4
@@ -20,7 +20,7 @@ general:
       color: purple
       food:
         type: ball
-        color: [darkgreen]
+        foodname: [darkgreen]
         amount: 1200
         position: [1, 1]
   2: 
@@ -34,7 +34,7 @@ general:
       color: violet
       food:
         type: ball
-        color: [darkgreen]
+        foodname: [darkgreen]
         amount: 1600
         position: [1, 1]
 amount_ambiguity:
@@ -50,7 +50,7 @@ amount_ambiguity:
       color: white
       food:
         type: None
-        color: [darkred]
+        foodname: [darkred]
         amount: 20
         position: [1, 1]
     - x: 0.54
@@ -59,7 +59,7 @@ amount_ambiguity:
       color: green
       food:
         type: ball
-        color: [darkred]
+        foodname: [darkred]
         amount: 20
         position: [1, 1]
     - x: 0.39
@@ -68,7 +68,7 @@ amount_ambiguity:
       color: gray
       food:
         type: ball
-        color: [darkred]
+        foodname: [darkred]
         amount: 1600
         position: [1, 1] 
   2: 
@@ -82,7 +82,7 @@ amount_ambiguity:
       color: yellow
       food:
         type: ball
-        color: [darkgreen]
+        foodname: [darkgreen]
         amount: 1400
         position: [1, 1]
     - x: 0.45
@@ -91,7 +91,7 @@ amount_ambiguity:
       color: darkgray
       food:
         type: ball
-        color: [darkred]
+        foodname: [darkred]
         amount: 200
         position: [1, 1]
 spatial_proximity:
@@ -107,7 +107,7 @@ spatial_proximity:
       color: pink
       food:
         type: ball
-        color: [darkred]
+        foodname: [darkred]
         amount: 1600
         position: [1, 1]
     - x: 0.5
@@ -116,7 +116,7 @@ spatial_proximity:
       color: darkgreen
       food:
         type: ball
-        color: [darkred]
+        foodname: [darkred]
         amount: 1600
         position: [1, 1]
     - x: 0.28
@@ -125,7 +125,7 @@ spatial_proximity:
       color: green
       food:
         type: ball
-        color: [darkred]
+        foodname: [darkred]
         amount: 1600
         position: [1, 1]
   2:
@@ -139,7 +139,7 @@ spatial_proximity:
       color: white
       food:
         type: ball
-        color: [darkgreen]
+        foodname: [darkgreen]
         amount: 1600
         position: [1, 1]
     - x: 0.45
@@ -148,7 +148,7 @@ spatial_proximity:
       color: red
       food:
         type: ball
-        color: [darkgreen]
+        foodname: [darkgreen]
         amount: 1600
         position: [1, 1]
 tool_block:
@@ -164,7 +164,7 @@ tool_block:
       color: purple
       food:
         type: ball
-        color: [darkred]
+        foodname: [darkred]
         amount: 2000
         position: [1, 1]
     - x: 0.4
@@ -173,7 +173,7 @@ tool_block:
       color: green
       food:
         type: None
-        color: [darkred]
+        foodname: [darkred]
         amount: 0
         position: [1, 1]
   2:
@@ -187,7 +187,7 @@ tool_block:
       color: gray
       food:
         type: ball
-        color: [darkred]
+        foodname: [darkred]
         amount: 2000
         position: [1, 1]
 distance:
@@ -203,7 +203,7 @@ distance:
       color: pink
       food:
         type: ball
-        color: [darkred]
+        foodname: [darkred]
         amount: 1200
         position: [1, 1]
     - x: 0.4
@@ -212,7 +212,7 @@ distance:
       color: green
       food:
         type: None
-        color: [darkred]
+        foodname: [darkred]
         amount: 0
         position: [1, 1]
   2: 
@@ -226,7 +226,7 @@ distance:
       color: yellow
       food:
         type: ball
-        color: [darkgreen]
+        foodname: [darkgreen]
         amount: 1400
         position: [1, 1]
 mix_type:
@@ -241,7 +241,7 @@ mix_type:
       color: blue
       food:
         type: ball
-        color: [darkgreen]
+        foodname: [darkgreen]
         amount: 1200
         position: [1, 1]
     - x: 0.6
@@ -250,7 +250,7 @@ mix_type:
       color: green
       food:
         type: ball
-        color: [darkred]
+        foodname: [darkred]
         amount: 1200
         position: [1, 1]
   2: # tool_block + amount_ambiguity
@@ -264,7 +264,7 @@ mix_type:
       color: orange
       food:
         type: ball
-        color: [darkgreen]
+        foodname: [darkgreen]
         amount: 200
         position: [1, 1]
     - x: 0.6
@@ -273,7 +273,7 @@ mix_type:
       color: green
       food:
         type: ball
-        color: [darkred]
+        foodname: [darkred]
         amount: 1200
         position: [1, 1]
     - x: 0.38
@@ -282,7 +282,7 @@ mix_type:
       color: white
       food:
         type: ball
-        color: [darkgreen]
+        foodname: [darkgreen]
         amount: 300
         position: [1, 1]
   3: # amount_ambiguity + spatial_proximity
@@ -296,7 +296,7 @@ mix_type:
       color: darkgray
       food:
         type: None
-        color: [darkgreen]
+        foodname: [darkgreen]
         amount: 200
         position: [1, 1]
     - x: 0.55
@@ -305,7 +305,7 @@ mix_type:
       color: brown
       food:
         type: ball
-        color: [black]
+        foodname: [black]
         amount: 1200
         position: [1, 1]
     - x: 0.38
@@ -314,7 +314,7 @@ mix_type:
       color: gray
       food:
         type: ball
-        color: [black]
+        foodname: [black]
         amount: 300
         position: [1, 1]
     - x: 0.8
@@ -323,7 +323,7 @@ mix_type:
       color: white
       food:
         type: ball
-        color: [black]
+        foodname: [black]
         amount: 1300
         position: [1, 1]
   4: # distance + amount_ambiguity
@@ -337,7 +337,7 @@ mix_type:
       color: yellow
       food:
         type: ball
-        color: [darkgreen]
+        foodname: [darkgreen]
         amount: 1400
         position: [1, 1]
     - x: 0.4
@@ -346,7 +346,7 @@ mix_type:
       color: orange
       food:
         type: ball
-        color: [darkgreen]
+        foodname: [darkgreen]
         amount: 50
         position: [1, 1]
   5: # spatial_proximity + amount_ambiguity + tool_block
@@ -360,7 +360,7 @@ mix_type:
       color: orange
       food:
         type: ball
-        color: [darkgreen]
+        foodname: [darkgreen]
         amount: 1200
         position: [1, 1]
     - x: 0.6
@@ -369,7 +369,7 @@ mix_type:
       color: green
       food:
         type: ball
-        color: [darkred]
+        foodname: [darkred]
         amount: 200
         position: [1, 1]
     - x: 0.75
@@ -378,7 +378,7 @@ mix_type:
       color: white
       food:
         type: ball
-        color: [darkgreen]
+        foodname: [darkgreen]
         amount: 1300
         position: [1, 1]
 

@@ -31,8 +31,8 @@ while getopts "e:c:n:l:t:h" opt; do
 done
 
 # Ensure required flags are provided
-if [ -z "$EXP_ID" ] || [ -z "$CONFIG_FILE" ] || [ -z "$TEST_TYPE" ]; then
-    echo "Error: Both -e (EXP_ID), -c (CONFIG_FILE), and -c (TEST_TYPE) are required."
+if [ -z "$EXP_ID" ] || [ -z "$TEST_TYPE" ]; then
+    echo "Error: Both -e (EXP_ID), and -n (TEST_TYPE) are required."
     usage
 fi
 
@@ -42,10 +42,13 @@ echo "Results will be saved in $RESULT_DIR"
 
 # Export environment variables for other scripts
 export RESULT_DIR=$RESULT_DIR
-export CONFIG_FILE=${CONFIG_FILE:-src/config/config.yaml}
+export CONFIG_FILE=${CONFIG_FILE:-src/config/final_task/all.yaml}
 export TEST_TYPE=$TEST_TYPE
 
+echo "Running experiment $EXP_ID with config file $CONFIG_FILE"
+sleep 1
 
+python concat_config.py
 CONFIGURATIONS=$(yq 'to_entries | .[:] | map(.key as $parent | .value | to_entries | .[:] | map([$parent, .key])) | flatten' $CONFIG_FILE | sed '/^#/d; s/ #.*//' | sed 's/- //')
 config_array=($CONFIGURATIONS)
 

@@ -1,78 +1,145 @@
 example:
-  1: 
-    instruction: Try your best to get more beans into the empty bowl in one scoop. Then heat the beans with microwave.
-    answer: ['grasp_spoon', 'move_to_gray_bowl', 'scoop', 'DONE']
-    tool: [spoon]
-    containers:   
-    - x: 0.54
-      y: 0.24
-      type: bowl
-      color: green
-      colorcode: lightgreen
-      food:
-        type: ball
-        color: [mung]
-        colorcode: [darkgreen]
-        amount: 20
-        position: [1, 1]
-    - x: 0.39
-      y: 0.08
-      type: bowl
-      color: white
-      colorcode: white
-      food:
-        type: ball
-        color: [mung]
-        colorcode: [darkgreen]
-        amount: 1600
-        position: [1, 1] 
-    - x: 0.4
-      y: -0.2
-      type: bowl
-      color: blue
-      colorcode: skyblue
-      food:
-        type: None
-        color: [darkgreen]
-        colorcode: [darkgreen]
-        amount: 1200
-        position: [1, 1]
-  2: # distance + tool_block
-    instruction: Scoop the beans quickly.
-    answer: ['move_to_orange_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_orange_bowl', 'scoop', 'DONE']
+  1:
+    instruction: Could you place a scoop of beans into the empty bowl and heat them up, please?
+    answer: ['move_to_green_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_white_bowl', 'scoop', 'move_to_green_bowl', 'drop_food', 'put_spoon_back', 'open_microwave', 'move_to_green_bowl', 'put_bowl_into_microwave', 'start_microwave'] # , 'open_microwave', 'take_bowl_out_microwave', 'DONE'] # not done!! ['move_to_green_bowl', 'pull_bowl_closer', 'grasp_spoon', 'DONE']
     tool: [spoon]
     containers:
-    - x: 0.42
-      y: -0.23
-      type: bowl
-      color: blue
-      colorcode: lightblue
-      food:
-        type: ball
-        colorcode: [red]
-        color: [darkred]
-        amount: 1200
-        position: [1, 1]
-    - x: 0.6
-      y: 0.3
+    - x: 0.45
+      y: -0.2
       type: bowl
       color: white
       colorcode: white
       food:
         type: ball
-        color: [mung]
-        colorcode: [darkgreen]
-        amount: 1200
+        foodname: [sweetpotato, taro, purplesweetpotato]
+        colorcode: [darkorange, plum, indigo]
+        amount: 2000
         position: [1, 1]
-    - x: 0.35
+    - x: 0.5
+      y: 0.28
+      type: bowl
+      color: green
+      colorcode: green
+      food:
+        type: ball
+        foodname: [white, pink]
+        colorcode: [white, lightcoral]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.4473437589809517
+      y: -0.01301534186995279
+      type: bowl
+      color: blue
+      colorcode: cornflowerblue
+      food:
+        type: ball
+        foodname: [red, green, kidneybean]
+        colorcode: [brown, coral, coral]
+        amount: 1600
+        position: [1, 1]
+  2: # cannot stir
+    instruction: Scoop all the bean into the empty bowl once and mix the beans in the empty bowl.
+    answer: ['grasp_spoon', 'move_to_purple_bowl', 'scoop', 'move_to_blue_bowl', 'drop_food', 'move_to_pink_bowl', 'scoop', 'move_to_blue_bowl', 'drop_food', 'move_to_white_bowl', 'scoop', 'move_to_blue_bowl', 'drop_food', 'move_to_gray_bowl', 'scoop', 'move_to_blue_bowl', 'drop_food', 'stir', 'DONE']
+    tool: [spoon]
+    containers:
+    - x: 0.4
       y: 0.05
       type: bowl
       color: gray
       colorcode: gray
       food:
-        type: None
-        color: [darkgreen]
-        colorcode: [darkgreen]
-        amount: 1200
+        type: ball
+        foodname: [sweetpotatoballs]
+        colorcode: [darkorange]
+        amount: 1600
         position: [1, 1]
+    - x: 0.6
+      y: 0.05
+      type: bowl
+      color: gray
+      colorcode: gray
+      food:
+        type: ball
+        foodname: [taroballs]
+        colorcode: [plum]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.8
+      y: 0.05
+      type: bowl
+      color: gray
+      colorcode: gray
+      food:
+        type: ball
+        foodname: [purplesweetpotatoballs]
+        colorcode: [indigo]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.4
+      y: -0.15
+      type: bowl
+      color: gray
+      colorcode: gray
+      food:
+        type: ball
+        foodname: [redtanyuan]
+        colorcode: [lightcoral]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.6
+      y: -0.15
+      type: bowl
+      color: gray
+      colorcode: gray
+      food:
+        type: ball
+        foodname: [whitetanyuan]
+        colorcode: [white]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.8
+      y: -0.15
+      type: bowl
+      color: gray
+      colorcode: gray
+      food:
+        type: ball
+        foodname: [bubble]
+        colorcode: [black]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.4
+      y: 0.25
+      type: bowl
+      color: gray
+      colorcode: gray
+      food:
+        type: ball
+        foodname: [redbean]
+        colorcode: [brown]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.6
+      y: 0.25
+      type: bowl
+      color: gray
+      colorcode: gray
+      food:
+        type: ball
+        foodname: [mungbean]
+        colorcode: [darkkhaki]
+        amount: 1600
+        position: [1, 1]
+    - x: 0.8
+      y: 0.25
+      type: bowl
+      color: gray
+      colorcode: gray
+      food:
+        type: ball
+        foodname: [kidneybean]
+        colorcode: [darkkhaki]
+        amount: 1600
+        position: [1, 1]
+    
 
