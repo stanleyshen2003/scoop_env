@@ -35,7 +35,7 @@ def run(mode, config, task_type, env_idx, root, test_type=None, threshold=None):
         os.makedirs(log_folder, exist_ok=True)
         Environment = IsaacSim(env_cfg_dict=config, log_folder=log_folder, record_video=(mode == 'pipeline'))
         if mode == 'pipeline':
-            Environment.test_pipeline(config.get('answer', []), test_type=test_type, threshold=threshold, use_vlm=True)
+            Environment.test_pipeline(config.get('answer', []), test_type=test_type, threshold=threshold, use_vlm=False)
         elif mode == 'llm':
             Environment.test_llm()
             pyautogui.screenshot().save(os.path.join(log_folder, "result.jpg"))

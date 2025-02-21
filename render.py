@@ -24,6 +24,6 @@ def render_all_config(config_file, show_text=False, force=False):
                 text = f"{instruction}\n{answer_sequence}" if show_text else ""  
                 Environment.render_config(img_filename, text=text)
 if __name__ == '__main__':
-    config_name = 'all' # 'general_easy',  'spatial_relationship', 'amount_ambiguity', 'distance', 'obstacles'
+    config_name = 'general_easy' # 'general_easy',  'spatial_relationship', 'amount_ambiguity', 'distance', 'obstacles'
     config_file = f'src/config/{config_name}.yaml'
-    render_all_config(config_file, show_text=False, force=False)
+    render_all_config(config_file, show_text=False, force=True)

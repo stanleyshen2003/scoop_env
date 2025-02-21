@@ -1,9 +1,9 @@
 import os
 import numpy as np
-import torch
-import clip
 import numpy as np
 import tensorflow.compat.v1 as tf
+import torch
+import clip
 import cv2
 
 from easydict import EasyDict

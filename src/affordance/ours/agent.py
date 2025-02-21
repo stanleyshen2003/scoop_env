@@ -49,7 +49,23 @@ class Affordance_agent_ours(Affordance_agent):
         params = nms_threshold, min_rpn_score_thresh, min_box_area, max_box_num
         probs = get_vild_prob(rgb_img_path, [prompt], params, image_root=self.image_root)
         return probs[prompt] > 0
-        
+    
+    def joint_affordable(self, action, cur_pose, j_eef):
+        def ik_solver(joint_pose):
+            pass
+        ## TODO 
+        ## 1. get fix trajectory based on action (might to do refactoring)
+        ## 2. calculate each step of joint pose based on ik solver 
+        ## 3. check if each step is affordable (check robot joint limit and poses in each step)
+        pass
+    
+    def trajectory_clear(self, action, cur_pose):
+        ## TODO
+        ## 1. get fix trajectory based on action
+        ## 2. build a point cloud
+        ## 3. point motion planning in 3d and detect collision
+        pass
+    
 if __name__ == '__main__':
     agent = Affordance_agent_ours(None, None)
     rgb_img_path = '/home/hcis-s17/multimodal_manipulation/scoop_env/src/affordance/classifier/data/spoon/2/0_rgb/021.png'

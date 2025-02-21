@@ -5334,7 +5334,7 @@ amount_ambiguity:
         amount: 300
         position: [1, 1]
   25:
-    instruction: Please transfer as many beans as you can from the bowl containing
+    instruction: Please transfer a scoop of beans from the bowl containing
       more items to the empty bowl.
     answer: [grasp_spoon, move_to_purple_bowl, scoop, move_to_yellow_bowl, drop_food,
       put_spoon_back, DONE]
@@ -5374,7 +5374,7 @@ amount_ambiguity:
         amount: 300
         position: [1, 1]
   26:
-    instruction: Scoop kidney beans from the bowl with more items to the empty bowl.
+    instruction: Scoop kidney beans from the bowl with more items to the empty bowl once.
     answer: [grasp_spoon, move_to_purple_bowl, scoop, move_to_white_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
@@ -5424,7 +5424,7 @@ amount_ambiguity:
         amount: 350
         position: [1, 1]
   27:
-    instruction: Scoop white tanyuan from the bowl with more items to the empty bowl.
+    instruction: Scoop white tanyuan from the bowl with more items to the empty bowl once.
     answer: [grasp_spoon, move_to_purple_bowl, scoop, move_to_blue_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
@@ -5476,7 +5476,7 @@ amount_ambiguity:
   28:
     instruction: Can you transfer some toppings into the empty bowl in one scoop? Try
       to get as many as you can.
-    answer: [grasp_spoon, move_to_gray_bowl, scoop, move_to_white_bowl, drop_food,
+    answer: [grasp_spoon, move_to_gray_bowl, scoop, move_to_white_bowl, drop_food, put_spoon_back,
       DONE]
     tool: [spoon]
     containers:
@@ -5515,7 +5515,7 @@ amount_ambiguity:
         position: [1, 1]
   29:
     instruction: Please scoop food in the bowl with more items into my pink bowl.
-    answer: [grasp_spoon, move_to_yello_bowl, scoop, move_to_pink_bowl, drop_food,
+    answer: [grasp_spoon, move_to_yello_bowl, scoop, move_to_pink_bowl, drop_food, put_spoon_back,
       DONE]
     tool: [spoon]
     containers:
@@ -5554,7 +5554,7 @@ amount_ambiguity:
         position: [1, 1]
   30:
     instruction: Please scoop tanyuan in the bowl with more items into my blue bowl.
-    answer: [grasp_spoon, move_to_yellow_bowl, scoop, move_to_blue_bowl, drop_food,
+    answer: [grasp_spoon, move_to_yellow_bowl, scoop, move_to_blue_bowl, drop_food, put_spoon_back,
       DONE]
     tool: [spoon]
     containers:
