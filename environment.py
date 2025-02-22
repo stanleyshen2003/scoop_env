@@ -899,6 +899,14 @@ class IsaacSim():
     def get_trajectory(self, action) -> List[torch.Tensor]:
         ## TODO
         ## move, take_tool, put_tool, scoop, put_food, open_microwave, close_microwave, start_microwave, (stir)
+        """_summary_
+
+        Args:
+            action (str): move, grasp_spoon, put_spoon_back, scoop, drop_food, open_microwave, close_microwave, start_microwave, pull_bowl_closer, put_bowl_into_microwave
+
+        Returns:
+            List[torch.Tensor]: _description_
+        """
         target_object = None
         if "move" in action:
             target_object = action.replace("move_to_", "").split()[0]
@@ -1281,6 +1289,7 @@ class IsaacSim():
             #     self.goal_rot_set[-1] = torch.tensor([[knife_rot.x, knife_rot.y, knife_rot.z, knife_rot.w]])
             roll, pitch, yaw = quaternion_to_euler(rot)
             print(f'r:{roll}, p:{pitch}, y:{yaw}')
+            
             self.action_stage['take_tool'] = 0
             self.is_acting['take_tool'] = True
             print(f"tool pose: {tool_pos} / {tool_rot}, goal pose: {self.goal_pos_set} / {self.goal_rot_set}")
@@ -2736,6 +2745,31 @@ class IsaacSim():
         )
         return combined_score
     
+    def affordance_pipeline(self):
+        """Affordance pipeline: Get the best action from the affordance score"""
+        
+        rgb_path = os.path.join("observation", "rgb.png")
+        depth_path = os.path.join("observation", "depth.png")
+        rgb_image = self.gym.get_camera_image(self.sim, self.envs[0], self.camera_handles[0], gymapi.IMAGE_COLOR).reshape(1080, 1920, 4)[:,:,:-1]
+        depth_image = self.gym.get_camera_image(self.sim, self.envs[0], self.camera_handles[0], gymapi.IMAGE_DEPTH)
+        depth_image = np.clip(depth_image, -1.8, 0)
+        depth_image = ((depth_image - np.min(depth_image)) / (np.max(depth_image) - np.min(depth_image)) * 255).astype(np.uint8)
+        Image.fromarray(rgb_image).save(rgb_path)
+        Image.fromarray(depth_image).save(depth_path)
+        traj_dict = {action: self.get_trajectory(action) for action in self.decision_pipeline.action_list}
+        joint_limit = torch.tensor([x for x in zip(self.franka_dof_lower_limits[:7], self.franka_dof_upper_limits[:7])])
+        kwargs = {
+            'j_eef': self.j_eef,
+            'joint_limit': joint_limit,
+            'intrinsic': self.get_camera_intrinsic(),
+            'extrinsic_list': [self.cam_pos],
+            'traj_dict': traj_dict,
+            'cur_pose': self.rb_state_tensor[self.franka_hand_indices, :7],
+            'cur_joint': self.dof_state[:, self.franka_dof_indices, 0].squeeze(-1)[:, :7]
+        }
+        affordance_score = self.decision_pipeline.get_affordance_score(rgb_path, depth_path, self.action_sequence, **kwargs)
+        return affordance_score
+            
     def our_pipeline(self, threshold, use_vlm=False, max_replan=3):
         # self.instruction += f" {len(self.action_sequence) + 1}. "
         rgb_path = os.path.join("observation", "rgb.png")
@@ -3004,7 +3038,8 @@ class IsaacSim():
         affordance_list = {
             'lap': 'lap',
             'saycan': 'classifier',
-            'our': 'our'
+            'our': 'our',
+            'affordance': 'our'
         }
         pipeline_list = {
             'lap': 'saycan',
@@ -3380,7 +3415,6 @@ class IsaacSim():
             else:
                 dpose = torch.tensor([[[0.],[0.],[0.],[0.],[0.],[0.]]])
             dpose = dpose.to(self.device)
-            
             
             self.pos_action[:, :7] = self.dof_state[:, self.franka_dof_indices, 0].squeeze(-1)[:, :7] + self.control_ik(dpose)
        

@@ -6,8 +6,11 @@ from src.affordance import Affordance_agent
 from src.semantic.utils import get_messages
 from src.semantic.openai_client import call_openai_api
 from src.utils import *
-from src.vild.utils import get_vild_prob
-    
+# from src.vild.utils import get_vild_prob
+
+def get_vild_prob(rgb_img_path, object_list, params):
+    pass
+
 def parse_object_list(text_path):
     file_text = ''.join(open(text_path).readlines())
     list_start = file_text.find('object list: [') + len('object list: [')

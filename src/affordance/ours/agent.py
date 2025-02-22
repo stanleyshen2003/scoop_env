@@ -22,9 +22,25 @@ class Affordance_agent_ours(Affordance_agent):
         # TODO get additional information
         return self.additional_information
     
-    def get_affordance(self, rgb_img_path, gray_scale_img, action_seq, action_candidate=[]):
+    def get_affordance(
+        self, 
+        rgb_img_path,
+        gray_scale_img, 
+        action_seq, 
+        traj_dict,
+        j_eef,
+        joint_limit,
+        intrinsic,
+        extrinsic_list,
+        cur_pose,
+        cur_joint,
+        action_candidate=[], 
+    ):
+        for action, traj in traj_dict.items():
+            print(action)
+            print(self.joint_affordable(cur_pose, traj, cur_joint, joint_limit, j_eef))
         return super().get_affordance(rgb_img_path, gray_scale_img, action_seq, action_candidate)
-    
+
     def tool_on_hand(self, rgb_img_path, tool_list) -> bool:
         """Use ViLD to detect the tool on hand
 
@@ -84,8 +100,8 @@ class Affordance_agent_ours(Affordance_agent):
         while len(traj) > 0:
             if not check_joint_limit(cur_joint, joint_limit):
                 return False
-            diff_pos = torch.norm(pose[:3] - cur_pose[:3])
-            diff_axis, diff_w = self._calculate_quat_diff(pose[3:], cur_pose[3:])
+            diff_pos = torch.norm(pose[:, :3] - cur_pose[:, :3])
+            diff_axis, diff_w = self._calculate_quat_diff(pose[:, 3:], cur_pose[:, 3:])
             if diff_pos < self.pos_offset and diff_axis < self.axis_offset and diff_w < self.w_offset:
                 pose = traj.pop(0)
                 continue

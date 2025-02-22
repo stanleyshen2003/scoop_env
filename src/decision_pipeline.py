@@ -1,3 +1,4 @@
+import inspect
 import os
 import cv2
 import random
@@ -25,8 +26,8 @@ class Decision_pipeline():
     def set_affordance_agent(self, affordance_type):
         affordance_agent_list = {
             "classifier": Affordance_agent_classifier,
-            # "lap": Affordance_agent_LAP,
-            # "ours": Affordance_agent_ours
+            "lap": Affordance_agent_LAP,
+            "our": Affordance_agent_ours
         } 
         self.affordance_agent = affordance_agent_list.get(affordance_type, Affordance_agent)(self.init_object_list, self.action_list)
     
@@ -81,9 +82,12 @@ class Decision_pipeline():
         observation_rgb_path, 
         observation_d_path, 
         action_sequence=None, 
-        action_candidate=[]
+        action_candidate=[],
+        **kwargs
     ):
-        affordance = self.affordance_agent.get_affordance(observation_rgb_path, observation_d_path, action_sequence, action_candidate)
+        print(kwargs)
+        print(inspect.signature(self.affordance_agent.get_affordance))
+        affordance = self.affordance_agent.get_affordance(observation_rgb_path, observation_d_path, action_seq=action_sequence, action_candidate=action_candidate, **kwargs)
         affordance = sort_scores_dict(affordance)
         open(os.path.join(self.log_folder, f"affordance_{self.obs_id}.txt"), 'w').write(f"{affordance}")
         print(f"affordance {max(affordance, key=affordance.get)}")

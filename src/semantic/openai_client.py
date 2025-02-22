@@ -140,7 +140,7 @@ def get_selection_score(
     if current_obs_url is not None:
         obs_url.append(current_obs_url)
         
-    model = 'gpt-4o' if use_vlm else 'gpt-3.5-turbo'
+    model = 'gpt-4o'
     # description_system_prompt = "You are a robot arm in food manipulation scneario. You should focus on your gripper. You need to describe the food manipulation table top scenario from the image."
     # description_user_prompt = "Describe the food manipulation table top scenario from the image. Including what the robot are holding, spoon, knife, fork, or None"
     # scenario_prompt = get_messages(description_system_prompt, description_user_prompt, user_image_url=obs_url[-1])
