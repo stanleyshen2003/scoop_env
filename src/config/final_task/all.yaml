@@ -466,6 +466,27 @@ spatial_relationship:
         position: [1, 1]
     - x: 0.7978419922743556
       y: 0.08577979752610426
+    - x: 0.54526337072225
+      y: 0.23551137847306944
+      type: bowl
+      color: white
+      colorcode: antiquewhite
+      food:
+        type: ball
+        foodname: [mung beans]
+        colorcode: [darkkhaki]
+        amount: 1600
+        position: [1, 1]
+  19:
+    instruction: Place a scoop of taro balls in the green bowl and heat it up with
+      the dumbwaiter.
+    answer: [move_to_green_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
+      scoop, move_to_green_bowl, drop_food, put_spoon_back, open_dumbwaiter, move_to_green_bowl,
+      put_bowl_into_dumbwaiter, close_dumbwaiter, start_dumbwaiter, DONE]
+    tool: [spoon]
+    containers:
+    - x: 0.3580278218171031
+      y: -0.1532742301250256
       type: bowl
       color: blue
       colorcode: cornflowerblue
@@ -479,6 +500,12 @@ spatial_relationship:
     instruction: Place tanyuan from the white bowl to the bowl nearest to the dumbwaiter.
     answer: [grasp_spoon, move_to_white_bowl, scoop, move_to_yellow_bowl, drop_food,
       put_spoon_back, DONE]
+  20:
+    instruction: Place a scoop of taro balls into the empty bowl and heat it up with
+      the dumbwaiter.
+    answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
+      scoop, move_to_white_bowl, drop_food, put_spoon_back, open_dumbwaiter, move_to_white_bowl,
+      put_bowl_into_dumbwaiter, close_dumbwaiter, start_dumbwaiter, DONE]
     tool: [spoon]
     containers:
     - x: 0.4186236112400294
@@ -486,6 +513,26 @@ spatial_relationship:
       type: bowl
       color: white
       colorcode: lightgrey
+      colorcode: antiquewhite
+      food:
+        type: None
+        foodname: []
+        colorcode: []
+        amount: 0
+        position: [1, 1]
+  21:
+    instruction: I want a scoop of white tanyuan in the white bowl heated using the
+      dumbwaiter.
+    answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_yellow_bowl,
+      scoop, move_to_white_bowl, drop_food, put_spoon_back, open_dumbwaiter, move_to_white_bowl,
+      put_bowl_into_dumbwaiter, close_dumbwaiter, start_dumbwaiter, DONE]
+    tool: [spoon]
+    containers:
+    - x: 0.56
+      y: -0.25
+      type: bowl
+      color: yellow
+      colorcode: darkgoldenrod
       food:
         type: ball
         foodname: [white tanyuan]
@@ -505,6 +552,15 @@ spatial_relationship:
         position: [1, 1]
     - x: 0.7978419922743556
       y: 0.08577979752610426
+  22:
+    instruction: I want a scoop of red beans in the white bowl heated using the dumbwaiter.
+    answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
+      scoop, move_to_white_bowl, drop_food, put_spoon_back, open_dumbwaiter, move_to_white_bowl,
+      put_bowl_into_dumbwaiter, close_dumbwaiter, start_dumbwaiter, DONE]
+    tool: [spoon]
+    containers:
+    - x: 0.56
+      y: -0.25
       type: bowl
       color: blue
       colorcode: navy
@@ -519,6 +575,11 @@ spatial_relationship:
       and place it in the bowl with tofu pudding.
     answer: [grasp_spoon, move_to_orange_bowl, scoop, move_to_purple_bowl, drop_food,
       put_spoon_back, DONE]
+  23:
+    instruction: Heat up a scoop of bubble in the yellow bowl.
+    answer: [move_to_yellow_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
+      scoop, move_to_yellow_bowl, drop_food, put_spoon_back, open_dumbwaiter, move_to_yellow_bowl,
+      put_bowl_into_dumbwaiter, close_dumbwaiter, start_dumbwaiter, DONE]
     tool: [spoon]
     containers:
     - x: 0.4269423242723885
@@ -545,6 +606,15 @@ spatial_relationship:
         position: [1, 1]
     - x: 0.7269423242723885
       y: 0.298099658801056
+  24:
+    instruction: Heat up a scoop of beans in the blue bowl.
+    answer: [move_to_blue_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
+      scoop, move_to_blue_bowl, drop_food, put_spoon_back, open_dumbwaiter, move_to_blue_bowl,
+      put_bowl_into_dumbwaiter, close_dumbwaiter, start_dumbwaiter, DONE]
+    tool: [spoon]
+    containers:
+    - x: 0.3576436613219363
+      y: -0.1247558055049526
       type: bowl
       color: grey
       colorcode: slategrey
@@ -559,6 +629,22 @@ spatial_relationship:
       and place it in the bowl with tofu pudding.
     answer: [grasp_spoon, move_to_orange_bowl, scoop, move_to_purple_bowl, drop_food,
       put_spoon_back, DONE]
+    - x: 0.6235750072060599
+      y: 0.307968988967734
+      type: bowl
+      color: blue
+      colorcode: cornflowerblue
+      food:
+        type: None
+        foodname: []
+        colorcode: []
+        amount: 0
+        position: [1, 1]
+  25:
+    instruction: Please scoop kidney beans to the purple bowl and heat it up.
+    answer: [move_to_pink_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
+      scoop, move_to_purple_bowl, drop_food, put_spoon_back, open_dumbwaiter, move_to_purple_bowl,
+      put_bowl_into_dumbwaiter, close_dumbwaiter, start_dumbwaiter, DONE]
     tool: [spoon]
     containers:
     - x: 0.4269423242723885
@@ -599,6 +685,11 @@ spatial_relationship:
       and place it in the bowl with tofu pudding.
     answer: [grasp_spoon, move_to_white_bowl, scoop, move_to_purple_bowl, drop_food,
       put_spoon_back, DONE]
+  26:
+    instruction: Please scoop some tanyuan to the pink bowl and heat it up.
+    answer: [move_to_pink_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
+      scoop, move_to_pink_bowl, drop_food, put_spoon_back, open_dumbwaiter, move_to_pink_bowl,
+      put_bowl_into_dumbwaiter, close_dumbwaiter, start_dumbwaiter, DONE]
     tool: [spoon]
     containers:
     - x: 0.4269423242723885
@@ -665,6 +756,16 @@ spatial_relationship:
         position: [1, 1]
     - x: 0.2750718022534647
       y: 0.2518164584358218
+  29:
+    instruction: Could you place a scoop of tanyuan into the empty bowl and heat them
+      up, please?
+    answer: [move_to_green_bowl, pull_bowl_closer, grasp_spoon, move_to_gray_bowl,
+      scoop, move_to_green_bowl, drop_food, put_spoon_back, open_dumbwaiter, move_to_green_bowl,
+      put_bowl_into_dumbwaiter, start_dumbwaiter]
+    tool: [spoon]
+    containers:
+    - x: 0.45
+      y: -0.2
       type: bowl
       color: blue
       colorcode: cornflowerblue
@@ -678,6 +779,23 @@ spatial_relationship:
     instruction: Place bubble from the bowl in the center of the table to the bowl containing tofu pudding.
     answer: [grasp_spoon, move_to_green_bowl, scoop, move_to_white_bowl, drop_food,
       put_spoon_back, DONE]
+    - x: 0.5
+      y: 0.28
+      type: bowl
+      color: green
+      colorcode: green
+      food:
+        type: None
+        foodname: []
+        colorcode: []
+        amount: 0
+        position: [1, 1]
+  30:
+    instruction: Could you place a scoop of sweet potato balls into the empty bowl and heat them
+      up, please?
+    answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_green_bowl,
+      scoop, move_to_white_bowl, drop_food, put_spoon_back, open_dumbwaiter, move_to_white_bowl,
+      put_bowl_into_dumbwaiter, start_dumbwaiter]
     tool: [spoon]
     containers:
     - x: 0.4525843275952327
@@ -2848,6 +2966,9 @@ general_easy:
   16:
     instruction: Place a scoop of toppings to the green bowl.
     answer: [grasp_spoon, move_to_blue_bowl, scoop, move_to_green_bowl, drop_food,
+  10:
+    instruction: Place beans from the white bowl to the bowl nearest to the dumbwaiter.
+    answer: [grasp_spoon, move_to_white_bowl, scoop, move_to_grey_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
     containers:
@@ -2887,6 +3008,9 @@ general_easy:
   17:
     instruction: Place a scoop of toppings to the green bowl.
     answer: [grasp_spoon, move_to_blue_bowl, scoop, move_to_green_bowl, drop_food,
+  11:
+    instruction: Place beans from the green bowl to the bowl nearest to the dumbwaiter.
+    answer: [grasp_spoon, move_to_green_bowl, scoop, move_to_grey_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
     containers:
@@ -2926,6 +3050,9 @@ general_easy:
   18:
     instruction: Place a scoop of toppings to the green bowl.
     answer: [grasp_spoon, move_to_blue_bowl, scoop, move_to_green_bowl, drop_food,
+  12:
+    instruction: Place tanyuan from the white bowl to the bowl nearest to the dumbwaiter.
+    answer: [grasp_spoon, move_to_white_bowl, scoop, move_to_yellow_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
     containers:
@@ -3317,6 +3444,10 @@ general_easy:
   30:
     instruction: Please place one scoop of red beans into the bowl with tofu pudding.
     answer: [grasp_spoon, move_to_pink_bowl, scoop, move_to_blue_bowl, drop_food,
+  19:
+    instruction: Please scoop the beans from the bowl near the gripper and place it
+      in the empty bowl next to the dumbwaiter.
+    answer: [grasp_spoon, move_to_blue_bowl, scoop, move_to_white_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
     containers:
@@ -3436,6 +3567,11 @@ obstacles:
     instruction: Scoop mung beans to the bowl with tofu pudding.
     answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
       scoop, move_to_purple_bowl, drop_food, put_spoon_back, DONE]
+  20:
+    instruction: Please transfer a scoop of kidney beans in the empty bowl next to the
+      dumbwaiter.
+    answer: [grasp_spoon, move_to_blue_bowl, scoop, move_to_white_bowl, drop_food,
+      put_spoon_back, DONE]
     tool: [spoon]
     containers:
     - x: 0.35473776559581977
@@ -4053,6 +4189,10 @@ obstacles:
     answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_yellow_bowl,
       scoop, move_to_white_bowl, drop_food, put_spoon_back, open_microwave, move_to_white_bowl,
       put_bowl_into_microwave, close_microwave, start_microwave, DONE]
+  27:
+    instruction: Scoop sweet potato balls from the bowl nearest to the dumbwaiter into the blue
+      bowl.
+    answer: [grasp_spoon, move_to_red_bowl, scoop, move_to_blue_bowl, drop_food, DONE]
     tool: [spoon]
     containers:
     - x: 0.56
@@ -4111,6 +4251,11 @@ obstacles:
     answer: [move_to_yellow_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
       scoop, move_to_yellow_bowl, drop_food, put_spoon_back, open_microwave, move_to_yellow_bowl,
       put_bowl_into_microwave, close_microwave, start_microwave, DONE]
+  28:
+    instruction: Scoop beans from the bowl nearest to the dumbwaiter into the purple
+      bowl.
+    answer: [grasp_spoon, move_to_red_bowl, scoop, move_to_purple_bowl, drop_food,
+      DONE]
     tool: [spoon]
     containers:
     - x: 0.3576436613219363

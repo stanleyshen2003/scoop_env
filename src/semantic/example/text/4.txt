@@ -18,10 +18,10 @@ scoop
 stir
 drop_food
 pull_bowl_closer
-open_microwave
-close_microwave
-start_microwave
-put_bowl_into_microwave
+open_dumbwaiter
+close_dumbwaiter
+start_dumbwaiter
+put_bowl_into_dumbwaiter
 DONE
 grasp_spoon
 put_spoon_back

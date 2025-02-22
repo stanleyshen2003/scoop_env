@@ -9,7 +9,7 @@ from src.cot_prompt import cot2 as cot # replace to other version
 from src.cot_prompt import cot_baseline2 as cot_baseline # replace to other version
 
 def get_action_list(tool_list, object_list):
-    action_list = ["scoop", "stir", "drop_food", "pull_bowl_closer", "open_microwave", "close_microwave", "start_microwave", "put_bowl_into_microwave", "DONE"]
+    action_list = ["scoop", "stir", "drop_food", "pull_bowl_closer", "open_dumbwaiter", "close_dumbwaiter", "start_dumbwaiter", "put_bowl_into_dumbwaiter", "DONE"]
     action_list.extend([f"grasp_{tool}" for tool in tool_list])
     action_list.extend([f"put_{tool}_back" for tool in tool_list])
     action_list.extend([f"move_to_{object.split(' (')[0]}" for object in object_list])

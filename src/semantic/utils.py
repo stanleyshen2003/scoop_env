@@ -4,7 +4,9 @@ import json
 from typing import List
 
 import sys
+# sys.path.append('/home/hcis-s25/Desktop/yuhong/scoop_env/')
 sys.path.append('/home/hcis-s17/multimodal_manipulation/scoop_env/')
+
 from src.utils import encode_image, decode_image
 
 def preprocess_action(action):
@@ -65,10 +67,10 @@ def get_action_description_prompt():
         'stir': "Stir the food.",
         'drop_food': "When the robot arm is positioned above a container, drop the food from the spoon into the container.",
         'pull_bowl_closer': "When the gripper is empty, pull the nearest bowl toward the center of the table.",
-        'open_microwave': "Open the microwave door.",
-        'close_microwave': "Close the microwave door.",
-        'put_bowl_into_microwave': "Place the nearest bowl into the microwave.",
-        'start_microwave': "Start the microwave.",
+        'open_dumbwaiter': "Open the dumbwaiter door.",
+        'close_dumbwaiter': "Close the dumbwaiter door.",
+        'put_bowl_into_dumbwaiter': "Place the nearest bowl into the dumbwaiter.",
+        'start_dumbwaiter': "Start the dumbwaiter.",
         'DONE': "Indicate that the task is complete."
 
     }
@@ -84,6 +86,7 @@ def get_key_considerations():
 def get_example_prompt(with_image=False, selection=False):
     system_prompt = ""
     system_image_url = []
+    # example_path = '/home/hcis-s25/Desktop/yuhong/scoop_env/src/semantic/example/text'
     example_path = '/home/hcis-s17/multimodal_manipulation/scoop_env/src/semantic/example/text'
     example_id = 1
     for txt in os.listdir(example_path):

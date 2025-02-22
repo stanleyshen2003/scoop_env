@@ -153,12 +153,12 @@ class IsaacSim():
                 "Q": "turn_down",
                 "R": "rot_left",
                 "T": "rot_right",
-                "K": "put_bowl_into_microwave",
-                "L": "take_bowl_out_microwave",
+                "K": "put_bowl_into_dumbwaiter",
+                "L": "take_bowl_out_dumbwaiter",
                 "SPACE": "gripper_close",
                 "C": "choose action",
-                "M": "open_microwave",
-                "N": "close_microwave",
+                "M": "open_dumbwaiter",
+                "N": "close_dumbwaiter",
                 "0": "scoop_put",
             }
             # self.action_list = []
@@ -177,11 +177,11 @@ class IsaacSim():
                 "Y": "put_tool",
                 "C": "move_around",
                 "D": "pull_bowl_closer",
-                "M": "open_microwave",
-                "N": "close_microwave",
-                "O": "start_microwave",
-                "K": "put_bowl_into_microwave",
-                "L": "take_bowl_out_microwave",
+                "M": "open_dumbwaiter",
+                "N": "close_dumbwaiter",
+                "O": "start_dumbwaiter",
+                "K": "put_bowl_into_dumbwaiter",
+                "L": "take_bowl_out_dumbwaiter",
                 "SPACE": "choose action",
                 "A": "get_trajectory",
                 # "P": "change_ball_friction"
@@ -613,32 +613,32 @@ class IsaacSim():
                 idx = self.gym.get_actor_index(env_ptr, self.forked_food_handle, gymapi.DOMAIN_SIM)
                 self.forked_food_indices.append(idx)
 
-    def create_microwave(self):
-        file_name = 'microwave/mobility.urdf'
+    def create_dumbwaiter(self):
+        file_name = 'dumbwaiter/mobility.urdf'
         asset_options = gymapi.AssetOptions()
         asset_options.armature = 0.01
         asset_options.fix_base_link = True
         asset_options.disable_gravity = True
         asset_options.vhacd_enabled = True
         asset_options.vhacd_params.resolution = 300000
-        self.microwave_asset = self.gym.load_asset(self.sim, self.asset_root, file_name, asset_options)
-        self.num_dofs += self.gym.get_asset_dof_count(self.microwave_asset)
-        self.microwave_dof_props = self.gym.get_asset_dof_properties(self.microwave_asset)
-        self.microwave_dof_props["driveMode"].fill(gymapi.DOF_MODE_POS)
+        self.dumbwaiter_asset = self.gym.load_asset(self.sim, self.asset_root, file_name, asset_options)
+        self.num_dofs += self.gym.get_asset_dof_count(self.dumbwaiter_asset)
+        self.dumbwaiter_dof_props = self.gym.get_asset_dof_properties(self.dumbwaiter_asset)
+        self.dumbwaiter_dof_props["driveMode"].fill(gymapi.DOF_MODE_POS)
         
-        self.microwave_pose = gymapi.Transform()
+        self.dumbwaiter_pose = gymapi.Transform()
         quat = euler_to_quaternion(0, 0, math.pi / 2)
-        self.microwave_pose.r = quat
-        self.microwave_pose.p = gymapi.Vec3(0.5, 0.6, self.default_height / 2 + 0.095)
+        self.dumbwaiter_pose.r = quat
+        self.dumbwaiter_pose.p = gymapi.Vec3(0.5, 0.6, self.default_height / 2 + 0.095)
     
-    def add_microwave(self, env_ptr):
-        microwave_handle = self.gym.create_actor(env_ptr, self.microwave_asset, self.microwave_pose, 'microwave', 0, 8)
-        self.gym.set_actor_scale(env_ptr, microwave_handle, 0.28)
-        self.gym.set_actor_dof_properties(env_ptr, microwave_handle, self.microwave_dof_props)
-        self.microwave_door_indices = self.gym.find_actor_dof_index(env_ptr, microwave_handle, 'door', gymapi.DOMAIN_SIM)
-        self.microwave_door_indices = to_torch(self.microwave_door_indices, dtype=torch.long, device=self.device)
-        microwave_idx = self.gym.get_actor_index(env_ptr, microwave_handle, gymapi.DOMAIN_SIM)
-        self.microwave_indices.append(microwave_idx)
+    def add_dumbwaiter(self, env_ptr):
+        dumbwaiter_handle = self.gym.create_actor(env_ptr, self.dumbwaiter_asset, self.dumbwaiter_pose, 'dumbwaiter', 0, 8)
+        self.gym.set_actor_scale(env_ptr, dumbwaiter_handle, 0.28)
+        self.gym.set_actor_dof_properties(env_ptr, dumbwaiter_handle, self.dumbwaiter_dof_props)
+        self.dumbwaiter_door_indices = self.gym.find_actor_dof_index(env_ptr, dumbwaiter_handle, 'door', gymapi.DOMAIN_SIM)
+        self.dumbwaiter_door_indices = to_torch(self.dumbwaiter_door_indices, dtype=torch.long, device=self.device)
+        dumbwaiter_idx = self.gym.get_actor_index(env_ptr, dumbwaiter_handle, gymapi.DOMAIN_SIM)
+        self.dumbwaiter_indices.append(dumbwaiter_idx)
         
     def create_franka(self, reload=None):
         # create franka asset
@@ -732,14 +732,14 @@ class IsaacSim():
         self.create_franka()
         self.create_tool()
         self.create_food()
-        self.create_microwave()
+        self.create_dumbwaiter()
         self.env_ptr_list = []
         # cache some common handles for later use
         self.camera_handles = []
         self.urdf_link_indices = []
         self.butter_indices = []
         self.forked_food_indices = []
-        self.microwave_indices = []
+        self.dumbwaiter_indices = []
         self.envs = []
         self.is_acting = {}
         self.action_stage = {}
@@ -757,12 +757,12 @@ class IsaacSim():
             self.add_food(env_ptr)
             self.add_franka(env_i, env_ptr)
             self.add_tool(env_ptr)
-            self.add_microwave(env_ptr)
+            self.add_dumbwaiter(env_ptr)
 
         self.urdf_link_indices = to_torch(self.urdf_link_indices, dtype=torch.long, device=self.device)
         self.butter_indices = to_torch(self.butter_indices, dtype=torch.long, device=self.device)
         self.forked_food_indices = to_torch(self.forked_food_indices, dtype=torch.long, device=self.device)
-        self.microwave_indices = to_torch(self.microwave_indices, dtype=torch.long, device=self.device)
+        self.dumbwaiter_indices = to_torch(self.dumbwaiter_indices, dtype=torch.long, device=self.device)
         for container in self.containers_list:
             container = container.split()[0]
             if len(self.containers_indices[container]) > 0:
@@ -780,8 +780,8 @@ class IsaacSim():
         self.franka_init_pose = torch.tensor([-0.4969, -0.5425,  0.3321, -2.0888,  0.0806,  1.6983,  0.5075,  0.0400, 0.0400], dtype=torch.float32, device=self.device)
         self.dof_state[:, self.franka_dof_indices, 0] = self.franka_init_pose 
         self.dof_state[:, self.franka_dof_indices, 1] = 0
-        self.dof_state[:, self.microwave_door_indices, 0] = 0 # math.pi # math.pi / 18
-        self.dof_state[:, self.microwave_door_indices, 1] = 0
+        self.dof_state[:, self.dumbwaiter_door_indices, 0] = 0 # math.pi # math.pi / 18
+        self.dof_state[:, self.dumbwaiter_door_indices, 1] = 0
             
         target_tesnsor = self.dof_state[:, :, 0].contiguous()
 
@@ -1978,18 +1978,18 @@ class IsaacSim():
         
         return dpose
 
-    def put_bowl_into_microwave(self):
+    def put_bowl_into_dumbwaiter(self):
         hand_pos = self.rb_state_tensor[self.franka_hand_indices, :3]
         hand_rot = self.rb_state_tensor[self.franka_hand_indices, 3:7]
         use_container_pos = True
         gripper_open = self.franka_dof_upper_limits[7:]
         gripper_close = self.franka_dof_lower_limits[7:]
-        if self.action_stage['put_bowl_into_microwave'] == -1:
+        if self.action_stage['put_bowl_into_dumbwaiter'] == -1:
             # initialize
             self.stop_counter = 40
-            print("put bowl into microwave start")
+            print("put bowl into dumbwaiter start")
             self.gripper_offset_cnt = self.gripper_action_offset
-            self.delta['put_bowl_into_microwave'] = [2, 2, 2, 0.8]#, 0.5, 0.5, 0.5]
+            self.delta['put_bowl_into_dumbwaiter'] = [2, 2, 2, 0.8]#, 0.5, 0.5, 0.5]
             self.goal_pos_set = [hand_pos + torch.tensor([[0., 0., -0.065]], device=self.device)]
             self.goal_rot_set = [torch.tensor([[1.0, 0.0, -0.05, 0.0]], device=self.device)]
             init_pos = hand_pos.clone()
@@ -2039,20 +2039,20 @@ class IsaacSim():
                 torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
                 torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device)
             ]
-            self.action_stage['put_bowl_into_microwave'] = 0
-            self.is_acting['put_bowl_into_microwave'] = True
+            self.action_stage['put_bowl_into_dumbwaiter'] = 0
+            self.is_acting['put_bowl_into_dumbwaiter'] = True
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
-        elif self.action_stage['put_bowl_into_microwave'] == len(self.goal_pos_set):
+        elif self.action_stage['put_bowl_into_dumbwaiter'] == len(self.goal_pos_set):
             # final stage
-            if self.is_acting['put_bowl_into_microwave']:
-                print("finish put_bowl_into_microwave")
-                self.is_acting['put_bowl_into_microwave'] = False
-                self.action_stage['put_bowl_into_microwave'] = -1
+            if self.is_acting['put_bowl_into_dumbwaiter']:
+                print("finish put_bowl_into_dumbwaiter")
+                self.is_acting['put_bowl_into_dumbwaiter'] = False
+                self.action_stage['put_bowl_into_dumbwaiter'] = -1
                 self.action = 'idle'
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
-        if (self.action_stage['put_bowl_into_microwave'] > 1 and self.action_stage['put_bowl_into_microwave'] < 8) or self.action_stage['put_bowl_into_microwave'] > 9:
+        if (self.action_stage['put_bowl_into_dumbwaiter'] > 1 and self.action_stage['put_bowl_into_dumbwaiter'] < 8) or self.action_stage['put_bowl_into_dumbwaiter'] > 9:
             self.pos_action[:, 7:9] = gripper_close
         else:
             self.pos_action[:, 7:9] = gripper_open
@@ -2060,8 +2060,8 @@ class IsaacSim():
                 self.gripper_offset_cnt += 1
                 # print(self.gripper_offset_cnt)
                 return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
-        goal_pos = self.goal_pos_set[self.action_stage['put_bowl_into_microwave']]
-        goal_rot = self.goal_rot_set[self.action_stage['put_bowl_into_microwave']]
+        goal_pos = self.goal_pos_set[self.action_stage['put_bowl_into_dumbwaiter']]
+        goal_rot = self.goal_rot_set[self.action_stage['put_bowl_into_dumbwaiter']]
         to_goal = goal_pos - hand_pos
         goal_dist = torch.norm(to_goal, dim=1).unsqueeze(-1)
         to_axis = goal_rot[:, :3] - hand_rot[:, :3]
@@ -2072,39 +2072,39 @@ class IsaacSim():
         orn_err = torch.where(axis_dist > self.axis_offset or w_dist > self.w_offset, self.orientation_error(goal_rot, hand_rot), torch.tensor([0., 0., 0.], device=self.device))
         dpose = torch.cat([pos_err, orn_err], -1).unsqueeze(-1)
         
-        if self.action_stage['put_bowl_into_microwave'] == 2:
+        if self.action_stage['put_bowl_into_dumbwaiter'] == 2:
             if self.stop_counter == 0:
-                self.action_stage['put_bowl_into_microwave'] += 1
-                print(self.action_stage['put_bowl_into_microwave'])
+                self.action_stage['put_bowl_into_dumbwaiter'] += 1
+                print(self.action_stage['put_bowl_into_dumbwaiter'])
             else:
                 self.stop_counter -= 1
                 print(f"stop_counter: {self.stop_counter}")
                 return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
         if goal_dist <= self.goal_offset and axis_dist <= self.axis_offset and w_dist <= self.w_offset:
-            self.action_stage['put_bowl_into_microwave'] += 1
-            print(self.action_stage['put_bowl_into_microwave'])
-            if self.action_stage['put_bowl_into_microwave'] == 5 or self.action_stage['put_bowl_into_microwave'] == 1:
+            self.action_stage['put_bowl_into_dumbwaiter'] += 1
+            print(self.action_stage['put_bowl_into_dumbwaiter'])
+            if self.action_stage['put_bowl_into_dumbwaiter'] == 5 or self.action_stage['put_bowl_into_dumbwaiter'] == 1:
                 self.gripper_offset_cnt = 0
             else:
                 self.gripper_offset_cnt = self.gripper_action_offset
-        dpose *= self.delta['put_bowl_into_microwave'][self.action_stage['put_bowl_into_microwave'] if self.action_stage['put_bowl_into_microwave'] < len(self.delta['put_bowl_into_microwave']) else -1]
+        dpose *= self.delta['put_bowl_into_dumbwaiter'][self.action_stage['put_bowl_into_dumbwaiter'] if self.action_stage['put_bowl_into_dumbwaiter'] < len(self.delta['put_bowl_into_dumbwaiter']) else -1]
         
         return dpose
     
     
-    def take_bowl_out_microwave(self):
+    def take_bowl_out_dumbwaiter(self):
         hand_pos = self.rb_state_tensor[self.franka_hand_indices, :3]
         hand_rot = self.rb_state_tensor[self.franka_hand_indices, 3:7]
         use_container_pos = True
         gripper_open = self.franka_dof_upper_limits[7:]
         gripper_close = self.franka_dof_lower_limits[7:]
-        if self.action_stage['take_bowl_out_microwave'] == -1:
+        if self.action_stage['take_bowl_out_dumbwaiter'] == -1:
             # initialize
             self.stop_counter = 40
-            print("take bowl outof microwave start")
+            print("take bowl outof dumbwaiter start")
             self.gripper_offset_cnt = self.gripper_action_offset
-            self.delta['take_bowl_out_microwave'] = [0.8]#, 0.5, 0.5, 0.5]
+            self.delta['take_bowl_out_dumbwaiter'] = [0.8]#, 0.5, 0.5, 0.5]
             self.goal_pos_set = [hand_pos + torch.tensor([[0., 0., -0.065]], device=self.device)]
             self.goal_rot_set = [torch.tensor([[1.0, 0.0, -0.05, 0.0]], device=self.device)]
             init_pos = hand_pos.clone()
@@ -2128,20 +2128,20 @@ class IsaacSim():
                 torch.tensor([[ 0.9491,  0.0030,  0.1802, -0.2583]], device=self.device)
             ]
             
-            self.action_stage['take_bowl_out_microwave'] = 0
-            self.is_acting['take_bowl_out_microwave'] = True
+            self.action_stage['take_bowl_out_dumbwaiter'] = 0
+            self.is_acting['take_bowl_out_dumbwaiter'] = True
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
-        elif self.action_stage['take_bowl_out_microwave'] == len(self.goal_pos_set):
+        elif self.action_stage['take_bowl_out_dumbwaiter'] == len(self.goal_pos_set):
             # final stage
-            if self.is_acting['take_bowl_out_microwave']:
-                print("finish take_bowl_out_microwave")
-                self.is_acting['take_bowl_out_microwave'] = False
-                self.action_stage['take_bowl_out_microwave'] = -1
+            if self.is_acting['take_bowl_out_dumbwaiter']:
+                print("finish take_bowl_out_dumbwaiter")
+                self.is_acting['take_bowl_out_dumbwaiter'] = False
+                self.action_stage['take_bowl_out_dumbwaiter'] = -1
                 self.action = "idle"
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
-        if (self.action_stage['take_bowl_out_microwave'] > 1 and self.action_stage['take_bowl_out_microwave'] < 8) or self.action_stage['take_bowl_out_microwave'] > 9:
+        if (self.action_stage['take_bowl_out_dumbwaiter'] > 1 and self.action_stage['take_bowl_out_dumbwaiter'] < 8) or self.action_stage['take_bowl_out_dumbwaiter'] > 9:
             self.pos_action[:, 7:9] = gripper_close
         else:
             self.pos_action[:, 7:9] = gripper_open
@@ -2149,8 +2149,8 @@ class IsaacSim():
                 self.gripper_offset_cnt += 1
                 # print(self.gripper_offset_cnt)
                 return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
-        goal_pos = self.goal_pos_set[self.action_stage['take_bowl_out_microwave']]
-        goal_rot = self.goal_rot_set[self.action_stage['take_bowl_out_microwave']]
+        goal_pos = self.goal_pos_set[self.action_stage['take_bowl_out_dumbwaiter']]
+        goal_rot = self.goal_rot_set[self.action_stage['take_bowl_out_dumbwaiter']]
         to_goal = goal_pos - hand_pos
         goal_dist = torch.norm(to_goal, dim=1).unsqueeze(-1)
         to_axis = goal_rot[:, :3] - hand_rot[:, :3]
@@ -2161,40 +2161,40 @@ class IsaacSim():
         orn_err = torch.where(axis_dist > self.axis_offset or w_dist > self.w_offset, self.orientation_error(goal_rot, hand_rot), torch.tensor([0., 0., 0.], device=self.device))
         dpose = torch.cat([pos_err, orn_err], -1).unsqueeze(-1)
         
-        if self.action_stage['take_bowl_out_microwave'] == 2:
+        if self.action_stage['take_bowl_out_dumbwaiter'] == 2:
             if self.stop_counter == 0:
-                self.action_stage['take_bowl_out_microwave'] += 1
-                print(self.action_stage['take_bowl_out_microwave'])
+                self.action_stage['take_bowl_out_dumbwaiter'] += 1
+                print(self.action_stage['take_bowl_out_dumbwaiter'])
             else:
                 self.stop_counter -= 1
                 print(f"stop_counter: {self.stop_counter}")
                 return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
         if goal_dist <= self.goal_offset and axis_dist <= self.axis_offset and w_dist <= self.w_offset:
-            self.action_stage['take_bowl_out_microwave'] += 1
-            print(self.action_stage['take_bowl_out_microwave'])
-            if self.action_stage['take_bowl_out_microwave'] == 5 or self.action_stage['take_bowl_out_microwave'] == 1:
+            self.action_stage['take_bowl_out_dumbwaiter'] += 1
+            print(self.action_stage['take_bowl_out_dumbwaiter'])
+            if self.action_stage['take_bowl_out_dumbwaiter'] == 5 or self.action_stage['take_bowl_out_dumbwaiter'] == 1:
                 self.gripper_offset_cnt = 0
             else:
                 self.gripper_offset_cnt = self.gripper_action_offset
-        dpose *= self.delta['take_bowl_out_microwave'][self.action_stage['take_bowl_out_microwave'] if self.action_stage['take_bowl_out_microwave'] < len(self.delta['take_bowl_out_microwave']) else -1]
+        dpose *= self.delta['take_bowl_out_dumbwaiter'][self.action_stage['take_bowl_out_dumbwaiter'] if self.action_stage['take_bowl_out_dumbwaiter'] < len(self.delta['take_bowl_out_dumbwaiter']) else -1]
         
         return dpose
     
     
-    def open_microwave(self):
+    def open_dumbwaiter(self):
         gripper_open = self.franka_dof_upper_limits[7:]
         gripper_close = self.franka_dof_lower_limits[7:]
         hand_pos = self.rb_state_tensor[self.franka_hand_indices, :3]
         hand_rot = self.rb_state_tensor[self.franka_hand_indices, 3:7]
         use_container_pos = True
         
-        if self.action_stage['open_microwave'] == -1:
+        if self.action_stage['open_dumbwaiter'] == -1:
             # initialize
             self.stop_counter = 70
-            print("open_microwave start")
-            self.delta['open_microwave'] = [2, 2, 2, 2, 2, 2, 1, 1, 1, 2]
-            # self.delta['open_microwave'] = [0.05, 0.05, 0.05, 0.5]
+            print("open_dumbwaiter start")
+            self.delta['open_dumbwaiter'] = [2, 2, 2, 2, 2, 2, 1, 1, 1, 2]
+            # self.delta['open_dumbwaiter'] = [0.05, 0.05, 0.05, 0.5]
             self.goal_pos_set = [hand_pos + torch.tensor([[0., 0., -0.065]], device=self.device)]
             self.goal_rot_set = [torch.tensor([[1.0, 0.0, -0.05, 0.0]], device=self.device)]
             init_pos = hand_pos.clone()                
@@ -2234,35 +2234,35 @@ class IsaacSim():
                 torch.tensor([[ 0.5951, 0.4882, 0.4980, -0.3993]], device=self.device),
                 torch.tensor([[ 0.9634, 0.1132, 0.2373, -0.0520]], device=self.device)
             ]
-            self.action_stage['open_microwave'] = 0
-            self.is_acting['open_microwave'] = True
+            self.action_stage['open_dumbwaiter'] = 0
+            self.is_acting['open_dumbwaiter'] = True
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
-        elif self.action_stage['open_microwave'] == len(self.goal_pos_set):
+        elif self.action_stage['open_dumbwaiter'] == len(self.goal_pos_set):
             # final stage
-            if self.is_acting['open_microwave']:
-                print("finish open_microwave")
-                self.is_acting['open_microwave'] = False
-                self.action_stage['open_microwave'] = -1
+            if self.is_acting['open_dumbwaiter']:
+                print("finish open_dumbwaiter")
+                self.is_acting['open_dumbwaiter'] = False
+                self.action_stage['open_dumbwaiter'] = -1
                 self.action = 'idle'
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
-        if self.action_stage['open_microwave'] > 1 and self.action_stage['open_microwave'] < 8:
+        if self.action_stage['open_dumbwaiter'] > 1 and self.action_stage['open_dumbwaiter'] < 8:
             self.pos_action[:, 7:9] = gripper_close
         else:
             self.pos_action[:, 7:9] = gripper_open
         
-        if self.action_stage['open_microwave'] == 2:
+        if self.action_stage['open_dumbwaiter'] == 2:
             if self.stop_counter == 0:
-                self.action_stage['open_microwave'] += 1
-                print(self.action_stage['open_microwave'])
+                self.action_stage['open_dumbwaiter'] += 1
+                print(self.action_stage['open_dumbwaiter'])
             else:
                 self.stop_counter -= 1
                 print(f"stop_counter: {self.stop_counter}")
                 return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
-        goal_pos = self.goal_pos_set[self.action_stage['open_microwave']]
-        goal_rot = self.goal_rot_set[self.action_stage['open_microwave']]
+        goal_pos = self.goal_pos_set[self.action_stage['open_dumbwaiter']]
+        goal_rot = self.goal_rot_set[self.action_stage['open_dumbwaiter']]
         to_goal = goal_pos - hand_pos
         goal_dist_test = torch.norm(to_goal, dim=1).unsqueeze(-1)
 
@@ -2284,27 +2284,27 @@ class IsaacSim():
         dpose = torch.cat([pos_err, orn_err], -1).unsqueeze(-1)
         
         if goal_dist_test <= self.goal_offset and axis_dist <= self.axis_offset and w_dist <= self.w_offset:
-            self.action_stage['open_microwave'] += 1
-            print(self.action_stage['open_microwave'])
-        dpose *= self.delta['open_microwave'][self.action_stage['open_microwave'] if self.action_stage['open_microwave'] < len(self.delta['open_microwave']) else -1]
+            self.action_stage['open_dumbwaiter'] += 1
+            print(self.action_stage['open_dumbwaiter'])
+        dpose *= self.delta['open_dumbwaiter'][self.action_stage['open_dumbwaiter'] if self.action_stage['open_dumbwaiter'] < len(self.delta['open_dumbwaiter']) else -1]
         
         # print(dpose)
         return dpose
    
-    def close_microwave(self):
+    def close_dumbwaiter(self):
         gripper_open = self.franka_dof_upper_limits[7:]
         gripper_close = self.franka_dof_lower_limits[7:]
         hand_pos = self.rb_state_tensor[self.franka_hand_indices, :3]
         hand_rot = self.rb_state_tensor[self.franka_hand_indices, 3:7]
         use_container_pos = True
         
-        if self.action_stage['close_microwave'] == -1:
+        if self.action_stage['close_dumbwaiter'] == -1:
             # initialize
             self.stop_counter = 35
-            print("close_microwave start")
-            self.delta['close_microwave'] = [2]
-            # self.delta['close_microwave'] = [x * 2 for x in self.delta['close_microwave']]
-            # self.delta['close_microwave'] = [0.05, 0.05, 0.05, 0.5]
+            print("close_dumbwaiter start")
+            self.delta['close_dumbwaiter'] = [2]
+            # self.delta['close_dumbwaiter'] = [x * 2 for x in self.delta['close_dumbwaiter']]
+            # self.delta['close_dumbwaiter'] = [0.05, 0.05, 0.05, 0.5]
             self.goal_pos_set = [hand_pos + torch.tensor([[0., 0., -0.065]], device=self.device)]
             self.goal_rot_set = [torch.tensor([[1.0, 0.0, -0.05, 0.0]], device=self.device)]
             init_pos = hand_pos.clone()                
@@ -2335,35 +2335,35 @@ class IsaacSim():
                 torch.tensor([[ 0.9963, 0.0367, 0.0521, 0.0577]], device=self.device)
 
             ]
-            self.action_stage['close_microwave'] = 0
-            self.is_acting['close_microwave'] = True
+            self.action_stage['close_dumbwaiter'] = 0
+            self.is_acting['close_dumbwaiter'] = True
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
-        elif self.action_stage['close_microwave'] == len(self.goal_pos_set):
+        elif self.action_stage['close_dumbwaiter'] == len(self.goal_pos_set):
             # final stage
-            if self.is_acting['close_microwave']:
-                print("finish close_microwave")
-                self.is_acting['close_microwave'] = False
+            if self.is_acting['close_dumbwaiter']:
+                print("finish close_dumbwaiter")
+                self.is_acting['close_dumbwaiter'] = False
                 self.action = "idle"
-                self.action_stage['close_microwave'] = -1
+                self.action_stage['close_dumbwaiter'] = -1
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
-        if self.action_stage['close_microwave'] > 0 and self.action_stage['close_microwave'] < 9:
+        if self.action_stage['close_dumbwaiter'] > 0 and self.action_stage['close_dumbwaiter'] < 9:
             self.pos_action[:, 7:9] = gripper_close
         else:
             self.pos_action[:, 7:9] = gripper_open
         
-        # if self.action_stage['close_microwave'] == 4:
+        # if self.action_stage['close_dumbwaiter'] == 4:
         #     if self.stop_counter == 0:
-        #         self.action_stage['close_microwave'] += 1
-        #         print(self.action_stage['close_microwave'])
+        #         self.action_stage['close_dumbwaiter'] += 1
+        #         print(self.action_stage['close_dumbwaiter'])
         #     else:
         #         self.stop_counter -= 1
         #         print(f"stop_counter: {self.stop_counter}")
         #         return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
-        goal_pos = self.goal_pos_set[self.action_stage['close_microwave']]
-        goal_rot = self.goal_rot_set[self.action_stage['close_microwave']]
+        goal_pos = self.goal_pos_set[self.action_stage['close_dumbwaiter']]
+        goal_rot = self.goal_rot_set[self.action_stage['close_dumbwaiter']]
         to_goal = goal_pos - hand_pos
         goal_dist_test = torch.norm(to_goal, dim=1).unsqueeze(-1)
 
@@ -2385,24 +2385,24 @@ class IsaacSim():
         dpose = torch.cat([pos_err, orn_err], -1).unsqueeze(-1)
         
         if goal_dist_test <= self.goal_offset and axis_dist <= self.axis_offset and w_dist <= self.w_offset:
-            self.action_stage['close_microwave'] += 1
-            print(self.action_stage['close_microwave'])
-        dpose *= self.delta['close_microwave'][self.action_stage['close_microwave'] if self.action_stage['close_microwave'] < len(self.delta['close_microwave']) else -1]
+            self.action_stage['close_dumbwaiter'] += 1
+            print(self.action_stage['close_dumbwaiter'])
+        dpose *= self.delta['close_dumbwaiter'][self.action_stage['close_dumbwaiter'] if self.action_stage['close_dumbwaiter'] < len(self.delta['close_dumbwaiter']) else -1]
         
         return dpose
 
-    def start_microwave(self):
+    def start_dumbwaiter(self):
         gripper_open = self.franka_dof_upper_limits[7:]
         gripper_close = self.franka_dof_lower_limits[7:]
         hand_pos = self.rb_state_tensor[self.franka_hand_indices, :3]
         hand_rot = self.rb_state_tensor[self.franka_hand_indices, 3:7]
         use_container_pos = True
         
-        if self.action_stage['start_microwave'] == -1:
+        if self.action_stage['start_dumbwaiter'] == -1:
             # initialize
-            print("start_microwave start")
-            self.delta['start_microwave'] = [2, 2, 2, 2, 2, 2, 1, 1, 1, 2]
-            # self.delta['start_microwave'] = [0.05, 0.05, 0.05, 0.5]
+            print("start_dumbwaiter start")
+            self.delta['start_dumbwaiter'] = [2, 2, 2, 2, 2, 2, 1, 1, 1, 2]
+            # self.delta['start_dumbwaiter'] = [0.05, 0.05, 0.05, 0.5]
             self.goal_pos_set = [hand_pos + torch.tensor([[0., 0., -0.065]], device=self.device)]
             self.goal_rot_set = [torch.tensor([[1.0, 0.0, -0.05, 0.0]], device=self.device)]
             init_pos = hand_pos.clone()                
@@ -2419,25 +2419,25 @@ class IsaacSim():
                 torch.tensor([[ 0.5329, 0.5489, 0.4332, -0.4765]], device=self.device),
                 torch.tensor([[ 0.5329, 0.5489, 0.4332, -0.4765]], device=self.device)
             ]
-            self.action_stage['start_microwave'] = 0
-            self.is_acting['start_microwave'] = True
+            self.action_stage['start_dumbwaiter'] = 0
+            self.is_acting['start_dumbwaiter'] = True
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
-        elif self.action_stage['start_microwave'] == len(self.goal_pos_set):
+        elif self.action_stage['start_dumbwaiter'] == len(self.goal_pos_set):
             # final stage
-            if self.is_acting['start_microwave']:
-                print("finish start_microwave")
-                self.is_acting['start_microwave'] = False
+            if self.is_acting['start_dumbwaiter']:
+                print("finish start_dumbwaiter")
+                self.is_acting['start_dumbwaiter'] = False
                 self.action = "idle"
-                self.action_stage['start_microwave'] = -1
+                self.action_stage['start_dumbwaiter'] = -1
             return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         
         self.pos_action[:, 7:9] = gripper_close
 
         
         
-        goal_pos = self.goal_pos_set[self.action_stage['start_microwave']]
-        goal_rot = self.goal_rot_set[self.action_stage['start_microwave']]
+        goal_pos = self.goal_pos_set[self.action_stage['start_dumbwaiter']]
+        goal_rot = self.goal_rot_set[self.action_stage['start_dumbwaiter']]
         to_goal = goal_pos - hand_pos
         goal_dist_test = torch.norm(to_goal, dim=1).unsqueeze(-1)
 
@@ -2457,9 +2457,9 @@ class IsaacSim():
         dpose = torch.cat([pos_err, orn_err], -1).unsqueeze(-1)
         
         if goal_dist_test <= self.goal_offset and axis_dist <= self.axis_offset and w_dist <= self.w_offset:
-            self.action_stage['start_microwave'] += 1
-            print(self.action_stage['start_microwave'])
-        dpose *= self.delta['start_microwave'][self.action_stage['start_microwave'] if self.action_stage['start_microwave'] < len(self.delta['start_microwave']) else -1]
+            self.action_stage['start_dumbwaiter'] += 1
+            print(self.action_stage['start_dumbwaiter'])
+        dpose *= self.delta['start_dumbwaiter'][self.action_stage['start_dumbwaiter'] if self.action_stage['start_dumbwaiter'] < len(self.delta['start_dumbwaiter']) else -1]
         
         return dpose
     
@@ -3133,17 +3133,17 @@ class IsaacSim():
                 dpose = self.take_tool('spoon')
             elif best_action == 'put_spoon_back':
                 dpose = self.put_tool('spoon')
-            elif best_action == 'open_microwave':
-                dpose = self.open_microwave()
-            elif best_action == 'close_microwave':
-                dpose = self.close_microwave()
-            elif best_action == 'start_microwave':
-                dpose = self.start_microwave()
-            elif best_action == 'put_bowl_into_microwave':
-                dpose = self.put_bowl_into_microwave()
-            elif best_action == 'take_bowl_out_microwave':
+            elif best_action == 'open_dumbwaiter':
+                dpose = self.open_dumbwaiter()
+            elif best_action == 'close_dumbwaiter':
+                dpose = self.close_dumbwaiter()
+            elif best_action == 'start_dumbwaiter':
+                dpose = self.start_dumbwaiter()
+            elif best_action == 'put_bowl_into_dumbwaiter':
+                dpose = self.put_bowl_into_dumbwaiter()
+            elif best_action == 'take_bowl_out_dumbwaiter':
                 raise NotImplementedError("Not implemented yet")
-                dpose = self.take_bowl_out_microwave()
+                dpose = self.take_bowl_out_dumbwaiter()
             elif best_action == "DONE" or len(self.action_sequence) >= max_sequence:
                 break 
             elif "move" in best_action:
@@ -3402,16 +3402,16 @@ class IsaacSim():
                 with open('./rot.txt', 'w') as f:
                     for row in rot:
                         f.write("[" + ", ".join(map(str, row)) + "]" + '\n')
-            elif self.action == "open_microwave":
-                dpose = self.open_microwave()
-            elif self.action == "close_microwave":
-                dpose = self.close_microwave()
-            elif self.action == "start_microwave":
-                dpose = self.start_microwave()
-            elif self.action == "put_bowl_into_microwave":
-                dpose = self.put_bowl_into_microwave()
-            elif self.action == "take_bowl_out_microwave":
-                dpose = self.take_bowl_out_microwave()
+            elif self.action == "open_dumbwaiter":
+                dpose = self.open_dumbwaiter()
+            elif self.action == "close_dumbwaiter":
+                dpose = self.close_dumbwaiter()
+            elif self.action == "start_dumbwaiter":
+                dpose = self.start_dumbwaiter()
+            elif self.action == "put_bowl_into_dumbwaiter":
+                dpose = self.put_bowl_into_dumbwaiter()
+            elif self.action == "take_bowl_out_dumbwaiter":
+                dpose = self.take_bowl_out_dumbwaiter()
             else:
                 dpose = torch.tensor([[[0.],[0.],[0.],[0.],[0.],[0.]]])
             dpose = dpose.to(self.device)

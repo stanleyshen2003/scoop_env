@@ -47,19 +47,19 @@ color_list = {
 DISTANCE_RANGE = (0.35, 0.6), (-0.2, 0.25)
 DISTANCE_RANGE_SCOOPABLE = (0.35, 0.55), (-0.15, 0.25)
 DISTANCE_RANGE_BLOCK_HOLDER = (0.35, 0.40), (-0.26, -0.24)
-DISTANCE_RANGE_BLOCK_MICROWAVE = (0.38, 0.5), (0.32, 0.34)
+DISTANCE_RANGE_BLOCK_DUMBWAITER = (0.38, 0.5), (0.32, 0.34)
 DISTANCE_RANGE_PULL = (0.71, 0.72), (-0.15, 0.2)
 DISTANCE_RANGE_TOO_FAR = (0.72, 0.8), (-0.2, 0.25)
 DISTANCE_RANGE_TOO_CLOSE = (0.25, 0.4), (0.2, 0.3)
 DISTANCE_RANGE_PULL_CENTER = (0.4, 0.5), (-0.1, 0.1)
 
-DISTANCE_RANGE_PULLABLE_SET = set([DISTANCE_RANGE_BLOCK_HOLDER, DISTANCE_RANGE_BLOCK_MICROWAVE, DISTANCE_RANGE_PULL])
-DISTANCE_RANGE_HEATABLE_SET = set([DISTANCE_RANGE_BLOCK_MICROWAVE])
+DISTANCE_RANGE_PULLABLE_SET = set([DISTANCE_RANGE_BLOCK_HOLDER, DISTANCE_RANGE_BLOCK_DUMBWAITER, DISTANCE_RANGE_PULL])
+DISTANCE_RANGE_HEATABLE_SET = set([DISTANCE_RANGE_BLOCK_DUMBWAITER])
 
 
 SCOOP_PUT_SEQUENCE = 'move_to_{scoop_target1}_bowl', 'scoop', 'move_to_{put_target1}_bowl', 'drop_food'
 PULL_SEQUENCE = 'move_to_{pull_target}_bowl', 'pull_bowl_closer'
-HEAT_SEQUENCE = 'open_microwave', 'move_to_{heat_target}_bowl', 'put_bowl_into_microwave', 'close_microwave', 'start_microwave'
+HEAT_SEQUENCE = 'open_dumbwaiter', 'move_to_{heat_target}_bowl', 'put_bowl_into_dumbwaiter', 'close_dumbwaiter', 'start_dumbwaiter'
 
 task_list = {
     ## container
@@ -146,10 +146,10 @@ task_list = {
             ('', [*PULL_SEQUENCE, 'grasp_spoon', *SCOOP_PUT_SEQUENCE, 'put_spoon_back', 'DONE']),
         ]
     },
-    'obstacles_microwave': {
+    'obstacles_dumbwaiter': {
         'containers': [
             [(0.35, 0.55), (-0.15, 0.), 1600, True],
-            [*DISTANCE_RANGE_BLOCK_MICROWAVE, 0, True],
+            [*DISTANCE_RANGE_BLOCK_DUMBWAITER, 0, True],
         ],
         'answer': [
             ('', ['grasp_spoon', *SCOOP_PUT_SEQUENCE, 'put_spoon_back', *PULL_SEQUENCE, *HEAT_SEQUENCE, 'DONE']),

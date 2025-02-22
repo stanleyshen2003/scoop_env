@@ -638,8 +638,8 @@ obstacles:
   19:
     instruction: Place a scoop of taro balls in the green bowl and put it into the dumbwaiter.
     answer: [move_to_green_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
-      scoop, move_to_green_bowl, drop_food, put_spoon_back, open_microwave, move_to_green_bowl,
-      put_bowl_into_microwave, close_microwave, start_microwave, DONE]
+      scoop, move_to_green_bowl, drop_food, put_spoon_back, open_dumbwaiter, move_to_green_bowl,
+      put_bowl_into_dumbwaiter, close_dumbwaiter, start_dumbwaiter, DONE]
     tool: [spoon]
     containers:
     - x: 0.3580278218171031
@@ -667,8 +667,8 @@ obstacles:
   20:
     instruction: Place a scoop of taro balls onto the tofu pudding and put it into the dumbwaiter.
     answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
-      scoop, move_to_white_bowl, drop_food, put_spoon_back, open_microwave, move_to_white_bowl,
-      put_bowl_into_microwave, close_microwave, start_microwave, DONE]
+      scoop, move_to_white_bowl, drop_food, put_spoon_back, open_dumbwaiter, move_to_white_bowl,
+      put_bowl_into_dumbwaiter, close_dumbwaiter, start_dumbwaiter, DONE]
     tool: [spoon]
     containers:
     - x: 0.3580278218171031
@@ -696,8 +696,8 @@ obstacles:
   21:
     instruction: I want a scoop of white tanyuan in the white bowl. Put it into the dumbwaiter after you finish scooping.
     answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_yellow_bowl,
-      scoop, move_to_white_bowl, drop_food, put_spoon_back, open_microwave, move_to_white_bowl,
-      put_bowl_into_microwave, close_microwave, start_microwave, DONE]
+      scoop, move_to_white_bowl, drop_food, put_spoon_back, open_dumbwaiter, move_to_white_bowl,
+      put_bowl_into_dumbwaiter, close_dumbwaiter, start_dumbwaiter, DONE]
     tool: [spoon]
     containers:
     - x: 0.56
@@ -725,8 +725,8 @@ obstacles:
   22:
     instruction: I want a scoop of red beans in the white bowl. Put it into the dumbwaiter after scooping.
     answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
-      scoop, move_to_white_bowl, drop_food, put_spoon_back, open_microwave, move_to_white_bowl,
-      put_bowl_into_microwave, close_microwave, start_microwave, DONE]
+      scoop, move_to_white_bowl, drop_food, put_spoon_back, open_dumbwaiter, move_to_white_bowl,
+      put_bowl_into_dumbwaiter, close_dumbwaiter, start_dumbwaiter, DONE]
     tool: [spoon]
     containers:
     - x: 0.56
@@ -754,8 +754,8 @@ obstacles:
   23:
     instruction: Place a scoop of bubble in the yellow bowl and put it into the dumbwaiter.
     answer: [move_to_yellow_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
-      scoop, move_to_yellow_bowl, drop_food, put_spoon_back, open_microwave, move_to_yellow_bowl,
-      put_bowl_into_microwave, close_microwave, start_microwave, DONE]
+      scoop, move_to_yellow_bowl, drop_food, put_spoon_back, open_dumbwaiter, move_to_yellow_bowl,
+      put_bowl_into_dumbwaiter, close_dumbwaiter, start_dumbwaiter, DONE]
     tool: [spoon]
     containers:
     - x: 0.3576436613219363
@@ -783,8 +783,8 @@ obstacles:
   24:
     instruction: Place a scoop of beans in the blue bowl and put it into the dumbwaiter.
     answer: [move_to_blue_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
-      scoop, move_to_blue_bowl, drop_food, put_spoon_back, open_microwave, move_to_blue_bowl,
-      put_bowl_into_microwave, close_microwave, start_microwave, DONE]
+      scoop, move_to_blue_bowl, drop_food, put_spoon_back, open_dumbwaiter, move_to_blue_bowl,
+      put_bowl_into_dumbwaiter, close_dumbwaiter, start_dumbwaiter, DONE]
     tool: [spoon]
     containers:
     - x: 0.3576436613219363
@@ -812,8 +812,8 @@ obstacles:
   25:
     instruction: Please scoop kidney beans to the purple bowl and put the purple bowl into the dumbwaiter.
     answer: [move_to_pink_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
-      scoop, move_to_purple_bowl, drop_food, put_spoon_back, open_microwave, move_to_purple_bowl,
-      put_bowl_into_microwave, close_microwave, start_microwave, DONE]
+      scoop, move_to_purple_bowl, drop_food, put_spoon_back, open_dumbwaiter, move_to_purple_bowl,
+      put_bowl_into_dumbwaiter, close_dumbwaiter, start_dumbwaiter, DONE]
     tool: [spoon]
     containers:
     - x: 0.3522838510739219
@@ -852,8 +852,8 @@ obstacles:
   26:
     instruction: Please scoop some tanyuan to the pink bowl and put it into the dumbwaiter.
     answer: [move_to_pink_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
-      scoop, move_to_pink_bowl, drop_food, put_spoon_back, open_microwave, move_to_pink_bowl,
-      put_bowl_into_microwave, close_microwave, start_microwave, DONE]
+      scoop, move_to_pink_bowl, drop_food, put_spoon_back, open_dumbwaiter, move_to_pink_bowl,
+      put_bowl_into_dumbwaiter, close_dumbwaiter, start_dumbwaiter, DONE]
     tool: [spoon]
     containers:
     - x: 0.3522838510739219
@@ -948,8 +948,8 @@ obstacles:
   29:
     instruction: Could you place a scoop of tanyuan into the bowl with tofu pudding and put it into the dumbwaiter?
     answer: [move_to_green_bowl, pull_bowl_closer, grasp_spoon, move_to_gray_bowl,
-      scoop, move_to_green_bowl, drop_food, put_spoon_back, open_microwave, move_to_green_bowl,
-      put_bowl_into_microwave, start_microwave]
+      scoop, move_to_green_bowl, drop_food, put_spoon_back, open_dumbwaiter, move_to_green_bowl,
+      put_bowl_into_dumbwaiter, start_dumbwaiter]
     tool: [spoon]
     containers:
     - x: 0.45
@@ -977,8 +977,8 @@ obstacles:
   30:
     instruction: Could you place a scoop of sweet potato balls onto the tofu pudding bowl and put it into the dumbwaiter?
     answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_green_bowl,
-      scoop, move_to_white_bowl, drop_food, put_spoon_back, open_microwave, move_to_white_bowl,
-      put_bowl_into_microwave, start_microwave]
+      scoop, move_to_white_bowl, drop_food, put_spoon_back, open_dumbwaiter, move_to_white_bowl,
+      put_bowl_into_dumbwaiter, start_dumbwaiter]
     tool: [spoon]
     containers:
     - x: 0.45

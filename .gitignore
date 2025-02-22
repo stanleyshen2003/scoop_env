@@ -181,8 +181,8 @@ src/affordance/classifier/temp_depth.png
 src/affordance/classifier/temp.png
 src/affordance/classifier/preprocessed_data
 colors.png
-urdf/microwave/parts_render
-urdf/microwave/parts_render_after_merging
+urdf/dumbwaiter/parts_render
+urdf/dumbwaiter/parts_render_after_merging
 src/config/pdm
 src/config/pdm_calibration
 src/affordance/lap/ckpt/

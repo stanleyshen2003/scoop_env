@@ -129,7 +129,7 @@ general_hard:
         position: [1, 1]
   2: # cannot stir
     instruction: Place two scoop of red beans and one scoop of mung bean into the blue bowl. Mix them and heat them up.
-    answer: ['grasp_spoon', 'move_to_pink_bowl', 'scoop', 'move_to_blue_bowl', 'drop_food', 'move_to_white_bowl', 'scoop', 'move_to_blue_bowl', 'drop_food', 'move_to_white_bowl', 'scoop', 'move_to_blue_bowl', 'drop_food', 'stir', 'put_spoon_back', 'open_microwave', 'move_to_blue_bowl', 'put_bowl_into_microwave', 'close_microwave', 'start_microwave', 'open_microwave', 'take_bowl_out_microwave', 'DONE']
+    answer: ['grasp_spoon', 'move_to_pink_bowl', 'scoop', 'move_to_blue_bowl', 'drop_food', 'move_to_white_bowl', 'scoop', 'move_to_blue_bowl', 'drop_food', 'move_to_white_bowl', 'scoop', 'move_to_blue_bowl', 'drop_food', 'stir', 'put_spoon_back', 'open_dumbwaiter', 'move_to_blue_bowl', 'put_bowl_into_dumbwaiter', 'close_dumbwaiter', 'start_dumbwaiter', 'open_dumbwaiter', 'take_bowl_out_dumbwaiter', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.45
@@ -364,7 +364,7 @@ obstacles:
         position: [1, 1]
   2:
     instruction: Could you place a scoop of beans into the empty bowl and heat them up, please?
-    answer: ['grasp_spoon', 'move_to_gray_bowl', 'scoop', 'move_to_green_bowl', 'drop_food', 'put_spoon_back', 'move_to_green_bowl', 'pull_bowl_closer', 'open_microwave', 'move_to_green_bowl', 'put_bowl_into_microwave', 'start_microwave'] # , 'open_microwave', 'take_bowl_out_microwave', 'DONE'] # not done!! ['move_to_green_bowl', 'pull_bowl_closer', 'grasp_spoon', 'DONE']
+    answer: ['grasp_spoon', 'move_to_gray_bowl', 'scoop', 'move_to_green_bowl', 'drop_food', 'put_spoon_back', 'move_to_green_bowl', 'pull_bowl_closer', 'open_dumbwaiter', 'move_to_green_bowl', 'put_bowl_into_dumbwaiter', 'start_dumbwaiter'] # , 'open_dumbwaiter', 'take_bowl_out_dumbwaiter', 'DONE'] # not done!! ['move_to_green_bowl', 'pull_bowl_closer', 'grasp_spoon', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.45
