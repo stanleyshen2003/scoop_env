@@ -8,6 +8,12 @@
 				<mesh filename="textured_objs/original-1.obj"/>
 			</geometry>
 		</visual>
+		<visual name="dumbwaiter">
+			<origin xyz="0.6430403380134146 0.42593899369239807 -0.5477944794777341"/>
+			<geometry>
+				<mesh filename="textured_objs/dumbwaiter.obj"/>
+			</geometry>
+		</visual>
 		<visual name="door_frame-6">
 			<origin xyz="0.6430403380134146 0.42593899369239807 -0.5477944794777341"/>
 			<geometry>
