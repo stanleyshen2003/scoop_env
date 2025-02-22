@@ -47,7 +47,7 @@ spatial_relationship:
       food:
         type: ball
         foodname: [kidney beans]
-        colorcode: [darkkhaki]
+        colorcode: [coral]
         amount: 1600
         position: [1, 1]
     - x: 0.7604604072608259
@@ -109,7 +109,7 @@ spatial_relationship:
       food:
         type: ball
         foodname: [kidney beans]
-        colorcode: [darkkhaki]
+        colorcode: [coral]
         amount: 1600
         position: [1, 1]
   3:
@@ -164,7 +164,7 @@ spatial_relationship:
         amount: 0
         position: [1, 1]
   4:
-    instruction: Scoop the toppings near the holder to the empty bowl.
+    instruction: Scoop the toppings near the holder to the bowl with tofu pudding.
     answer: [grasp_spoon, move_to_white_bowl, scoop, move_to_blue_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
@@ -203,7 +203,7 @@ spatial_relationship:
         amount: 1600
         position: [1, 1]
   5:
-    instruction: Scoop the beans near the holder to the empty bowl.
+    instruction: Scoop the beans near the holder to the bowl with tofu pudding.
     answer: [grasp_spoon, move_to_white_bowl, scoop, move_to_blue_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
@@ -216,7 +216,7 @@ spatial_relationship:
       food:
         type: ball
         foodname: [kidney beans]
-        colorcode: [darkkhaki]
+        colorcode: [coral]
         amount: 1600
         position: [1, 1]
     - x: 0.4755046381850665
@@ -242,7 +242,7 @@ spatial_relationship:
         amount: 1600
         position: [1, 1]
   6:
-    instruction: Scoop the toppings near the holder to the empty bowl.
+    instruction: Scoop the toppings near the holder to the bowl with tofu pudding.
     answer: [grasp_spoon, move_to_white_bowl, scoop, move_to_blue_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
@@ -255,7 +255,7 @@ spatial_relationship:
       food:
         type: ball
         foodname: [kidney beans]
-        colorcode: [darkkhaki]
+        colorcode: [coral]
         amount: 1600
         position: [1, 1]
     - x: 0.4755046381850665
@@ -320,7 +320,7 @@ spatial_relationship:
         amount: 1600
         position: [1, 1]
   8:
-    instruction: Place toppings from the bowl near the empty bowl to the empty bowl.
+    instruction: Place toppings from the bowl near the blue bowl to the blue bowl.
     answer: [grasp_spoon, move_to_purple_bowl, scoop, move_to_blue_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
@@ -355,7 +355,7 @@ spatial_relationship:
       food:
         type: ball
         foodname: [kidney beans]
-        colorcode: [darkkhaki]
+        colorcode: [coral]
         amount: 1600
         position: [1, 1]
   9:
@@ -398,7 +398,7 @@ spatial_relationship:
         amount: 1600
         position: [1, 1]
   10:
-    instruction: Place beans from the white bowl to the bowl nearest to the microwave.
+    instruction: Place beans from the white bowl to the bowl nearest to the dumbwaiter.
     answer: [grasp_spoon, move_to_white_bowl, scoop, move_to_grey_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
@@ -411,7 +411,7 @@ spatial_relationship:
       food:
         type: ball
         foodname: [kidney beans]
-        colorcode: [darkkhaki]
+        colorcode: [coral]
         amount: 1600
         position: [1, 1]
     - x: 0.5372159458406393
@@ -437,7 +437,7 @@ spatial_relationship:
         amount: 0
         position: [1, 1]
   11:
-    instruction: Place beans from the green bowl to the bowl nearest to the microwave.
+    instruction: Place beans from the green bowl to the bowl nearest to the dumbwaiter.
     answer: [grasp_spoon, move_to_green_bowl, scoop, move_to_grey_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
@@ -450,7 +450,7 @@ spatial_relationship:
       food:
         type: ball
         foodname: [kidney beans]
-        colorcode: [darkkhaki]
+        colorcode: [coral]
         amount: 1600
         position: [1, 1]
     - x: 0.5372159458406393
@@ -476,7 +476,7 @@ spatial_relationship:
         amount: 0
         position: [1, 1]
   12:
-    instruction: Place tanyuan from the white bowl to the bowl nearest to the microwave.
+    instruction: Place tanyuan from the white bowl to the bowl nearest to the dumbwaiter.
     answer: [grasp_spoon, move_to_white_bowl, scoop, move_to_yellow_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
@@ -516,7 +516,7 @@ spatial_relationship:
         position: [1, 1]
   13:
     instruction: Scoop the toppings from the bowl which is the closest to the robot gripper
-      and place it in the empty bowl.
+      and place it in the bowl with tofu pudding.
     answer: [grasp_spoon, move_to_orange_bowl, scoop, move_to_purple_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
@@ -556,7 +556,7 @@ spatial_relationship:
         position: [1, 1]
   14:
     instruction: Scoop the beans from the bowl which is the closest to the robot gripper
-      and place it in the empty bowl.
+      and place it in the bowl with tofu pudding.
     answer: [grasp_spoon, move_to_orange_bowl, scoop, move_to_purple_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
@@ -596,7 +596,7 @@ spatial_relationship:
         position: [1, 1]
   15:
     instruction: Scoop the toppings from the bowl which is the closest to the robot gripper
-      and place it in the empty bowl.
+      and place it in the bowl with tofu pudding.
     answer: [grasp_spoon, move_to_white_bowl, scoop, move_to_purple_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
@@ -675,8 +675,7 @@ spatial_relationship:
         amount: 1600
         position: [1, 1]
   17:
-    instruction: Place bubble from the bowl in the center of the table to the empty
-      bowl.
+    instruction: Place bubble from the bowl in the center of the table to the bowl containing tofu pudding.
     answer: [grasp_spoon, move_to_green_bowl, scoop, move_to_white_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
@@ -756,7 +755,7 @@ spatial_relationship:
         position: [1, 1]
   19:
     instruction: Please scoop the beans from the bowl near the gripper and place it
-      in the empty bowl next to the microwave.
+      in the bowl with tofu pudding next to the dumbwaiter.
     answer: [grasp_spoon, move_to_blue_bowl, scoop, move_to_white_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
@@ -802,12 +801,12 @@ spatial_relationship:
       food:
         type: ball
         foodname: [kidney beans]
-        colorcode: [darkkhaki]
+        colorcode: [coral]
         amount: 1600
         position: [1, 1]
   20:
-    instruction: Please transfer a scoop of kidney beans in the empty bowl next to the
-      microwave.
+    instruction: Please transfer a scoop of kidney beans in the bowl with tofu pudding next to the
+      dumbwaiter.
     answer: [grasp_spoon, move_to_blue_bowl, scoop, move_to_white_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
@@ -820,7 +819,7 @@ spatial_relationship:
       food:
         type: ball
         foodname: [kidney beans]
-        colorcode: [darkkhaki]
+        colorcode: [coral]
         amount: 1600
         position: [1, 1]
     - x: 0.4963791819371244
@@ -908,8 +907,7 @@ spatial_relationship:
         amount: 1600
         position: [1, 1]
   22:
-    instruction: Scoop mung beans from the bowl near the robot gripper to the empty
-      bowl.
+    instruction: Scoop mung beans from the bowl near the robot gripper onto the tofu pudding.
     answer: [grasp_spoon, move_to_red_bowl, scoop, move_to_green_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
@@ -955,11 +953,11 @@ spatial_relationship:
       food:
         type: ball
         foodname: [kidney beans]
-        colorcode: [darkkhaki]
+        colorcode: [coral]
         amount: 1600
         position: [1, 1]
   23:
-    instruction: Scoop the mung beans into the empty container. Please use the bowls
+    instruction: Scoop the mung beans into the container with tofu pudding. Please use the bowls
       nearest to the gripper.
     answer: [grasp_spoon, move_to_red_bowl, scoop, move_to_white_bowl, drop_food,
       put_spoon_back, DONE]
@@ -1010,7 +1008,7 @@ spatial_relationship:
         amount: 0
         position: [1, 1]
   24:
-    instruction: Scoop the red tanyuan into the empty container. Please use the bowls
+    instruction: Scoop the red tanyuan into the bowl containing tofu pudding. Please use the bowls
       nearest to the gripper.
     answer: [grasp_spoon, move_to_green_bowl, scoop, move_to_white_bowl, drop_food,
       put_spoon_back, DONE]
@@ -1141,7 +1139,7 @@ spatial_relationship:
         amount: 0
         position: [1, 1]
   27:
-    instruction: Scoop sweet potato balls from the bowl nearest to the microwave into the blue
+    instruction: Scoop sweet potato balls from the bowl nearest to the dumbwaiter into the blue
       bowl.
     answer: [grasp_spoon, move_to_red_bowl, scoop, move_to_blue_bowl, drop_food, DONE]
     tool: [spoon]
@@ -1180,7 +1178,7 @@ spatial_relationship:
         amount: 0
         position: [1, 1]
   28:
-    instruction: Scoop beans from the bowl nearest to the microwave into the purple
+    instruction: Scoop beans from the bowl nearest to the dumbwaiter into the purple
       bowl.
     answer: [grasp_spoon, move_to_red_bowl, scoop, move_to_purple_bowl, drop_food,
       DONE]
@@ -1220,8 +1218,8 @@ spatial_relationship:
         amount: 0
         position: [1, 1]
   29:
-    instruction: Scoop food items from the bowl closest to the empty bowl and transfer
-      them into the empty bowl.
+    instruction: Scoop food items from the bowl closest to the tofu pudding and transfer
+      them onto the tofu pudding.
     answer: [grasp_spoon, move_to_blue_bowl, scoop, move_to_white_bowl, drop_food,
       DONE]
     tool: [spoon]
@@ -1271,8 +1269,8 @@ spatial_relationship:
         amount: 0
         position: [1, 1]
   30:
-    instruction: Scoop food items from the bowl closest to the empty bowl and transfer
-      them into the empty bowl.
+    instruction: Scoop food items from the bowl closest to the bowl with tofu pudding and transfer
+      them to it.
     answer: [grasp_spoon, move_to_blue_bowl, scoop, move_to_white_bowl, drop_food,
       DONE]
     tool: [spoon]

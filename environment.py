@@ -333,7 +333,7 @@ class IsaacSim():
         asset_options.vhacd_params.resolution = 500000
         if self.env_cfg_dict["containers"] is not None:
             self.container_num = len(self.env_cfg_dict["containers"]) if self.env_cfg_dict["containers"] is not None else 0
-            file_name_list = [f'container/{x["type"]}.urdf' for x in self.env_cfg_dict["containers"]] if self.env_cfg_dict["containers"] is not None else None
+            file_name_list = [f'container/{x["type"]}.urdf' if x["food"]["type"] != "None" else 'container/bowl_tofu.urdf' for x in self.env_cfg_dict["containers"]]
             self.container_asset = [self.gym.load_asset(self.sim, self.asset_root, file_name, asset_options) for file_name in file_name_list]
         else:
             self.container_num = 0
@@ -343,6 +343,7 @@ class IsaacSim():
         self.containers_pose = []
         self.containers_color = []
         self.containers_list = []
+        print(file_name_list)
         self.min_container_dist = 0.2
         min_x = 0.35
         max_x = 0.55
@@ -391,7 +392,7 @@ class IsaacSim():
             food = None
             food_config = self.env_cfg_dict["containers"][i]["food"]
             if food_config['type'] == "None":
-                food = "(empty)"
+                food = "(with tofu pudding)"
             elif food_config['type'] == "ball":
                 food_colors = " and ".join(self.env_cfg_dict["containers"][i]["food"]["foodname"])
                 food = f"(with {food_colors})"                
