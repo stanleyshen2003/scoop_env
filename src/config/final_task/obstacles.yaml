@@ -1,6 +1,6 @@
 obstacles:
   1:
-    instruction: Scoop kidney beans to the empty bowl.
+    instruction: Scoop kidney beans to the bowl with tofu pudding.
     answer: [move_to_orange_bowl, pull_bowl_closer, grasp_spoon, move_to_orange_bowl,
       scoop, move_to_blue_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -13,7 +13,7 @@ obstacles:
       food:
         type: ball
         foodname: [kidney beans]
-        colorcode: [darkkhaki]
+        colorcode: [coral]
         amount: 1600
         position: [1, 1]
     - x: 0.47737942131701244
@@ -39,7 +39,7 @@ obstacles:
         amount: 1600
         position: [1, 1]
   2:
-    instruction: Scoop purple sweet potato balls to the empty bowl.
+    instruction: Scoop purple sweet potato balls to the bowl with tofu pudding.
     answer: [move_to_orange_bowl, pull_bowl_closer, grasp_spoon, move_to_grey_bowl,
       scoop, move_to_blue_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -78,7 +78,7 @@ obstacles:
         amount: 1600
         position: [1, 1]
   3:
-    instruction: Scoop mung beans to the empty bowl.
+    instruction: Scoop mung beans to the bowl with tofu pudding.
     answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
       scoop, move_to_purple_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -173,7 +173,7 @@ obstacles:
         amount: 0
         position: [1, 1]
   6:
-    instruction: Please scoop some beans to the empty bowl.
+    instruction: Please scoop some beans onto the tofu pudding.
     answer: [move_to_pink_bowl, pull_bowl_closer, grasp_spoon, move_to_pink_bowl,
       scoop, move_to_red_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -552,7 +552,7 @@ obstacles:
         amount: 0
         position: [1, 1]
   16:
-    instruction: Place taro balls in the empty bowl.
+    instruction: Place taro balls in the bowl containing tofu pudding.
     answer: [move_to_blue_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
       scoop, move_to_blue_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -580,7 +580,7 @@ obstacles:
         amount: 1600
         position: [1, 1]
   17:
-    instruction: Place beans in the empty bowl.
+    instruction: Place beans in the bowl containing tofu pudding.
     answer: [move_to_green_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
       scoop, move_to_green_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -608,7 +608,7 @@ obstacles:
         amount: 1600
         position: [1, 1]
   18:
-    instruction: Place beans in the empty bowl.
+    instruction: Place beans onto the tofu pudding.
     answer: [move_to_purple_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
       scoop, move_to_purple_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -636,8 +636,7 @@ obstacles:
         amount: 1600
         position: [1, 1]
   19:
-    instruction: Place a scoop of taro balls in the green bowl and heat it up with
-      the microwave.
+    instruction: Place a scoop of taro balls in the green bowl and put it into the dumbwaiter.
     answer: [move_to_green_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
       scoop, move_to_green_bowl, drop_food, put_spoon_back, open_microwave, move_to_green_bowl,
       put_bowl_into_microwave, close_microwave, start_microwave, DONE]
@@ -666,8 +665,7 @@ obstacles:
         amount: 0
         position: [1, 1]
   20:
-    instruction: Place a scoop of taro balls into the empty bowl and heat it up with
-      the microwave.
+    instruction: Place a scoop of taro balls onto the tofu pudding and put it into the dumbwaiter.
     answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
       scoop, move_to_white_bowl, drop_food, put_spoon_back, open_microwave, move_to_white_bowl,
       put_bowl_into_microwave, close_microwave, start_microwave, DONE]
@@ -696,8 +694,7 @@ obstacles:
         amount: 0
         position: [1, 1]
   21:
-    instruction: I want a scoop of white tanyuan in the white bowl heated using the
-      microwave.
+    instruction: I want a scoop of white tanyuan in the white bowl. Put it into the dumbwaiter after you finish scooping.
     answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_yellow_bowl,
       scoop, move_to_white_bowl, drop_food, put_spoon_back, open_microwave, move_to_white_bowl,
       put_bowl_into_microwave, close_microwave, start_microwave, DONE]
@@ -726,7 +723,7 @@ obstacles:
         amount: 0
         position: [1, 1]
   22:
-    instruction: I want a scoop of red beans in the white bowl heated using the microwave.
+    instruction: I want a scoop of red beans in the white bowl. Put it into the dumbwaiter after scooping.
     answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
       scoop, move_to_white_bowl, drop_food, put_spoon_back, open_microwave, move_to_white_bowl,
       put_bowl_into_microwave, close_microwave, start_microwave, DONE]
@@ -755,7 +752,7 @@ obstacles:
         amount: 0
         position: [1, 1]
   23:
-    instruction: Heat up a scoop of bubble in the yellow bowl.
+    instruction: Place a scoop of bubble in the yellow bowl and put it into the dumbwaiter.
     answer: [move_to_yellow_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
       scoop, move_to_yellow_bowl, drop_food, put_spoon_back, open_microwave, move_to_yellow_bowl,
       put_bowl_into_microwave, close_microwave, start_microwave, DONE]
@@ -784,7 +781,7 @@ obstacles:
         amount: 0
         position: [1, 1]
   24:
-    instruction: Heat up a scoop of beans in the blue bowl.
+    instruction: Place a scoop of beans in the blue bowl and put it into the dumbwaiter.
     answer: [move_to_blue_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
       scoop, move_to_blue_bowl, drop_food, put_spoon_back, open_microwave, move_to_blue_bowl,
       put_bowl_into_microwave, close_microwave, start_microwave, DONE]
@@ -813,7 +810,7 @@ obstacles:
         amount: 0
         position: [1, 1]
   25:
-    instruction: Please scoop kidney beans to the purple bowl and heat it up.
+    instruction: Please scoop kidney beans to the purple bowl and put the purple bowl into the dumbwaiter.
     answer: [move_to_pink_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
       scoop, move_to_purple_bowl, drop_food, put_spoon_back, open_microwave, move_to_purple_bowl,
       put_bowl_into_microwave, close_microwave, start_microwave, DONE]
@@ -827,7 +824,7 @@ obstacles:
       food:
         type: ball
         foodname: [kidney beans]
-        colorcode: [darkkhaki]
+        colorcode: [coral]
         amount: 1600
         position: [1, 1]
     - x: 0.6
@@ -853,7 +850,7 @@ obstacles:
         amount: 0
         position: [1, 1]
   26:
-    instruction: Please scoop some tanyuan to the pink bowl and heat it up.
+    instruction: Please scoop some tanyuan to the pink bowl and put it into the dumbwaiter.
     answer: [move_to_pink_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
       scoop, move_to_pink_bowl, drop_food, put_spoon_back, open_microwave, move_to_pink_bowl,
       put_bowl_into_microwave, close_microwave, start_microwave, DONE]
@@ -893,7 +890,7 @@ obstacles:
         amount: 0
         position: [1, 1]
   27:
-    instruction: Scoop beans into the empty bowl.
+    instruction: Scoop beans into the bowl with tofu pudding.
     answer: [move_to_purple_bowl, pull_bowl_closer, grasp_spoon, move_to_purple_bowl,
       scoop, move_to_green_bowl, drop_food, DONE]
     tool: [spoon]
@@ -921,7 +918,7 @@ obstacles:
         amount: 0
         position: [1, 1]
   28:
-    instruction: Scoop bubble into the empty bowl.
+    instruction: Scoop bubble into the bowl with tofu pudding.
     answer: [move_to_purple_bowl, pull_bowl_closer, grasp_spoon, move_to_purple_bowl,
       scoop, move_to_white_bowl, drop_food, DONE]
     tool: [spoon]
@@ -949,8 +946,7 @@ obstacles:
         amount: 0
         position: [1, 1]
   29:
-    instruction: Could you place a scoop of tanyuan into the empty bowl and heat them
-      up, please?
+    instruction: Could you place a scoop of tanyuan into the bowl with tofu pudding and put it into the dumbwaiter?
     answer: [move_to_green_bowl, pull_bowl_closer, grasp_spoon, move_to_gray_bowl,
       scoop, move_to_green_bowl, drop_food, put_spoon_back, open_microwave, move_to_green_bowl,
       put_bowl_into_microwave, start_microwave]
@@ -979,8 +975,7 @@ obstacles:
         amount: 0
         position: [1, 1]
   30:
-    instruction: Could you place a scoop of sweet potato balls into the empty bowl and heat them
-      up, please?
+    instruction: Could you place a scoop of sweet potato balls onto the tofu pudding bowl and put it into the dumbwaiter?
     answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_green_bowl,
       scoop, move_to_white_bowl, drop_food, put_spoon_back, open_microwave, move_to_white_bowl,
       put_bowl_into_microwave, start_microwave]

@@ -34,7 +34,7 @@ example:
       food:
         type: ball
         foodname: [red, green, kidneybean]
-        colorcode: [brown, coral, coral]
+        colorcode: [brown, darkkhaki, coral]
         amount: 1600
         position: [1, 1]
   2: # cannot stir
@@ -138,7 +138,7 @@ example:
       food:
         type: ball
         foodname: [kidneybean]
-        colorcode: [darkkhaki]
+        colorcode: [coral]
         amount: 1600
         position: [1, 1]
     

@@ -91,7 +91,7 @@ distance:
       food:
         type: ball
         foodname: [kidney beans]
-        colorcode: [darkkhaki]
+        colorcode: [coral]
         amount: 1600
         position: [1, 1]
     - x: 0.5242868350317109
@@ -223,7 +223,7 @@ distance:
         amount: 0
         position: [1, 1]
   7:
-    instruction: Transfer some sweet potato balls to the empty bowl.
+    instruction: Transfer some sweet potato balls to the bowl with tofu pudding.
     answer: [move_to_green_bowl, pull_bowl_closer, grasp_spoon, move_to_green_bowl,
       scoop, move_to_purple_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -262,7 +262,7 @@ distance:
         amount: 1600
         position: [1, 1]
   8:
-    instruction: Transfer some white tanyuan to the empty bowl.
+    instruction: Transfer some white tanyuan to the bowl with tofu pudding.
     answer: [move_to_blue_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
       scoop, move_to_purple_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -301,7 +301,7 @@ distance:
         amount: 1600
         position: [1, 1]
   9:
-    instruction: Transfer some kidney beans to the empty bowl.
+    instruction: Transfer some kidney beans to the bowl with tofu pudding.
     answer: [move_to_green_bowl, pull_bowl_closer, grasp_spoon, move_to_green_bowl,
       scoop, move_to_red_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -314,7 +314,7 @@ distance:
       food:
         type: ball
         foodname: [kidney beans]
-        colorcode: [darkkhaki]
+        colorcode: [coral]
         amount: 1600
         position: [1, 1]
     - x: 0.4043663444108435
@@ -375,11 +375,11 @@ distance:
       food:
         type: ball
         foodname: [kidney beans]
-        colorcode: [darkkhaki]
+        colorcode: [coral]
         amount: 200
         position: [1, 1]
   11:
-    instruction: Put a scoop of mung beans into the empty bowl please.
+    instruction: Put a scoop of mung beans into the bowl with tofu pudding please.
     answer: [move_to_blue_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
       scoop, move_to_white_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -457,7 +457,7 @@ distance:
         amount: 200
         position: [1, 1]
   13:
-    instruction: Place a scoop of white tanyuan into the empty bowl.
+    instruction: Place a scoop of white tanyuan into the bowl with tofu pudding.
     answer: [move_to_blue_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
       scoop, move_to_white_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -496,7 +496,7 @@ distance:
         amount: 800
         position: [1, 1]
   14:
-    instruction: Place a scoop of white tanyuan into the empty bowl.
+    instruction: Place a scoop of white tanyuan into the bowl with tofu pudding.
     answer: [move_to_blue_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
       scoop, move_to_white_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -535,7 +535,7 @@ distance:
         amount: 800
         position: [1, 1]
   15:
-    instruction: Place a scoop of sweet potato balls into the empty bowl.
+    instruction: Place a scoop of sweet potato balls onto the tofu pudding.
     answer: [move_to_blue_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
       scoop, move_to_green_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -563,7 +563,7 @@ distance:
         amount: 0
         position: [1, 1]
   16:
-    instruction: Scoop sweet potato balls into the empty bowl please.
+    instruction: Scoop sweet potato balls onto the tofu pudding please.
     answer: [move_to_pink_bowl, pull_bowl_closer, grasp_spoon, move_to_pink_bowl,
       scoop, move_to_grey_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -602,7 +602,7 @@ distance:
         amount: 800
         position: [1, 1]
   17:
-    instruction: Scoop taro balls into the empty bowl please.
+    instruction: Scoop taro balls into bowl containing tofu pudding please.
     answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
       scoop, move_to_red_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -641,7 +641,7 @@ distance:
         amount: 800
         position: [1, 1]
   18:
-    instruction: Scoop white tanyuan into the empty bowl please.
+    instruction: Scoop white tanyuan into the bowl containing tofu pudding please.
     answer: [move_to_pink_bowl, pull_bowl_closer, grasp_spoon, move_to_pink_bowl,
       scoop, move_to_grey_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -669,7 +669,7 @@ distance:
         amount: 0
         position: [1, 1]
   19:
-    instruction: Please scoop beans to the empty bowl.
+    instruction: Please scoop beans onto the tofu pudding.
     answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
       scoop, move_to_blue_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -697,7 +697,7 @@ distance:
         amount: 0
         position: [1, 1]
   20:
-    instruction: Please scoop beans to the empty bowl.
+    instruction: Please scoop beans to the bowl with tofu pudding.
     answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
       scoop, move_to_green_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -710,7 +710,7 @@ distance:
       food:
         type: ball
         foodname: [kidney beans]
-        colorcode: [darkkhaki]
+        colorcode: [coral]
         amount: 1400
         position: [1, 1]
     - x: 0.36461166197268696
@@ -725,7 +725,7 @@ distance:
         amount: 0
         position: [1, 1]
   21:
-    instruction: Please scoop beans into the empty bowl.
+    instruction: Please scoop beans into the bowl with tofu pudding.
     answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
       scoop, move_to_purple_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -738,7 +738,7 @@ distance:
       food:
         type: ball
         foodname: [kidney beans]
-        colorcode: [darkkhaki]
+        colorcode: [coral]
         amount: 1600
         position: [1, 1]
     - x: 0.37281732563381137
@@ -753,7 +753,7 @@ distance:
         amount: 0
         position: [1, 1]
   22:
-    instruction: Please scoop tanyuan into the empty bowl.
+    instruction: Please scoop tanyuan into the bowl with tofu pudding.
     answer: [move_to_blue_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
       scoop, move_to_white_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -865,7 +865,7 @@ distance:
         amount: 0
         position: [1, 1]
   26:
-    instruction: Scoop food to the empty bowl.
+    instruction: Scoop food to the bowl containing tofu pudding.
     answer: [move_to_blue_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl,
       scoop, move_to_purple_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
@@ -893,7 +893,7 @@ distance:
         amount: 0
         position: [1, 1]
   27:
-    instruction: Please place a scoop of taro balls into the empty bowl.
+    instruction: Please place a scoop of taro balls onto the tofu pudding.
     answer: [move_to_pink_bowl, pull_bowl_closer, grasp_spoon, move_to_pink_bowl,
       scoop, move_to_green_bowl, drop_food, DONE]
     tool: [spoon]
@@ -921,7 +921,7 @@ distance:
         amount: 0
         position: [1, 1]
   28:
-    instruction: Please place a scoop of bubble into the empty bowl.
+    instruction: Please place a scoop of bubble into the bowl with tofu pudding.
     answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
       scoop, move_to_blue_bowl, drop_food, DONE]
     tool: [spoon]
@@ -949,7 +949,7 @@ distance:
         amount: 0
         position: [1, 1]
   29:
-    instruction: Scoop some sweet potato balls into the empty bowl.
+    instruction: Scoop some sweet potato balls into the bowl with tofu pudding.
     answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
       scoop, move_to_gray_bowl, drop_food, DONE]
     tool: [spoon]
@@ -988,7 +988,7 @@ distance:
         amount: 1200
         position: [1, 1]
   30:
-    instruction: Scoop some mung beans into the empty bowl.
+    instruction: Scoop some mung beans into the bowl with tofu pudding.
     answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl,
       scoop, move_to_gray_bowl, drop_food, DONE]
     tool: [spoon]

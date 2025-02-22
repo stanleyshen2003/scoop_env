@@ -381,7 +381,7 @@ class IsaacSim():
             food = None
             food_config = self.env_cfg_dict["containers"][i]["food"]
             if food_config['type'] == "None":
-                food = "(empty)"
+                food = "(with tofu pudding)"
             elif food_config['type'] == "ball":
                 food_colors = " and ".join(self.env_cfg_dict["containers"][i]["food"]["foodname"])
                 food = f"(with {food_colors})"                
