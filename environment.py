@@ -36,7 +36,7 @@ import cv2
 
 from time import time, sleep
 from PIL import Image, ImageDraw, ImageFont
-from typing import List
+from typing import List, Tuple, Optional
 torch.pi = math.pi
 
 import src.action_state as action_state
@@ -183,12 +183,13 @@ class IsaacSim():
                 "K": "put_bowl_into_microwave",
                 "L": "take_bowl_out_microwave",
                 "SPACE": "choose action",
+                "A": "get_trajectory",
                 # "P": "change_ball_friction"
             }
             for i, container in enumerate(self.containers_indices):
                 if i + 1 > 9:
                     break
-                setting[str(i + 1)] = f"move_{container}"
+                setting[str(i + 1)] = f"move_to_{container}"
             self.action_list = list(setting.values())
             
         setting['X'] = 'save'
@@ -279,11 +280,21 @@ class IsaacSim():
         camera_props.width = 1920
         camera_props.height = 1080
         camera_props.enable_tensors = True
+        self.camera_props = camera_props
         cam_handle = self.gym.create_camera_sensor(env_ptr, camera_props)
         # self.gym.set_camera_location(cam_handle, env_ptr, gymapi.Vec3(1.5, 0, 1.2), gymapi.Vec3(0, 0, 0))
         self.gym.set_camera_location(cam_handle, env_ptr, gymapi.Vec3(1., 0, 1.5), gymapi.Vec3(0, 0, 0))
         self.camera_handles.append(cam_handle)
-        
+    
+    def get_camera_intrinsic(self):
+        width, height = self.camera_props.width, self.camera_props.height
+        horizontal_fov = self.camera_props.horizontal_fov
+        fx = width / (2 * math.tan(horizontal_fov / 2))
+        fy = fx
+        cx = width / 2
+        cy = height / 2
+        return torch.tensor([[fx, 0, cx], [0, fy, cy], [0, 0, 1]], dtype=torch.float32)
+    
     def _create_ground_plane(self):
         plane_params = gymapi.PlaneParams()
         plane_params.normal = gymapi.Vec3(0.0, 0.0, 1.0)
@@ -389,7 +400,7 @@ class IsaacSim():
                 
             rgba = to_rgba(color_code)
             color = gymapi.Vec3(rgba[0], rgba[1], rgba[2])
-            self.containers_indices[f"{c}_{container_type} {food}"] = []
+            self.containers_indices[f"{c}_{container_type}"] = []
             self.containers_list.append(f"{c}_{container_type} {food}")
             self.containers_pose.append(container_pose)
             self.containers_color.append(color)
@@ -401,7 +412,7 @@ class IsaacSim():
             self.gym.set_actor_scale(env_ptr, container_handle, 0.5)
             self.gym.set_rigid_body_color(env_ptr, container_handle, 0, gymapi.MESH_VISUAL_AND_COLLISION, self.containers_color[i])
             container_idx = self.gym.get_actor_rigid_body_index(env_ptr, container_handle, 0, gymapi.DOMAIN_SIM)
-            self.containers_indices[self.containers_list[i]].append(container_idx)
+            self.containers_indices[self.containers_list[i].split()[0]].append(container_idx)
 
     def create_butter(self):
         file_name = 'food/butter.urdf'
@@ -752,6 +763,7 @@ class IsaacSim():
         self.forked_food_indices = to_torch(self.forked_food_indices, dtype=torch.long, device=self.device)
         self.microwave_indices = to_torch(self.microwave_indices, dtype=torch.long, device=self.device)
         for container in self.containers_list:
+            container = container.split()[0]
             if len(self.containers_indices[container]) > 0:
                 self.containers_indices[container] = to_torch(self.containers_indices[container], dtype=torch.long, device=self.device) 
             else:
@@ -883,6 +895,320 @@ class IsaacSim():
         dpose *= self.delta['move_around']
         return dpose
     
+    def get_trajectory(self, action) -> List[torch.Tensor]:
+        ## TODO
+        ## move, take_tool, put_tool, scoop, put_food, open_microwave, close_microwave, start_microwave, (stir)
+        target_object = None
+        if "move" in action:
+            target_object = action.replace("move_to_", "").split()[0]
+            action = "move"
+            
+        traj_dict = {
+            "move": self._move_traj,
+            "grasp_spoon": self._take_tool_traj,
+            "put_spoon_back": self._put_tool_traj,
+            "scoop": self._scoop_traj,
+            "drop_food": self._scoop_put_traj,
+            "open_microwave": self._open_microwave_traj,
+            "close_microwave": self._close_microwave_traj,
+            "start_microwave": self._start_microwave_traj,
+            "pull_bowl_closer": self._pull_bowl_traj,
+            "put_bowl_into_microwave": self._put_bowl_into_microwave_traj,
+        }
+        
+        traj = traj_dict.get(action, None)
+        if traj is None:
+            return None, None
+        hand_pos = self.rb_state_tensor[self.franka_hand_indices, :3]
+        hand_rot = self.rb_state_tensor[self.franka_hand_indices, 3:7]
+        params = {
+            "hand_pos": hand_pos,  
+            "hand_rot": hand_rot,  
+            "object": target_object,
+            "tool": "spoon",
+        }
+        param_names = inspect.signature(traj).parameters.keys()
+        params = {k: v for k, v in params.items() if k in param_names}
+        pos_set, rot_set = traj(**params)
+        return [torch.cat([pos, rot], dim=1) for pos, rot in zip(pos_set, rot_set)]
+    
+    def _move_traj(self, hand_rot, object):
+        object_type = "tool" if object in self.tool_list else "container"
+        self.indices_list = {
+            "tool": self.tool_indices,
+            "container": self.containers_indices
+        }
+        object_indice = self.indices_list[object_type][object]
+        object_pos = self.rb_state_tensor[object_indice, :3] + torch.tensor([-0.05, 0, 0.4], device=self.device)
+        return [object_pos], [hand_rot]
+    
+    def _take_tool_traj(self, tool):
+        tool_pos = self.rb_state_tensor[self.tool_indices[tool], :3]
+        tool_rot = self.rb_state_tensor[self.tool_indices[tool], 3:7]
+        rot = gymapi.Quat(tool_rot[:, 0], tool_rot[:, 1], tool_rot[:, 2], tool_rot[:, 3])
+        roll, pitch, yaw = quaternion_to_euler(rot)
+        roll += 3.14
+        rot = euler_to_quaternion(roll, pitch, yaw)
+        hold_hight = 0.002
+        
+        pos_set = [
+            torch.tensor([[tool_pos[:, 0], tool_pos[:, 1], tool_pos[:, 2] + 0.17]], device=self.device),
+            torch.tensor([[tool_pos[:, 0], tool_pos[:, 1], tool_pos[:, 2] + 0.095 - hold_hight]], device=self.device),
+            torch.tensor([[tool_pos[:, 0], tool_pos[:, 1], tool_pos[:, 2] + 0.13]], device=self.device),
+            torch.tensor([[tool_pos[:, 0], tool_pos[:, 1] + 0.05, tool_pos[:, 2] + 0.13]], device=self.device),
+            torch.tensor([[tool_pos[:, 0], tool_pos[:, 1] + 0.05, tool_pos[:, 2] + 0.2]], device=self.device)
+        ]
+        rot_set = [torch.tensor([[rot.x, rot.y, rot.z, rot.w]], device=self.device)] * len(pos_set)
+        return pos_set, rot_set
+    
+    def _put_tool_traj(self, tool):
+        tool_pos = self.tool_pose[tool].p
+        tool_rot = self.tool_pose[tool].r
+        rot = tool_rot
+        roll, pitch, yaw = quaternion_to_euler(rot)
+        roll += 3.14
+        rot = euler_to_quaternion(roll, pitch, yaw)
+        pos_set = [
+            torch.tensor([[tool_pos.x, tool_pos.y + 0.05, tool_pos.z + 0.18]], device=self.device),
+            torch.tensor([[tool_pos.x, tool_pos.y + 0.05, tool_pos.z + 0.15]], device=self.device),
+            torch.tensor([[tool_pos.x, tool_pos.y - 0.0026, tool_pos.z + 0.13]], device=self.device),
+            torch.tensor([[tool_pos.x, tool_pos.y - 0.0026, tool_pos.z + 0.085]], device=self.device),
+            torch.tensor([[tool_pos.x, tool_pos.y - 0.0026, tool_pos.z + 0.2]], device=self.device)
+        ]
+        rot_set = [torch.tensor([[rot.x, rot.y, rot.z, rot.w]], device=self.device)] * len(pos_set)
+        return pos_set, rot_set
+    
+    def _scoop_traj(self, hand_pos):
+        init_pos = hand_pos.clone()
+        init_pos[:, 2] = 0
+        best_tensor = self.find_nearest_container(init_pos)
+        init_pos = best_tensor - torch.tensor([[0.01, -0.02, 0.0]], device=self.device)
+        init_pos[0][2] = 0.035
+        init_pos[0][1] += 0.0127
+        #init_pos[0][0] -= 0.02
+        # original pos: 0.3871, 0.0877, container pos: 0.43999999999999995, 0.07500000000000001
+        pos_set = [
+            init_pos + torch.tensor([[0.0000, 0.0000, 0.7836]], device=self.device),
+            init_pos + torch.tensor([[-0.0300,  0.0000,  0.7228]], device=self.device),
+            init_pos + torch.tensor([[-0.0299,  0.0109,  0.6728]], device=self.device),
+            init_pos + torch.tensor([[-0.0271,  0.0050,  0.6808]], device=self.device),
+            init_pos + torch.tensor([[-0.0264,  0.0054,  0.6716]], device=self.device),
+            init_pos + torch.tensor([[0.0169, 0.0043, 0.6700]], device=self.device),
+            init_pos + torch.tensor([[-0.0288,  0.0043,  0.6638]], device=self.device),
+            init_pos + torch.tensor([[-0.0295,  0.0043,  0.6638]], device=self.device),
+            init_pos + torch.tensor([[-0.0300,  0.0038,  0.6650]], device=self.device),
+            init_pos + torch.tensor([[-0.0352,  0.0035,  0.6668]], device=self.device),
+            init_pos + torch.tensor([[-0.0505,  0.0031,  0.6698]], device=self.device),
+            init_pos + torch.tensor([[-0.0807,  0.0022,  0.6728]], device=self.device),
+            init_pos + torch.tensor([[-0.1024,  0.0019,  0.6758]], device=self.device),
+            init_pos + torch.tensor([[-0.1016,  0.0021,  0.6708]], device=self.device),
+            init_pos + torch.tensor([[-0.1370,  0.0019,  0.6808]], device=self.device),
+            init_pos + torch.tensor([[-0.1830,  0.0017,  0.7000]], device=self.device)
+        ]
+
+        rot_set = [
+            torch.tensor([[ 0.9945,  0.0413, -0.0809,  0.0523]], device=self.device),
+            torch.tensor([[ 0.9945,  0.0410, -0.0808,  0.0522]], device=self.device),
+            torch.tensor([[ 0.9953,  0.0393, -0.0701,  0.0542]], device=self.device),
+            torch.tensor([[ 0.9976,  0.0345, -0.0243,  0.0549]], device=self.device),
+            torch.tensor([[ 0.9977,  0.0345, -0.0176,  0.0563]], device=self.device),
+            torch.tensor([[0.9975, 0.0310, 0, 0.0575]], device=self.device),
+            torch.tensor([[0.9975, 0.0310, 0.0288, 0.0575]], device=self.device),
+            torch.tensor([[0.9965, 0.0388, 0.0500, 0.0580]], device=self.device),
+            torch.tensor([[0.9952, 0.0278, 0.0736, 0.0586]], device=self.device),
+            torch.tensor([[0.9925, 0.0257, 0.1034, 0.0594]], device=self.device),
+            torch.tensor([[0.9869, 0.0225, 0.1478, 0.0604]], device=self.device),
+            torch.tensor([[0.9621, 0.0144, 0.2648, 0.0626]], device=self.device),
+            torch.tensor([[0.9340, 0.0089, 0.3514, 0.0637]], device=self.device),
+            torch.tensor([[0.9337, 0.0093, 0.4071, 0.0639]], device=self.device),
+            torch.tensor([[0.8848, 0.0023, 0.5116, 0.0641]], device=self.device),
+            torch.tensor([[0.8844, 0.0025, 0.5116, 0.0640]], device=self.device)
+        ]
+        return pos_set, rot_set
+    
+    def _scoop_put_traj(self, hand_pos):
+        init_pos = hand_pos.clone()
+        init_pos[:, 2] = 0
+        best_tensor = self.find_nearest_container(init_pos)
+        init_pos = best_tensor - torch.tensor([[0.01, -0.02, 0.0]], device=self.device)
+        init_pos[0][2] = 0.03
+        init_pos[0][1] += 0.0127
+        #init_pos[0][0] -= 0.02
+        # original pos: 0.3871, 0.0877, container pos: 0.43999999999999995, 0.07500000000000001
+        x_shift = 0.03
+        z_shift = 0.15
+        pos_set = [ 
+            init_pos + torch.tensor([[-x_shift-0.1024,  0.0019,  0.6758+z_shift]], device=self.device), 
+            init_pos + torch.tensor([[-x_shift-0.0807,  0.0022,  0.6728+z_shift]], device=self.device), 
+            init_pos + torch.tensor([[-x_shift-0.0505,  0.0031,  0.6698+z_shift]], device=self.device), 
+            init_pos + torch.tensor([[-x_shift-0.0352,  0.0035,  0.6668+z_shift]], device=self.device), 
+            init_pos + torch.tensor([[-x_shift-0.0300,  0.0038,  0.6650+z_shift]], device=self.device), 
+            init_pos + torch.tensor([[-x_shift-0.0295,  0.0043,  0.6638+z_shift]], device=self.device), 
+            init_pos + torch.tensor([[-x_shift-0.0288,  0.0043,  0.6638+z_shift]], device=self.device), 
+            init_pos + torch.tensor([[-x_shift+0.0169, 0.0043, 0.6700+z_shift]], device=self.device), 
+            init_pos + torch.tensor([[-x_shift+0.0000, 0.0043, 0.6700+z_shift]], device=self.device), 
+            init_pos + torch.tensor([[-x_shift+0.0000, 0.0000, 0.7836+z_shift]], device=self.device),
+        ]
+        rot_set = [ 
+            torch.tensor([[0.9340, 0.0089, 0.3514, 0.0637]], device=self.device), 
+            torch.tensor([[0.9621, 0.0144, 0.2648, 0.0626]], device=self.device), 
+            torch.tensor([[0.9869, 0.0225, 0.1478, 0.0604]], device=self.device), 
+            torch.tensor([[0.9925, 0.0257, 0.1034, 0.0594]], device=self.device), 
+            torch.tensor([[0.9952, 0.0278, 0.0736, 0.0586]], device=self.device), 
+            torch.tensor([[0.9965, 0.0388, 0.0500, 0.0580]], device=self.device), 
+            torch.tensor([[0.9975, 0.0310, 0.0288, 0.0575]], device=self.device), 
+            torch.tensor([[0.9975, 0.0310, 0.0000, 0.0575]], device=self.device),
+            torch.tensor([[ 0.9893,  0.0362, -0.1308,  0.0528]], device=self.device),
+            torch.tensor([[ 0.9945,  0.0413, -0.0809,  0.0523]], device=self.device),
+        ]
+        return pos_set, rot_set
+    
+    def _open_microwave_traj(self):
+        pos_set = [
+            torch.tensor([[0.5815, 0.2740, 0.63]], device=self.device),
+            # torch.tensor([[0.6021, 0.3101, 0.6262]], device=self.device),
+            # torch.tensor([[0.6021, 0.3101, 0.6262]], device=self.device),
+            # torch.tensor([[0.6021, 0.3101, 0.6262]], device=self.device),
+            
+            torch.tensor([[0.6021, 0.321, 0.6262]], device=self.device),
+            torch.tensor([[0.6021, 0.321, 0.6262]], device=self.device),
+            torch.tensor([[0.6021, 0.321, 0.6262]], device=self.device),
+            
+            # torch.tensor([[0.58, 0.3053, 0.6002]], device=self.device)
+            torch.tensor([[0.5865, 0.2111, 0.6281]], device=self.device),
+            torch.tensor([[0.5528, 0.1524, 0.6283]], device=self.device),
+            torch.tensor([[0.4601, 0.0769, 0.6280]], device=self.device),
+            torch.tensor([[0.2797, 0.0333, 0.6281]], device=self.device),
+            torch.tensor([[0.2797, 0.0333, 0.6281]], device=self.device),
+            torch.tensor([[0.2851, -0.0098, 0.6229]], device=self.device),
+            torch.tensor([[0.3119, 0.0020, 0.8432]], device=self.device)
+        ]
+        rot_set = [
+            torch.tensor([[ 0.5699, 0.4882, 0.4497, -0.4844]], device=self.device),
+            torch.tensor([[ 0.5096, 0.5654, 0.4241, -0.4906]], device=self.device),
+            torch.tensor([[ 0.5096, 0.5654, 0.4241, -0.4906]], device=self.device),
+            torch.tensor([[ 0.5096, 0.5654, 0.4241, -0.4906]], device=self.device),
+            torch.tensor([[ 0.5193, 0.5606, 0.4172, -0.4920]], device=self.device),
+            torch.tensor([[ 0.5088, 0.5718, 0.4091, -0.4968]], device=self.device),
+            torch.tensor([[ 0.5470, 0.5337, 0.4521, -0.4600]], device=self.device),
+            torch.tensor([[ 0.5951, 0.4882, 0.4980, -0.3993]], device=self.device),
+            torch.tensor([[ 0.5951, 0.4882, 0.4980, -0.3993]], device=self.device),
+            torch.tensor([[ 0.5951, 0.4882, 0.4980, -0.3993]], device=self.device),
+            torch.tensor([[ 0.9634, 0.1132, 0.2373, -0.0520]], device=self.device)
+        ]
+        return pos_set, rot_set
+    
+    def _close_microwave_traj(self):
+        pos_set = [
+            torch.tensor([[0.3119, 0.0020, 0.8432]], device=self.device),
+            torch.tensor([[0.2851, -0.0098, 0.6229]], device=self.device),
+            torch.tensor([[0.2797, 0.0333, 0.6281]], device=self.device),
+            torch.tensor([[0.2797, 0.0333, 0.6281]], device=self.device),
+            torch.tensor([[0.4601, 0.0769, 0.6280]], device=self.device),
+            torch.tensor([[0.5528, 0.1524, 0.6283]], device=self.device),
+            torch.tensor([[0.5865, 0.2111, 0.6281]], device=self.device),
+            torch.tensor([[0.6081, 0.3025, 0.6262]], device=self.device),
+            torch.tensor([[0.5499, 0.2111, 0.6341]], device=self.device)
+        ]
+
+        rot_set = [
+            torch.tensor([[ 0.9634, 0.1132, 0.2373, -0.0520]], device=self.device),
+            torch.tensor([[ 0.5951, 0.4882, 0.4980, -0.3993]], device=self.device),
+            torch.tensor([[ 0.5951, 0.4882, 0.4980, -0.3993]], device=self.device),
+            torch.tensor([[ 0.5951, 0.4882, 0.4980, -0.3993]], device=self.device),
+            torch.tensor([[ 0.5470, 0.5337, 0.4521, -0.4600]], device=self.device),
+            torch.tensor([[ 0.5088, 0.5718, 0.4091, -0.4968]], device=self.device),
+            torch.tensor([[ 0.5193, 0.5606, 0.4172, -0.4920]], device=self.device),
+            torch.tensor([[ 0.5096, 0.5654, 0.4241, -0.4906]], device=self.device),
+            torch.tensor([[ 0.5329,  0.5489,  0.4332, -0.4765]], device=self.device),
+            torch.tensor([[ 0.9963, 0.0367, 0.0521, 0.0577]], device=self.device)
+        ]
+        return pos_set, rot_set
+    
+    def _start_microwave_traj(self):
+        pos_set = [
+            torch.tensor([[0.6581, 0.2500, 0.6262]], device=self.device),
+            torch.tensor([[0.6581, 0.3025, 0.6341]], device=self.device),
+            torch.tensor([[0.6581, 0.2500, 0.6262]], device=self.device)
+        ]
+        rot_set = [
+            torch.tensor([[ 0.5329, 0.5489, 0.4332, -0.4765]], device=self.device),
+            torch.tensor([[ 0.5329, 0.5489, 0.4332, -0.4765]], device=self.device),
+            torch.tensor([[ 0.5329, 0.5489, 0.4332, -0.4765]], device=self.device)
+        ]
+        return pos_set, rot_set
+    
+    def _pull_bowl_traj(self, hand_pos):
+        init_pos = hand_pos.clone()
+        init_pos[:, 2] = 0
+        best_tensor = self.find_nearest_container(init_pos)
+        init_pos = best_tensor - torch.tensor([[0.01, -0.02, 0.0]], device=self.device)
+        init_pos[0][2] = 0.03
+        init_pos[0][1] += 0.0127
+        
+        pos_set = [
+            init_pos + torch.tensor([[-0.07, -0.07, 0.7836]], device=self.device),
+            init_pos + torch.tensor([[-0.07, -0.07,  0.57]], device=self.device),
+            init_pos + torch.tensor([[-0.07, -0.07,  0.57]], device=self.device),
+            torch.tensor([[0.45,0,0.62]], device=self.device),
+            torch.tensor([[0.45,0,0.62]], device=self.device),
+            torch.tensor([[0.45,0,0.8]], device=self.device),
+        ]
+
+        rot_set = [
+            torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
+            torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
+            torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
+            torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
+            torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
+            torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device)
+        ]
+        return pos_set, rot_set
+    
+    def _put_bowl_into_microwave_traj(self, hand_pos):
+        init_pos = hand_pos.clone()
+        init_pos[:, 2] = 0
+        best_tensor = self.find_nearest_container(init_pos)
+        init_pos = best_tensor - torch.tensor([[0.01, -0.02, 0.0]], device=self.device)
+        init_pos[0][2] = 0.03
+        init_pos[0][1] += 0.0127
+        pos_set = [
+            init_pos + torch.tensor([[-0.07, -0.07, 0.7836]], device=self.device),
+            init_pos + torch.tensor([[-0.07, -0.07,  0.6]], device=self.device),
+            init_pos + torch.tensor([[-0.07, -0.07,  0.6]], device=self.device),
+            init_pos + torch.tensor([[-0.07, -0.07,  0.6]], device=self.device),
+            torch.tensor([[0.4794, 0.0003, 0.6256]], device=self.device),
+            torch.tensor([[0.4794, 0.1503, 0.6256]], device=self.device),
+            torch.tensor([[0.4794, 0.2803, 0.6277]], device=self.device),
+            torch.tensor([[0.4794, 0.3203, 0.6277]], device=self.device),
+            torch.tensor([[0.4794, 0.3321, 0.6277]], device=self.device),
+            torch.tensor([[0.4794, 0.3321, 0.6700]], device=self.device),
+            torch.tensor([[0.4794, 0.2621, 0.6700]], device=self.device),
+            torch.tensor([[0.4794, 0.2621, 0.6277]], device=self.device),
+            torch.tensor([[0.4794, 0.3321, 0.6277]], device=self.device),
+            torch.tensor([[0.4794, 0.3383, 0.6277]], device=self.device)
+            
+        ]
+
+        rot_set = [
+            torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
+            torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
+            torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
+
+            torch.tensor([[ 0.9864,  0.0982,  0.1127, -0.0682]], device=self.device),
+            torch.tensor([[ 0.9864,  0.0982,  0.1127, -0.0682]], device=self.device),
+            torch.tensor([[ 0.9842, -0.0319,  0.0889, -0.1498]], device=self.device),
+            torch.tensor([[ 0.9842, -0.0319,  0.0889, -0.1498]], device=self.device),
+            torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+            torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+            torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+            torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+            torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+            torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+            torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device)
+        ]
+        return pos_set, rot_set
+        
     def move(self, object: str, pos=None, rot=None, slow=False):
         object_type = "tool" if object in self.tool_list else "container"
         zero = torch.tensor([0., 0., 0.], device=self.device)
@@ -908,14 +1234,14 @@ class IsaacSim():
         to_axis = rot[:, :3] - hand_rot[:, :3]
         axis_dist = torch.norm(to_axis, dim=1)
         w_dist = abs(rot[:, -1] - hand_rot[:, -1])
-        if not self.is_acting[f'move_{object}'] and not self.reach_goal_position(goal_dist, axis_dist, w_dist):
-            self.is_acting[f'move_{object}'] = True
+        if not self.is_acting[f'move_to_{object}'] and not self.reach_goal_position(goal_dist, axis_dist, w_dist):
+            self.is_acting[f'move_to_{object}'] = True
         pos_err = torch.where(goal_dist > self.goal_offset, pos - hand_pos, zero)
         pos_err = torch.where(xy_dist > xy_offset, torch.cat([pos_err[:, :2], torch.tensor([[0]], device=self.device)], -1), pos_err)
         orn_err = torch.where(axis_dist > self.axis_offset or w_dist > self.w_offset, self.orientation_error(rot, hand_rot), zero)
         if goal_dist <= self.goal_offset and axis_dist <= self.axis_offset and w_dist <= self.w_offset:
-            if self.is_acting[f'move_{object}']:
-                self.is_acting[f'move_{object}'] = False
+            if self.is_acting[f'move_to_{object}']:
+                self.is_acting[f'move_to_{object}'] = False
                 print(f"finish moving to {object}")
         dpose = torch.cat([pos_err, orn_err], -1).unsqueeze(-1)
         if slow:
@@ -940,11 +1266,11 @@ class IsaacSim():
             rot = euler_to_quaternion(roll, pitch, yaw)
             pitch = -1.57
             knife_rot = euler_to_quaternion(roll, pitch, yaw)
-            hold_tight = 0.002
+            hold_hight = 0.002
             
             self.goal_pos_set = [
                 torch.tensor([[tool_pos[:, 0], tool_pos[:, 1], tool_pos[:, 2] + 0.17]], device=self.device),
-                torch.tensor([[tool_pos[:, 0], tool_pos[:, 1], tool_pos[:, 2] + 0.095 - hold_tight]], device=self.device),
+                torch.tensor([[tool_pos[:, 0], tool_pos[:, 1], tool_pos[:, 2] + 0.095 - hold_hight]], device=self.device),
                 torch.tensor([[tool_pos[:, 0], tool_pos[:, 1], tool_pos[:, 2] + 0.13]], device=self.device),
                 torch.tensor([[tool_pos[:, 0], tool_pos[:, 1] + 0.05, tool_pos[:, 2] + 0.13]], device=self.device),
                 torch.tensor([[tool_pos[:, 0], tool_pos[:, 1] + 0.05, tool_pos[:, 2] + 0.2]], device=self.device)
@@ -2930,12 +3256,11 @@ class IsaacSim():
                     img_num += 1
                     self.gym.write_camera_image_to_file(self.sim, self.envs[i], self.camera_handles[i], gymapi.IMAGE_COLOR, file_name)
                     start = time()
-            if "move_" in self.action:
-                destination = self.action.replace("move_", "")
-                if destination == "around":
-                    self.move_around()
-                else:
-                    dpose = self.move(destination, slow=False)
+            if "move_" in self.action and self.action != "move_around":
+                destination = self.action.replace("move_to_", "")
+                dpose = self.move(destination, slow=False)
+            elif self.action == "move_around":
+                dpose = self.move_around()
             elif self.action == "up":
                 dpose = torch.tensor([[[0.],[0.],[1.],[0.],[0.],[0.]]]) * delta
             elif self.action == "down":
@@ -2991,6 +3316,16 @@ class IsaacSim():
                         print(current_tool)
                         break
                 dpose = torch.tensor([[[0.],[0.],[0.],[0.],[0.],[0.]]])
+            elif self.action == "get_trajectory":
+                for action in self.decision_pipeline.action_list:
+                    pose = self.get_trajectory(action)
+                    print(action)
+                    if pose is None:
+                        continue
+                    [print(p) for p in pose]
+                    print('=' * 50)
+                dpose = torch.tensor([[[0.],[0.],[0.],[0.],[0.],[0.]]])
+                    
             elif self.action == "change_ball_friction":
                 for ball_handle in self.ball_handles:
                     body_shape_prop = self.gym.get_actor_rigid_shape_properties(self.env_ptr_list[0], ball_handle)
@@ -3214,5 +3549,4 @@ if __name__ == "__main__":
     os.makedirs('temp', exist_ok=True)
     issac = IsaacSim(config, log_folder='temp')
     issac.data_collection()
-
     # issac.simulate()
