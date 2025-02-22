@@ -1,9 +1,9 @@
 obstacles:
   7:
-    instruction: Place a scoop of chocolate beans in the green bowl and heat it up with the microwave.
+    instruction: Place a scoop of chocolate beans in the green bowl and heat it up with the dumbwaiter.
     answer: [move_to_green_bowl, pull_bowl_closer, grasp_spoon, move_to_blue_bowl, scoop, move_to_green_bowl, drop_food,
-      put_spoon_back, open_microwave, move_to_green_bowl,
-      put_bowl_into_microwave, close_microwave, start_microwave, DONE]
+      put_spoon_back, open_dumbwaiter, move_to_green_bowl,
+      put_bowl_into_dumbwaiter, close_dumbwaiter, start_dumbwaiter, DONE]
     tool: [spoon]
     containers:
     - x: 0.3580278218171031
@@ -29,10 +29,10 @@ obstacles:
         amount: 0
         position: [1, 1]
   8:
-    instruction: I want a scoop of red beans in the white bowl heated using the microwave.
+    instruction: I want a scoop of red beans in the white bowl heated using the dumbwaiter.
     answer: [move_to_white_bowl, pull_bowl_closer, grasp_spoon, move_to_yellow_bowl, scoop, move_to_white_bowl, drop_food,
-      put_spoon_back, open_microwave, move_to_white_bowl,
-      put_bowl_into_microwave, close_microwave, start_microwave, DONE]
+      put_spoon_back, open_dumbwaiter, move_to_white_bowl,
+      put_bowl_into_dumbwaiter, close_dumbwaiter, start_dumbwaiter, DONE]
     tool: [spoon]
     containers:
     - x: 0.56
@@ -60,8 +60,8 @@ obstacles:
   9:
     instruction: Heat up a scoop of mung beans in the yellow bowl.
     answer: [move_to_yellow_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl, scoop, move_to_yellow_bowl, drop_food,
-      put_spoon_back, open_microwave, move_to_yellow_bowl,
-      put_bowl_into_microwave, close_microwave, start_microwave, DONE]
+      put_spoon_back, open_dumbwaiter, move_to_yellow_bowl,
+      put_bowl_into_dumbwaiter, close_dumbwaiter, start_dumbwaiter, DONE]
     tool: [spoon]
     containers:
     - x: 0.3576436613219363
@@ -89,8 +89,8 @@ obstacles:
   10:
     instruction: Please scoop the red beans to the purple bowl and heat it up.
     answer: [move_to_pink_bowl, pull_bowl_closer, grasp_spoon, move_to_white_bowl, scoop, move_to_purple_bowl, drop_food,
-      put_spoon_back, open_microwave, move_to_purple_bowl,
-      put_bowl_into_microwave, close_microwave, start_microwave, DONE]
+      put_spoon_back, open_dumbwaiter, move_to_purple_bowl,
+      put_bowl_into_dumbwaiter, close_dumbwaiter, start_dumbwaiter, DONE]
     tool: [spoon]
     containers:
     - x: 0.35228385107392193
@@ -128,7 +128,7 @@ obstacles:
         position: [1, 1]
   12:
     instruction: Could you place a scoop of beans into the empty bowl and heat them up, please?
-    answer: ['move_to_green_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_gray_bowl', 'scoop', 'move_to_green_bowl', 'drop_food', 'put_spoon_back', 'open_microwave', 'move_to_green_bowl', 'put_bowl_into_microwave', 'start_microwave'] # , 'open_microwave', 'take_bowl_out_microwave', 'DONE'] # not done!! ['move_to_green_bowl', 'pull_bowl_closer', 'grasp_spoon', 'DONE']
+    answer: ['move_to_green_bowl', 'pull_bowl_closer', 'grasp_spoon', 'move_to_gray_bowl', 'scoop', 'move_to_green_bowl', 'drop_food', 'put_spoon_back', 'open_dumbwaiter', 'move_to_green_bowl', 'put_bowl_into_dumbwaiter', 'start_dumbwaiter'] # , 'open_dumbwaiter', 'take_bowl_out_dumbwaiter', 'DONE'] # not done!! ['move_to_green_bowl', 'pull_bowl_closer', 'grasp_spoon', 'DONE']
     tool: [spoon]
     containers:
     - x: 0.45
