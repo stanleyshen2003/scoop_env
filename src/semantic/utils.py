@@ -4,7 +4,7 @@ import json
 from typing import List
 
 import sys
-sys.path.append('/home/hcis-s25/Desktop/yuhong/scoop_env/')
+sys.path.append('/home/hcis-s17/multimodal_manipulation/scoop_env/')
 from src.utils import encode_image, decode_image
 
 def preprocess_action(action):
@@ -84,7 +84,7 @@ def get_key_considerations():
 def get_example_prompt(with_image=False, selection=False):
     system_prompt = ""
     system_image_url = []
-    example_path = '/home/hcis-s25/Desktop/yuhong/scoop_env/src/semantic/example/text'
+    example_path = '/home/hcis-s17/multimodal_manipulation/scoop_env/src/semantic/example/text'
     example_id = 1
     for txt in os.listdir(example_path):
         if not txt.endswith('.txt'):
