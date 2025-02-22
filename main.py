@@ -35,7 +35,7 @@ def run(mode, config, task_type, env_idx, root, test_type=None, threshold=None):
         os.makedirs(log_folder, exist_ok=True)
         Environment = IsaacSim(env_cfg_dict=config, log_folder=log_folder, record_video=(mode == 'pipeline'))
         if mode == 'pipeline':
-            Environment.test_pipeline(config.get('answer', []), test_type=test_type, threshold=threshold, use_vlm=False)
+            Environment.test_pipeline(config.get('answer', []), test_type=test_type, threshold=threshold, use_vlm=True)
         elif mode == 'llm':
             Environment.test_llm()
             pyautogui.screenshot().save(os.path.join(log_folder, "result.jpg"))
@@ -75,7 +75,7 @@ if __name__ == "__main__":
     
     # specific_task = [('amount_ambiguity', 1), ('amount_ambiguity', 2), ('spatial_proximity', 1), ('spatial_proximity', 2)]
     all_task = get_task_type_list(config_file)
-    excepted_task = ['mix_type', 'general_hard', 'spatial_relationship', 'distance']
+    excepted_task = ['mix_type', 'general_hard']
     specific_task = list(set(all_task) - set(excepted_task))
     # experiments('pipeline', config_file, root, test_type=test_type, threshold=threshold, specific_task=specific_task)
     

@@ -12,7 +12,7 @@ drop_food
 DONE
 
 red_bowl (with mung beans)
-purple_bowl (empty)
+purple_bowl (with tofu pudding)
 
 scoop
 stir

@@ -401,7 +401,7 @@ class IsaacSim():
                 
             rgba = to_rgba(color_code)
             color = gymapi.Vec3(rgba[0], rgba[1], rgba[2])
-            self.containers_indices[f"{c}_{container_type}"] = []
+            self.containers_indices[f"{c}_{container_type} {food}"] = []
             self.containers_list.append(f"{c}_{container_type} {food}")
             self.containers_pose.append(container_pose)
             self.containers_color.append(color)
@@ -413,7 +413,7 @@ class IsaacSim():
             self.gym.set_actor_scale(env_ptr, container_handle, 0.5)
             self.gym.set_rigid_body_color(env_ptr, container_handle, 0, gymapi.MESH_VISUAL_AND_COLLISION, self.containers_color[i])
             container_idx = self.gym.get_actor_rigid_body_index(env_ptr, container_handle, 0, gymapi.DOMAIN_SIM)
-            self.containers_indices[self.containers_list[i].split()[0]].append(container_idx)
+            self.containers_indices[self.containers_list[i]].append(container_idx)
 
     def create_butter(self):
         file_name = 'food/butter.urdf'
@@ -764,7 +764,7 @@ class IsaacSim():
         self.forked_food_indices = to_torch(self.forked_food_indices, dtype=torch.long, device=self.device)
         self.dumbwaiter_indices = to_torch(self.dumbwaiter_indices, dtype=torch.long, device=self.device)
         for container in self.containers_list:
-            container = container.split()[0]
+            # container = container.split()[0]
             if len(self.containers_indices[container]) > 0:
                 self.containers_indices[container] = to_torch(self.containers_indices[container], dtype=torch.long, device=self.device) 
             else:

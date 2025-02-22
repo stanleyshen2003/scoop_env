@@ -1,4 +1,4 @@
-Try your best to get more beans into the empty bowl in one scoop. Put it into the dumbwaiter after you finish scooping.
+Try your best to get more beans into the bowl with tofu pudding in one scoop. Put it into the dumbwaiter after you finish scooping.
 
 grasp_spoon
 move_to_white_bowl
@@ -17,7 +17,7 @@ DONE
 
 white_bowl (with mung beans)
 green_bowl (with mung beans)
-blue_bowl (empty)
+blue_bowl (with tofu pudding)
 
 scoop
 stir

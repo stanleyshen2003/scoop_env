@@ -4,7 +4,7 @@ import json
 from typing import List
 
 import sys
-# sys.path.append('/home/hcis-s25/Desktop/yuhong/scoop_env/')
+# sys.path.append('/home/hcis-s21/Desktop/stanleyshen/scoop_env/')
 sys.path.append('/home/hcis-s17/multimodal_manipulation/scoop_env/')
 
 from src.utils import encode_image, decode_image
@@ -86,7 +86,7 @@ def get_key_considerations():
 def get_example_prompt(with_image=False, selection=False):
     system_prompt = ""
     system_image_url = []
-    # example_path = '/home/hcis-s25/Desktop/yuhong/scoop_env/src/semantic/example/text'
+    # example_path = '/home/hcis-s21/Desktop/stanleyshen/scoop_env/src/semantic/example/text'
     example_path = '/home/hcis-s17/multimodal_manipulation/scoop_env/src/semantic/example/text'
     example_id = 1
     for txt in os.listdir(example_path):
@@ -263,7 +263,7 @@ def next_goal_description_prompt(instruction, action_seq, container_list):
     container_list = [preprocess_object(container) for container in container_list]
     action_seq = [preprocess_action(action) for action in action_seq]
     action_sequence = ", ".join([action for action in action_seq])
-    system_prompt = f"""You are a smart assistant tasked with summarizing current stage of a food manipulation task and reasonig about the next subgoal of the task in one step. Given instruction, previous action sequence, list of containers in the scenario, and current observation. Please specify what you should achieve in the next step and explain the reason. Do not choose the action directly and provide your answer in 50 words or fewer."""
+    system_prompt = f"""You are a smart assistant tasked with summarizing current stage of a food manipulation task and reasonig about the next subgoal of the task in one step. Given instruction, previous action sequence, list of containers in the scenario, and current observation. Please specify what you should achieve in the next step and explain the reason. If you think the goal specified by the instruction is achieved, tell me you think the task is done and why. Do not choose the action directly and provide your answer in 50 words or fewer."""
     user_prompt =  f"""Instruction: {instruction}
 Previous actions: {action_sequence}
 Object list: {', '.join(container_list)}
