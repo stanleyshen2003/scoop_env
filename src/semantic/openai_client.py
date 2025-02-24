@@ -162,7 +162,7 @@ def get_selection_score(
     print(messages[1]["content"][0]['text'])
     print(top_logprobs)
     print(response_content)
-    answer = response_content.split("The correct answer is ")[-1].split(".")[0]
+    answer = response_content.split("Iteration")[1].split(".")[0][-1]
     answer = {answer: 0}
     semantic = {action_description[key]: np.exp(answer.get(value, float('-inf'))) for key, value in action_dict.items()}
     if use_vlm:

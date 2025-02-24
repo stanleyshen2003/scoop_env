@@ -178,8 +178,13 @@ Following these, another scenario will be presented, requiring you to deduce and
 # Output Requirements
 Select and output one action from the provided Action List in your task as the next optimal action to execute.
 The response should exclude all formatting characters such as backticks, quotes, or additional symbols.
+You should provide a sequence as the answer, starting from current iteration until selecting DONE.
+ 
 Format the first line of your response strictly as: Description: [your description].
-Format the second line of your response strictly as: The correct answer is [character]. [action] (e.g., The correct answer is A. scoop).
+Format the rest of the line of your response strictly as: "
+Iteration [number]: 
+    Output: [character]. [action]". Please use the format in the examples as a reference.
+
 """
     if with_example:
         system_prompt += "\n# Examples\n"
