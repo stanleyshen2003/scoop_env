@@ -926,7 +926,7 @@ amount_ambiguity:
         amount: 1600
         position: [1, 1]
   24:
-    instruction: Please transfer as many beans as you can from the bowl containing
+    instruction: Please transfer as many beans as you can in one scoop from the bowl containing
       more items to the bowl containing tofu pudding.
     answer: [grasp_spoon, move_to_purple_bowl, scoop, move_to_yellow_bowl, drop_food,
       put_spoon_back, DONE]

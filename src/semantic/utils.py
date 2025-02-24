@@ -4,8 +4,8 @@ import json
 from typing import List
 
 import sys
-# sys.path.append('/home/hcis-s21/Desktop/stanleyshen/scoop_env/')
-sys.path.append('/home/hcis-s17/multimodal_manipulation/scoop_env/')
+sys.path.append('/home/hcis-s21/Desktop/stanleyshen/scoop_env/')
+# sys.path.append('/home/hcis-s17/multimodal_manipulation/scoop_env/')
 
 from src.utils import encode_image, decode_image
 
@@ -86,8 +86,8 @@ def get_key_considerations():
 def get_example_prompt(with_image=False, selection=False):
     system_prompt = ""
     system_image_url = []
-    # example_path = '/home/hcis-s21/Desktop/stanleyshen/scoop_env/src/semantic/example/text'
-    example_path = '/home/hcis-s17/multimodal_manipulation/scoop_env/src/semantic/example/text'
+    example_path = '/home/hcis-s21/Desktop/stanleyshen/scoop_env/src/semantic/example/text'
+    # example_path = '/home/hcis-s17/multimodal_manipulation/scoop_env/src/semantic/example/text'
     example_id = 1
     for txt in os.listdir(example_path):
         if not txt.endswith('.txt'):
@@ -142,6 +142,7 @@ def get_system_prompt(selection=False, with_example=True, additional_info=[]):
     base_prompt = """# Scenario
 You are a robotic arm specialized in food manipulation tasks. Your mission is to complete the assigned task step-by-step by selecting the most appropriate actions from the provided list. Your decisions should balance precision, safety, efficiency, and task progression.
 Take the previous actionns into consideration and choose the best action for the current iteration from the action list.
+You should describe the reasoning behind your decision and consider the high-level goal of the task before making a choice.
 
 # Additional Knowledges
 1. Scooping guidelines
@@ -177,8 +178,8 @@ Following these, another scenario will be presented, requiring you to deduce and
 # Output Requirements
 Select and output one action from the provided Action List in your task as the next optimal action to execute.
 The response should exclude all formatting characters such as backticks, quotes, or additional symbols.
-Format the first line of your response strictly as: character. action (e.g., A. scoop).
-Format the second line of your response strictly as: Explanation: (your explanation here).
+Format the first line of your response strictly as: Description: [your description].
+Format the second line of your response strictly as: The correct answer is [character]. [action] (e.g., The correct answer is A. scoop).
 """
     if with_example:
         system_prompt += "\n# Examples\n"

@@ -164,7 +164,7 @@ spatial_relationship:
         amount: 0
         position: [1, 1]
   4:
-    instruction: Scoop the toppings near the holder to the bowl with tofu pudding.
+    instruction: Scoop some toppings from the bowl near the holder to the bowl with tofu pudding.
     answer: [grasp_spoon, move_to_white_bowl, scoop, move_to_blue_bowl, drop_food,
       put_spoon_back, DONE]
     tool: [spoon]
@@ -1141,7 +1141,7 @@ spatial_relationship:
   27:
     instruction: Scoop sweet potato balls from the bowl nearest to the dumbwaiter into the blue
       bowl.
-    answer: [grasp_spoon, move_to_red_bowl, scoop, move_to_blue_bowl, drop_food, DONE]
+    answer: [grasp_spoon, move_to_red_bowl, scoop, move_to_blue_bowl, drop_food, put_spoon_back, DONE]
     tool: [spoon]
     containers:
     - x: 0.6
@@ -1181,7 +1181,7 @@ spatial_relationship:
     instruction: Scoop beans from the bowl nearest to the dumbwaiter into the purple
       bowl.
     answer: [grasp_spoon, move_to_red_bowl, scoop, move_to_purple_bowl, drop_food,
-      DONE]
+      put_spoon_back, DONE]
     tool: [spoon]
     containers:
     - x: 0.6
@@ -1221,7 +1221,7 @@ spatial_relationship:
     instruction: Scoop food items from the bowl closest to the tofu pudding and transfer
       them onto the tofu pudding.
     answer: [grasp_spoon, move_to_blue_bowl, scoop, move_to_white_bowl, drop_food,
-      DONE]
+      put_spoon_back, DONE]
     tool: [spoon]
     containers:
     - x: 0.8
@@ -1272,7 +1272,7 @@ spatial_relationship:
     instruction: Scoop food items from the bowl closest to the bowl with tofu pudding and transfer
       them to it.
     answer: [grasp_spoon, move_to_blue_bowl, scoop, move_to_white_bowl, drop_food,
-      DONE]
+      put_spoon_back, DONE]
     tool: [spoon]
     containers:
     - x: 0.5

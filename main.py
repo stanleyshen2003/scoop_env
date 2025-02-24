@@ -75,10 +75,11 @@ if __name__ == "__main__":
     
     # specific_task = [('amount_ambiguity', 1), ('amount_ambiguity', 2), ('spatial_proximity', 1), ('spatial_proximity', 2)]
     all_task = get_task_type_list(config_file)
-    excepted_task = ['mix_type', 'general_hard']
+    excepted_task = ['mix_type', 'general_hard', 'obstacles', 'distance']
     specific_task = list(set(all_task) - set(excepted_task))
     # experiments('pipeline', config_file, root, test_type=test_type, threshold=threshold, specific_task=specific_task)
-    
+    if env_idx not in [14]:
+        exit()
     mode = 'pipeline'
     if not specific_task or (task_type, env_idx) in specific_task or task_type in specific_task:
         config = read_yaml(config_file, task_type=task_type, env_idx=env_idx)

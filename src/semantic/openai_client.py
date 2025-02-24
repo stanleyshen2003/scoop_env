@@ -155,22 +155,26 @@ def get_selection_score(
     
     explanation_system_prompt = "You are a robot arm in food manipulation scneario. You should focus on your gripper. You need to explain why you choose the action."
     explanation_prompt = get_messages(explanation_system_prompt, current_user_prompt + f"{response_content} \nPlease explain why you choose the last action.", user_image_url=current_obs_url)
-    explanation = call_openai_api(explanation_prompt, model).choices[0].message.content
+    # explanation = call_openai_api(explanation_prompt, model).choices[0].message.content
     
     print(messages[0]["content"][0]['text'])
     print('=' * 80)
     print(messages[1]["content"][0]['text'])
     print(top_logprobs)
     print(response_content)
+    answer = response_content.split("The correct answer is ")[-1].split(".")[0]
+    answer = {answer: 0}
+    semantic = {action_description[key]: np.exp(answer.get(value, float('-inf'))) for key, value in action_dict.items()}
     if use_vlm:
         print(scenario_description)
-    print(explanation)
+    # print(explanation)
     # _semantic = {action: np.exp(top_logprobs.get(choice, float('-inf'))) for action, choice in action_dict.items()}
     # semantic = {}
     # for key, val in _semantic.items():
     #     semantic[action_description[key]] = val
-    semantic = {action_description[key]: np.exp(top_logprobs.get(value, float('-inf'))) for key, value in action_dict.items()}
+    # semantic = {action_description[key]: np.exp(top_logprobs.get(value, float('-inf'))) for key, value in action_dict.items()}
     semantic = sort_scores_dict(semantic)
+    # print("here")
     # print(semantic)
     
     if log_folder is not None:
@@ -181,7 +185,7 @@ def get_selection_score(
                 '\n[USER]\n' + user_prompt, 
                 '\n[DES]\n' + scenario_description, 
                 '\n[RES]\n' + response_content, 
-                '\n[EXP]\n' + explanation, 
+                # '\n[EXP]\n' + explanation, 
                 '\n[SCORE]\n' + f"{semantic}"
             ]))
     return semantic
