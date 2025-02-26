@@ -4,7 +4,7 @@ import json
 from typing import List
 
 import sys
-sys.path.append('/home/hcis-s21/Desktop/stanleyshen/scoop_env/')
+sys.path.append('/home/hcis-s25/Desktop/yuhong/from_s21/scoop_env/')
 # sys.path.append('/home/hcis-s17/multimodal_manipulation/scoop_env/')
 
 from src.utils import encode_image, decode_image
@@ -86,7 +86,7 @@ def get_key_considerations():
 def get_example_prompt(with_image=False, selection=False):
     system_prompt = ""
     system_image_url = []
-    example_path = '/home/hcis-s21/Desktop/stanleyshen/scoop_env/src/semantic/example/text'
+    example_path = '/home/hcis-s25/Desktop/yuhong/from_s21/scoop_env/src/semantic/example/text'
     # example_path = '/home/hcis-s17/multimodal_manipulation/scoop_env/src/semantic/example/text'
     example_id = 1
     for txt in os.listdir(example_path):
@@ -141,7 +141,7 @@ def get_system_prompt(selection=False, with_example=True, additional_info=[]):
     '''
     base_prompt = """# Scenario
 You are a robotic arm specialized in food manipulation tasks. Your mission is to complete the assigned task step-by-step by selecting the most appropriate actions from the provided list. Your decisions should balance precision, safety, efficiency, and task progression.
-Take the previous actionns into consideration and choose the best action for the current iteration from the action list.
+Take the previous actionns into consideration and choose the best actions for the remaining sequence from the action list.
 You should describe the reasoning behind your decision and consider the high-level goal of the task before making a choice.
 
 # Additional Knowledges
@@ -176,14 +176,75 @@ You will be provided with several examples, each illustrating a unique scenario 
 Following these, another scenario will be presented, requiring you to deduce and choose the next optimal action.
 
 # Output Requirements
-Select and output one action from the provided Action List in your task as the next optimal action to execute.
+Select and output some actions from the provided Action List in your task as the actions to execute in order.
 The response should exclude all formatting characters such as backticks, quotes, or additional symbols.
-You should provide a sequence as the answer, starting from current iteration until selecting DONE.
+You should provide a sequence of action as answer, starting from current iteration until selecting DONE.
  
 Format the first line of your response strictly as: Description: [your description].
 Format the rest of the line of your response strictly as: "
 Iteration [number]: 
     Output: [character]. [action]". Please use the format in the examples as a reference.
+
+"""
+    if with_example:
+        system_prompt += "\n# Examples\n"
+        example_system_prompt, _ = get_example_prompt(with_image=False, selection=selection)
+        system_prompt += example_system_prompt
+    return system_prompt
+
+def get_system_prompt_choose_one(selection=False, with_example=True, additional_info=[]):
+    '''
+    Generate the system prompt for the user to make a decision
+    Args:
+        selection: whether to use character selection for the action list
+        with_example: whether to include examples in the prompt
+        additional_info: additional information to include in the prompt, format: List[name of information], including Current Observation, Goal Description
+    Returns:
+        system_prompt: the text content of the system prompt
+        system_image_url: the url of the image used in the examples
+    '''
+    base_prompt = """# Scenario
+You are a robotic arm specialized in food manipulation tasks. Your mission is to complete the assigned task step-by-step by selecting the most appropriate actions from the provided list. Your decisions should balance precision, safety, efficiency, and task progression.
+You will be provided with a sequence which the robot already executed and a few actions that you can choose for the next iteration at the end of the prompt. You should assume all the action is executed successfully.
+You should describe the reasoning behind your decision and consider the high-level goal of the task before making a choice.
+
+# Additional Knowledges
+1. Scooping guidelines
+A single scoop should be done by selecting [move_to_container(with food), scoop, move_to_container(destination), drop_food] when the spoon is on the gripper.
+2. Collision Avoidance
+If an action risks a collision or task failure, pull the bowl to a safer location before proceeding.
+3. Scooping limitations
+Avoid scooping from bowls with insufficient food (e.g., only a few beans).
+If a bowl is too far, pull it closer before attempting to scoop.
+"""
+    additional_info_description = {
+        'Current Observation': "An image of the robot's current environment.",
+        'Goal Description': "A description of the subgoal that the robot must accomplish in next iteration.",
+        "Additional important information": "A detailed description of the environment and task. Please consider this information when making your decision."
+    }
+    additional_info_prompt = '\n'.join([f"{name}: {additional_info_description[name]}" for name in additional_info])
+    additional_info_prompt += '\n' if additional_info else ''
+    system_prompt = f"""{base_prompt}
+# Action Description
+{get_action_description_prompt()}
+
+# Scenario Format
+You will be presented with a single scenario containing the following details:
+Action List: A list of all actions that the robot can perform, formatted as character. action.
+Initial Object List: A detailed inventory of objects present in the environment, formatted as container_name (food inside).
+Instruction: The high-level task or goal that the robot must accomplish.
+Iterative Previous Actions: A chronological record of the actions the robot has executed in prior iterations.
+{additional_info_prompt}
+# Input Format
+You will be provided with several examples, each illustrating a unique scenario in the format described above.
+Following these, another scenario will be presented, requiring you to deduce and choose the next optimal action.
+
+# Output Requirements
+You should only select and output actions that is mentioned in the question at the end of the prompt.
+The response should exclude all formatting characters such as backticks, quotes, or additional symbols.
+ 
+Format the first line of your response strictly as: Description: [your description].
+Format the second line of your response strictly as: The action I should execute in next iteration is [character]. [action name]
 
 """
     if with_example:
@@ -210,6 +271,26 @@ def get_user_prompt(instruction, action_seq, action_dict, container_list, additi
     {additional_info_prompt}{segmentation_prompt}{generate_prompt(action_seq_choices, indent=True)}
     Iteration {len(action_seq_choices)+1}:
         Output: """
+    return user_prompt
+
+def get_user_prompt_choose_one(instruction, action_seq, action_dict, container_list, additional_info={}, possible_actions=str) -> str:
+    container_list = [preprocess_object(container) for container in container_list]
+    action_seq = [preprocess_action(action) for action in action_seq]
+    # possible_actions = [preprocess_action(action) for action in possible_actions]
+    action_choices = [f"{v}. {k}" for k, v in action_dict.items()]
+    action_seq_choices = [f"{action_dict[action]}. {action}" for action in action_seq]
+    
+    additional_info_prompt = '\n'.join([f"{name}: {info}" for name, info in additional_info.items()]) if additional_info else ''
+    additional_info_prompt += '\n' if additional_info else ''
+    
+    # possible_actions = ' or '.join([f"{action_dict[action]. action}" for action in possible_actions])
+    user_prompt = f"""Your task:
+    Action list: {action_choices}
+    Initial object list: {container_list}
+    Instruction: {instruction}
+    {additional_info_prompt}{generate_prompt(action_seq_choices, indent=True)}
+    Which action should I execute next? {possible_actions}
+    """
     return user_prompt
 
 def next_action_prompt(instruction, action_seq):

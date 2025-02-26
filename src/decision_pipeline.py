@@ -22,10 +22,11 @@ class Decision_pipeline():
         self.log_folder = log_folder
         self.obs_id = 0
         self.affordance_agent = Affordance_agent(self.init_object_list, self.action_list)
+        self.record = {}
     
     def set_affordance_agent(self, affordance_type):
         affordance_agent_list = {
-            "classifier": Affordance_agent_classifier,
+            # "classifier": Affordance_agent_classifier,
             "lap": Affordance_agent_LAP,
             "our": Affordance_agent_ours
         } 
@@ -111,6 +112,9 @@ class Decision_pipeline():
         print("=" * 20)
         return affordance, additional_info
     
+    '''
+    this function.
+    '''
     def get_semantic_score(
         self, 
         instruction, 
@@ -125,7 +129,7 @@ class Decision_pipeline():
             base64_image = encode_image(observation_rgb_path)
             obs_image = base64_image
             cv2.imwrite(os.path.join(self.log_folder, f'observation_{self.obs_id}.png'), cv2.imread(observation_rgb_path))
-        semantic = get_selection_score_openai(
+        semantic, record = get_selection_score_openai(
             instruction=instruction, 
             object_list=self.init_object_list, 
             action_list=self.action_list, 
@@ -138,7 +142,9 @@ class Decision_pipeline():
             segmentation_prompt=segmentation_prompt,
             example_with_image=False,
             example_in_system=True,
+            record=self.record
         )
+        self.record = record
         # semantic = get_semantic_gemini(instruction, object_list, action_list, action_sequence)
         print(f"semantic {max(semantic, key=semantic.get)}")
         print(semantic)
