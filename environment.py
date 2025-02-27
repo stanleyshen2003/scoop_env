@@ -2767,6 +2767,18 @@ class IsaacSim():
         )
         return combined_score
     
+    def get_our_pipeline_kwargs(self):
+        traj_dict = {action: self.get_trajectory(action) for action in self.decision_pipeline.action_list}
+        kwargs = {
+            'K': self.get_camera_intrinsic(),
+            # 'extrinsic': self.gym.get_camera_view_matrix(self.sim, self.envs[0], self.camera_handles[0]),
+            'extrinsic': self.get_camera_extrinsic(), 
+            'traj_dict': traj_dict,
+            'cur_pose': self.rb_state_tensor[self.franka_hand_indices, :7],
+            'cur_joint': self.dof_state[:, self.franka_dof_indices, 0].squeeze(-1)[:, :7]
+        }
+        return kwargs
+    
     def affordance_pipeline(self):
         """Affordance pipeline: Get the best action from the affordance score"""
         
@@ -2778,19 +2790,11 @@ class IsaacSim():
         depth_image = ((depth_image - np.min(depth_image)) / (np.max(depth_image) - np.min(depth_image)) * 255).astype(np.uint8)
         Image.fromarray(rgb_image).save(rgb_path)
         Image.fromarray(depth_image).save(depth_path)
-        traj_dict = {action: self.get_trajectory(action) for action in self.decision_pipeline.action_list}
-        kwargs = {
-            'K': self.get_camera_intrinsic(),
-            # 'extrinsic': self.gym.get_camera_view_matrix(self.sim, self.envs[0], self.camera_handles[0]),
-            'extrinsic': self.get_camera_extrinsic(), 
-            'traj_dict': traj_dict,
-            'cur_pose': self.rb_state_tensor[self.franka_hand_indices, :7],
-            'cur_joint': self.dof_state[:, self.franka_dof_indices, 0].squeeze(-1)[:, :7]
-        }
+        kwargs = self.get_our_pipeline_kwargs()
         affordance_score = self.decision_pipeline.get_affordance_score(rgb_path, depth_path, self.action_sequence, **kwargs)
         return affordance_score
             
-    def our_pipeline(self, threshold, use_vlm=False, max_replan=3):
+    def our_pipeline(self, use_vlm=False, max_replan=3):
         # self.instruction += f" {len(self.action_sequence) + 1}. "
         rgb_path = os.path.join("observation", "rgb.png")
         depth_path = os.path.join("observation", "depth.png")
@@ -2800,32 +2804,31 @@ class IsaacSim():
         depth_image = ((depth_image - np.min(depth_image)) / (np.max(depth_image) - np.min(depth_image)) * 255).astype(np.uint8)
         Image.fromarray(rgb_image).save(rgb_path)
         Image.fromarray(depth_image).save(depth_path)
-        print(self.containers_list)
-        additional_info = ""
-        for i in range(max_replan):
+        kwargs = self.get_our_pipeline_kwargs()
+        for _ in range(max_replan):
             semantic_score = self.decision_pipeline.get_semantic_score(
                 self.instruction, 
                 rgb_path, 
                 self.action_sequence, 
-                additional_info=additional_info, 
-                use_vlm=use_vlm
+                use_affordance_info=True, 
+                use_vlm=use_vlm,
+                update_record=False,
             )
-            action_candidate = [action for action, score in semantic_score.items() if score > threshold]
-            affordance_score, additional_info = self.decision_pipeline.get_affordance_score_with_info(
+            best_action = max(semantic_score, key=semantic_score.get)
+            action_candidate = [best_action]
+            affordance_score = self.decision_pipeline.get_affordance_score(
                 rgb_path, 
                 depth_path, 
-                self.action_sequence, 
-                action_candidate
+                action_sequence=self.action_sequence, 
+                action_candidate=action_candidate,
+                with_info=True,
+                **kwargs
             )
-            action_candidate = list(affordance_score.keys())
-            if len(action_candidate) == 0:
-                continue
-            elif len(action_candidate) == 1:
-                best_action = action_candidate[0]
+            if affordance_score[best_action]:
                 break
             else:
-                action_candidate_score = self.decision_pipeline.chain_of_thought(self.instruction, rgb_path, self.action_sequence, action_candidate)
-                best_action = max(action_candidate_score, key=action_candidate_score.get)
+                continue
+        self.decision_pipeline.update_record()
         return {best_action: 1}
     
     def gt_pipeline(self, gt_action):

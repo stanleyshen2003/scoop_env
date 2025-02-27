@@ -1,13 +1,20 @@
 import os
 import socket
 import json
-from typing import List
+from typing import List, Dict
 
 import sys
 sys.path.append('/home/hcis-s25/Desktop/yuhong/from_s21/scoop_env/')
 # sys.path.append('/home/hcis-s17/multimodal_manipulation/scoop_env/')
 
 from src.utils import encode_image, decode_image
+
+AFFORDANCE_DESCRIPTION = {
+    'Current Observation': "An image of the robot's current environment.",
+    'Goal Description': "A description of the subgoal that the robot must accomplish in next iteration.",
+    "Additional important information": "A detailed description of the environment and task. Please consider this information when making your decision.",
+    "Previous Affordance Feedback": "A record of the affordance feedback from the previous iteration.",
+}
 
 def preprocess_action(action):
     """
@@ -86,8 +93,8 @@ def get_key_considerations():
 def get_example_prompt(with_image=False, selection=False):
     system_prompt = ""
     system_image_url = []
-    example_path = '/home/hcis-s25/Desktop/yuhong/from_s21/scoop_env/src/semantic/example/text'
-    # example_path = '/home/hcis-s17/multimodal_manipulation/scoop_env/src/semantic/example/text'
+    # example_path = '/home/hcis-s25/Desktop/yuhong/from_s21/scoop_env/src/semantic/example/text'
+    example_path = '/home/hcis-s17/multimodal_manipulation/scoop_env/src/semantic/example/text'
     example_id = 1
     for txt in os.listdir(example_path):
         if not txt.endswith('.txt'):
@@ -153,11 +160,7 @@ If an action risks a collision or task failure, pull the bowl to a safer locatio
 Avoid scooping from bowls with insufficient food (e.g., only a few beans).
 If a bowl is too far, pull it closer before attempting to scoop.
 """
-    additional_info_description = {
-        'Current Observation': "An image of the robot's current environment.",
-        'Goal Description': "A description of the subgoal that the robot must accomplish in next iteration.",
-        "Additional important information": "A detailed description of the environment and task. Please consider this information when making your decision."
-    }
+    additional_info_description = AFFORDANCE_DESCRIPTION
     additional_info_prompt = '\n'.join([f"{name}: {additional_info_description[name]}" for name in additional_info])
     additional_info_prompt += '\n' if additional_info else ''
     system_prompt = f"""{base_prompt}
@@ -192,7 +195,7 @@ Iteration [number]:
         system_prompt += example_system_prompt
     return system_prompt
 
-def get_system_prompt_choose_one(selection=False, with_example=True, additional_info=[]):
+def get_system_prompt_choose_one(selection=False, with_example=True, additional_info: List=[]):
     '''
     Generate the system prompt for the user to make a decision
     Args:
@@ -217,11 +220,7 @@ If an action risks a collision or task failure, pull the bowl to a safer locatio
 Avoid scooping from bowls with insufficient food (e.g., only a few beans).
 If a bowl is too far, pull it closer before attempting to scoop.
 """
-    additional_info_description = {
-        'Current Observation': "An image of the robot's current environment.",
-        'Goal Description': "A description of the subgoal that the robot must accomplish in next iteration.",
-        "Additional important information": "A detailed description of the environment and task. Please consider this information when making your decision."
-    }
+    additional_info_description = AFFORDANCE_DESCRIPTION
     additional_info_prompt = '\n'.join([f"{name}: {additional_info_description[name]}" for name in additional_info])
     additional_info_prompt += '\n' if additional_info else ''
     system_prompt = f"""{base_prompt}
@@ -253,7 +252,7 @@ Format the second line of your response strictly as: The action I should execute
         system_prompt += example_system_prompt
     return system_prompt
 
-def get_user_prompt(instruction, action_seq, action_dict, container_list, additional_info={}, segmentation=False) -> str:
+def get_user_prompt(instruction, action_seq, action_dict, container_list, additional_info: Dict={}, segmentation=False) -> str:
     container_list = [preprocess_object(container) for container in container_list]
     action_seq = [preprocess_action(action) for action in action_seq]
     

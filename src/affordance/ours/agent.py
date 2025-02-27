@@ -33,7 +33,6 @@ class Affordance_agent_ours(Affordance_agent):
     def __init__(self, init_object_list, action_list, DH_params, joint_limit, base_pose, device):
         super().__init__(init_object_list, action_list)
         self.image_root = '/home/hcis-s17/multimodal_manipulation/scoop_env/src/affordance/ours/image'
-        self.additional_information = None
         self.pos_offset = 0.01
         self.axis_offset = 0.03
         self.w_offset = 0.03
@@ -41,10 +40,10 @@ class Affordance_agent_ours(Affordance_agent):
         self.joint_limit = joint_limit
         self.device = device
         self.base_pose = base_pose
+        self.affordance_info = None
     
-    def get_additional_info(self):
-        # TODO get additional information
-        return self.additional_information
+    def get_affordance_info(self):
+        return self.affordance_info
     
     def get_affordance(
         self, 
@@ -59,17 +58,86 @@ class Affordance_agent_ours(Affordance_agent):
         action_candidate=[], 
     ):
         # self.trajectory_clear(None, cur_pose, traj_dict['scoop'], [rgb_img_path], [gray_scale_img], K, [extrinsic])
-        for action, traj in traj_dict.items():
+        
+        affordance = {action: 0 for action in action_candidate}
+        spoon_on_hand = self.spoon_on_hand(action_seq)
+        food_on_hand = spoon_on_hand and self.food_on_hand(action_seq)
+        dumbwaiter_opened = self.dumbwaiter_opened(action_seq)
+        
+        self.affordance_info = ''
+        for action in affordance.keys():
             print(action)
-            if traj is not None:
-                print(self.joint_affordable(cur_pose.clone(), cur_joint.clone(), traj))
-            else:
-                print("Trajectory is None")
-            print('='*50)
-            
-        return super().get_affordance(rgb_img_path, gray_scale_img, action_seq, action_candidate)
+            state_affordable, info = self.state_affordable(action, spoon_on_hand, food_on_hand, dumbwaiter_opened)
+            if not state_affordable:
+                self.affordance_info += f'{action}: {info}'
+                continue
+            if traj_dict[action] is not None:
+                joint_affordable = np.random.choice([0, 1]) #self.joint_affordable(cur_pose.clone(), cur_joint.clone(), traj_dict[action])
+                if not joint_affordable:
+                    self.affordance_info += f'{action}: Cannot reach the target pose'
+                    continue
+                traj_clear = np.random.choice([0, 1]) # self.trajectory_clear(action, cur_pose.clone(), traj_dict[action], [rgb_img_path], [gray_scale_img], K, [extrinsic])
+                if not traj_clear:
+                    self.affordance_info += f'{action}: Collision detected'
+                    continue
+            affordance[action] = 1
 
-    def tool_on_hand(self, rgb_img_path, tool_list) -> bool:
+        return affordance
+    
+    def state_affordable(self, action, spoon_on_hand, food_on_hand, dumbwaiter_opened):
+        if action == 'grasp_spoon':
+            if spoon_on_hand:
+                return False, "Cannot grasp spoon when spoon is already on hand"
+        elif action == 'put_spoon_back':
+            if not spoon_on_hand:
+                return False, "Cannot put spoon back when spoon is not on hand"
+        elif action == 'scoop':
+            if not spoon_on_hand:
+                return False, "Cannot scoop when spoon is not on hand"
+            if food_on_hand:
+                return False, "Cannot scoop when food is already in the spoon"
+        elif action == 'drop_food':
+            if not food_on_hand:
+                return False, "Cannot drop food when food is not in the sponn"
+        elif action == 'open_dumbwaiter':
+            if dumbwaiter_opened:
+                return False, "Cannot open dumbwaiter when it is already opened"
+        elif action == 'close_dumbwaiter':
+            if not dumbwaiter_opened:
+                return False, "Cannot close dumbwaiter when it is already closed"
+        return True, None
+            
+    def spoon_on_hand(self, action_seq):
+        """assume the robot has no spoon at the beginning"""
+        grasped = False
+        for action in action_seq:
+            if action == 'grasp_spoon':
+                grasped = True
+            elif action == 'put_spoon_back':
+                grasped = False
+        return grasped
+
+    def food_on_hand(self, action_seq):
+        """assume the robot has no food at the beginning"""
+        food = False
+        for action in action_seq:
+            if action == 'scoop':
+                food = True
+            elif action == 'drop_food':
+                food = False
+        return food
+    
+    def dumbwaiter_opened(self, action_seq): 
+        """assume the dumbwaiter is closed at the beginning"""
+        opened = False
+        for action in action_seq:
+            if action == 'open_dumbwaiter':
+                opened = True
+            elif action == 'close_dumbwaiter': 
+                opened = False
+        return opened
+            
+    def spoon_on_hand_prob(self, rgb_img_path, tool_list) -> bool:
         """Use ViLD to detect the tool on hand
 
         Args:
@@ -87,7 +155,7 @@ class Affordance_agent_ours(Affordance_agent):
         exists = {prompt2tool[prompt]: prob > 0 for prompt, prob in probs.items()}
         return exists
     
-    def empty_hand(self, rgb_img_path) -> bool:
+    def empty_hand_prob(self, rgb_img_path) -> bool:
         """Use ViLD to detect if the hand is empty
 
         Args:
@@ -412,5 +480,5 @@ class Affordance_agent_ours(Affordance_agent):
 if __name__ == '__main__':
     agent = Affordance_agent_ours(None, None)
     # rgb_img_path = '/home/hcis-s17/multimodal_manipulation/scoop_env/src/affordance/classifier/data/spoon/2/0_rgb/021.png'
-    # print(agent.tool_on_hand(rgb_img_path, ['spoon', 'fork', 'knife']))
+    # print(agent.spoon_on_hand(rgb_img_path, ['spoon', 'fork', 'knife']))
     # print(agent.empty_hand(rgb_img_path))
