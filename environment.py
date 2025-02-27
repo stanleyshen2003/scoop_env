@@ -644,7 +644,7 @@ class IsaacSim():
         self.dumbwaiter_pose = gymapi.Transform()
         quat = euler_to_quaternion(0, 0, math.pi / 2)
         self.dumbwaiter_pose.r = quat
-        self.dumbwaiter_pose.p = gymapi.Vec3(0.5, 0.6, self.default_height / 2 + 0.095)
+        self.dumbwaiter_pose.p = gymapi.Vec3(0.5, 0.62, self.default_height / 2 + 0.095)
     
     def add_dumbwaiter(self, env_ptr):
         dumbwaiter_handle = self.gym.create_actor(env_ptr, self.dumbwaiter_asset, self.dumbwaiter_pose, 'dumbwaiter', 0, 8)
@@ -652,6 +652,7 @@ class IsaacSim():
         self.gym.set_actor_dof_properties(env_ptr, dumbwaiter_handle, self.dumbwaiter_dof_props)
         self.dumbwaiter_door_indices = self.gym.find_actor_dof_index(env_ptr, dumbwaiter_handle, 'door', gymapi.DOMAIN_SIM)
         self.dumbwaiter_door_indices = to_torch(self.dumbwaiter_door_indices, dtype=torch.long, device=self.device)
+        self.dumbwaiter_door_indices_rb.append(self.gym.find_actor_rigid_body_index(env_ptr, dumbwaiter_handle, 'link_1', gymapi.DOMAIN_SIM))
         dumbwaiter_idx = self.gym.get_actor_index(env_ptr, dumbwaiter_handle, gymapi.DOMAIN_SIM)
         self.dumbwaiter_indices.append(dumbwaiter_idx)
         
@@ -759,6 +760,7 @@ class IsaacSim():
         self.butter_indices = []
         self.forked_food_indices = []
         self.dumbwaiter_indices = []
+        self.dumbwaiter_door_indices_rb = []
         self.envs = []
         self.is_acting = {}
         self.action_stage = {}
@@ -782,6 +784,7 @@ class IsaacSim():
         self.butter_indices = to_torch(self.butter_indices, dtype=torch.long, device=self.device)
         self.forked_food_indices = to_torch(self.forked_food_indices, dtype=torch.long, device=self.device)
         self.dumbwaiter_indices = to_torch(self.dumbwaiter_indices, dtype=torch.long, device=self.device)
+        self.dumbwaiter_door_indices_rb = to_torch(self.dumbwaiter_door_indices_rb, dtype=torch.long, device=self.device)
         for container in self.containers_list:
             # container = container.split()[0]
             if len(self.containers_indices[container]) > 0:
@@ -2769,13 +2772,24 @@ class IsaacSim():
     
     def get_our_pipeline_kwargs(self):
         traj_dict = {action: self.get_trajectory(action) for action in self.decision_pipeline.action_list}
+        holder_pos = torch.tensor([[0.412, -0.36, self.default_height / 2 - 0.01]])
+        nearest_container_holder = self.find_nearest_container(holder_pos)
+        distance_nearest_container_holder = torch.norm(holder_pos[:, :2] - nearest_container_holder[:, :2])
+        
+        dumbwaiter_pos = self.rb_state_tensor[self.dumbwaiter_door_indices_rb, :3]
+        nearest_container_dumbwaiter = self.find_nearest_container(dumbwaiter_pos)
+        print(f"dumbwaiter pos: {dumbwaiter_pos}, nearest container: {nearest_container_dumbwaiter}")
+        distance_nearest_dumbwaiter_holder = torch.norm(dumbwaiter_pos[:, :2] - nearest_container_dumbwaiter[:, :2])
+        
         kwargs = {
-            'K': self.get_camera_intrinsic(),
+            # 'K': self.get_camera_intrinsic(),
             # 'extrinsic': self.gym.get_camera_view_matrix(self.sim, self.envs[0], self.camera_handles[0]),
-            'extrinsic': self.get_camera_extrinsic(), 
+            # 'extrinsic': self.get_camera_extrinsic(), 
             'traj_dict': traj_dict,
             'cur_pose': self.rb_state_tensor[self.franka_hand_indices, :7],
-            'cur_joint': self.dof_state[:, self.franka_dof_indices, 0].squeeze(-1)[:, :7]
+            'cur_joint': self.dof_state[:, self.franka_dof_indices, 0].squeeze(-1)[:, :7],
+            'dis_holder': distance_nearest_container_holder,
+            'dis_dumbwaiter': distance_nearest_dumbwaiter_holder,
         }
         return kwargs
     
@@ -3633,7 +3647,7 @@ class IsaacSim():
 
 
 if __name__ == "__main__":
-    config = read_yaml("./src/config/final_task/distance.yaml", task_type='distance', env_idx=1)
+    config = read_yaml("./src/config/final_task/obstacles.yaml", task_type='obstacles', env_idx=30)
     os.makedirs('temp', exist_ok=True)
     isaac = IsaacSim(config, log_folder='temp')
     isaac.data_collection()
