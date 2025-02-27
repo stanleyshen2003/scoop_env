@@ -24,13 +24,13 @@ class Decision_pipeline():
         self.affordance_agent = Affordance_agent(self.init_object_list, self.action_list)
         self.record = {}
     
-    def set_affordance_agent(self, affordance_type):
+    def set_affordance_agent(self, affordance_type, **kwargs):
         affordance_agent_list = {
             # "classifier": Affordance_agent_classifier,
             "lap": Affordance_agent_LAP,
             "our": Affordance_agent_ours
         } 
-        self.affordance_agent = affordance_agent_list.get(affordance_type, Affordance_agent)(self.init_object_list, self.action_list)
+        self.affordance_agent = affordance_agent_list.get(affordance_type, Affordance_agent)(self.init_object_list, self.action_list, **kwargs)
     
     def random_action(self):
         return random.choice(self.action_list)
