@@ -41,6 +41,10 @@ class Decision_pipeline():
     def update_record(self):
         self.record = deepcopy(self._record_buffer)
         
+    def clear_record(self):
+        self.record = {}
+        self._record_buffer = {}
+    
     def chain_of_thought(
         self, 
         instruction,

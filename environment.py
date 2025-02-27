@@ -2779,6 +2779,25 @@ class IsaacSim():
         }
         return kwargs
     
+    def get_our_affordance_agent_kwargs(self):
+        joint_limit = torch.tensor([x for x in zip(self.franka_dof_lower_limits[:7], self.franka_dof_upper_limits[:7])])
+        kwargs = {
+            'DH_params': [
+                {'a': 0, 'd': 0.333, 'alpha': 0},
+                {'a': 0, 'd': 0, 'alpha': -np.pi/2},
+                {'a': 0, 'd': 0.316, 'alpha': np.pi/2},
+                {'a': 0.0825, 'd': 0, 'alpha': np.pi/2},
+                {'a': -0.0825, 'd': 0.384, 'alpha': -np.pi/2},
+                {'a': 0, 'd': 0, 'alpha': np.pi/2},
+                {'a': 0.088, 'd': 0, 'alpha': np.pi/2}
+            ],
+            'joint_limit': joint_limit,
+            'base_pose': self.rb_state_tensor[self.franka_base_indices, :7],
+            'device': self.device
+        }
+        
+        return kwargs
+    
     def affordance_pipeline(self):
         """Affordance pipeline: Get the best action from the affordance score"""
         
@@ -2794,7 +2813,7 @@ class IsaacSim():
         affordance_score = self.decision_pipeline.get_affordance_score(rgb_path, depth_path, self.action_sequence, **kwargs)
         return affordance_score
             
-    def our_pipeline(self, use_vlm=False, max_replan=3):
+    def our_pipeline(self, use_vlm=False, max_replan=5):
         # self.instruction += f" {len(self.action_sequence) + 1}. "
         rgb_path = os.path.join("observation", "rgb.png")
         depth_path = os.path.join("observation", "depth.png")
@@ -2825,10 +2844,13 @@ class IsaacSim():
                 **kwargs
             )
             if affordance_score[best_action]:
+                self.decision_pipeline.update_record()
                 break
             else:
+                self.decision_pipeline.clear_record()
                 continue
-        self.decision_pipeline.update_record()
+        else:
+            best_action = 'REPLAN_ERROR'
         return {best_action: 1}
     
     def gt_pipeline(self, gt_action):
@@ -3072,13 +3094,7 @@ class IsaacSim():
         affordance_type = affordance_list.get(test_type, None)
         kwargs = {}
         if affordance_type == 'our':
-            joint_limit = torch.tensor([x for x in zip(self.franka_dof_lower_limits[:7], self.franka_dof_upper_limits[:7])])
-            kwargs = {
-                'DH_params': {},
-                'joint_limit': joint_limit,
-                'base_pose': self.rb_state_tensor[self.franka_base_indices, :7],
-                'device': self.device
-            }
+            kwargs = self.get_our_affordance_agent_kwargs()
         self.decision_pipeline.set_affordance_agent(affordance_type, **kwargs)
         
         if self.record_video:
@@ -3178,7 +3194,7 @@ class IsaacSim():
             elif best_action == 'take_bowl_out_dumbwaiter':
                 raise NotImplementedError("Not implemented yet")
                 dpose = self.take_bowl_out_dumbwaiter()
-            elif best_action == "DONE" or len(self.action_sequence) >= max_sequence:
+            elif best_action == "DONE" or best_action == 'REPLAN_ERROR' or len(self.action_sequence) >= max_sequence:
                 break 
             elif "move" in best_action:
                 for object in self.containers_list:
@@ -3387,21 +3403,7 @@ class IsaacSim():
                         break
                 dpose = torch.tensor([[[0.],[0.],[0.],[0.],[0.],[0.]]])
             elif self.action == "get_trajectory":
-                joint_limit = torch.tensor([x for x in zip(self.franka_dof_lower_limits[:7], self.franka_dof_upper_limits[:7])])
-                kwargs = {
-                    'DH_params': [
-                        {'a': 0, 'd': 0.333, 'alpha': 0},
-                        {'a': 0, 'd': 0, 'alpha': -np.pi/2},
-                        {'a': 0, 'd': 0.316, 'alpha': np.pi/2},
-                        {'a': 0.0825, 'd': 0, 'alpha': np.pi/2},
-                        {'a': -0.0825, 'd': 0.384, 'alpha': -np.pi/2},
-                        {'a': 0, 'd': 0, 'alpha': np.pi/2},
-                        {'a': 0.088, 'd': 0, 'alpha': np.pi/2}
-                    ],
-                    'joint_limit': joint_limit,
-                    'base_pose': self.rb_state_tensor[self.franka_base_indices, :7],
-                    'device': self.device
-                }
+                kwargs = self.get_our_affordance_agent_kwargs()
                 self.decision_pipeline.set_affordance_agent("our", **kwargs)
                 print('GT jeef', self.j_eef)
                 self.affordance_pipeline()

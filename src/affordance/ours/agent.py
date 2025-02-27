@@ -72,7 +72,7 @@ class Affordance_agent_ours(Affordance_agent):
                 self.affordance_info += f'{action}: {info}'
                 continue
             if traj_dict[action] is not None:
-                joint_affordable = np.random.choice([0, 1]) #self.joint_affordable(cur_pose.clone(), cur_joint.clone(), traj_dict[action])
+                joint_affordable = np.random.choice([0, 1]) # self.joint_affordable(cur_pose.clone(), cur_joint.clone(), traj_dict[action])
                 if not joint_affordable:
                     self.affordance_info += f'{action}: Cannot reach the target pose'
                     continue
