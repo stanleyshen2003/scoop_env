@@ -97,6 +97,8 @@ class Decision_pipeline():
         with_info = False,
         **kwargs
     ):
+        if len(action_candidate) == 0:
+            action_candidate = self.action_list
         affordance = self.affordance_agent.get_affordance(observation_rgb_path, observation_d_path, action_seq=action_sequence, action_candidate=action_candidate, **kwargs)
         if with_info:
             info = self.affordance_agent.get_affordance_info()
