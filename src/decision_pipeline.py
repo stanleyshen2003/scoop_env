@@ -97,11 +97,13 @@ class Decision_pipeline():
         with_info = False,
         **kwargs
     ):
+        if len(action_candidate) == 0:
+            action_candidate = self.action_list
         affordance = self.affordance_agent.get_affordance(observation_rgb_path, observation_d_path, action_seq=action_sequence, action_candidate=action_candidate, **kwargs)
         if with_info:
             info = self.affordance_agent.get_affordance_info()
             if info:
-                key = f"Iteration {len(action_sequence) + 1}"
+                key = len(action_sequence) + 1
                 if key not in self.affordance_info_list:
                     self.affordance_info_list[key] = []
                 self.affordance_info_list[key].append(info)
@@ -134,9 +136,8 @@ class Decision_pipeline():
         if use_affordance_info:
             affordance_info_string = []
             for key, infos in self.affordance_info_list.items():
-                affordance_info_string.append(f'\t\t{key}:')
-                for info in infos:
-                    affordance_info_string.append(f'\t\t\t{info}')
+                info_string = ''.join(infos)
+                affordance_info_string.append(f'\t\tIn iteration {key}, {info_string}')
             additional_info['Previous Affordance Feedback'] = '\n' + '\n'.join(affordance_info_string)
         semantic, record = get_selection_score_openai(
             instruction=instruction, 
