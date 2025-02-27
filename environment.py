@@ -295,6 +295,21 @@ class IsaacSim():
         cy = height / 2
         return torch.tensor([[fx, 0, cx], [0, fy, cy], [0, 0, 1]], dtype=torch.float32)
     
+    def get_camera_extrinsic(self):
+        cam_pos = torch.tensor([self.cam_pos.x, self.cam_pos.y, self.cam_pos.z], dtype=torch.float32)
+        cam_target = torch.tensor([0, 0, 0], dtype=torch.float32)
+        cam_up = torch.tensor([0, 0, 1], dtype=torch.float32)
+        cam_x = (cam_target - cam_pos) / torch.norm(cam_target - cam_pos)
+        # cam_z = (cam_pos - cam_target) / torch.norm(cam_pos - cam_target)
+        cam_y = torch.cross(cam_up, cam_x) / torch.norm(torch.cross(cam_up, cam_x))
+        cam_z = torch.cross(cam_x, cam_y)
+        cam_R = torch.stack([cam_x, cam_y, cam_z], dim=1)
+        cam_T = -cam_R @ cam_pos
+        cam_extrinsic = torch.eye(4, dtype=torch.float32)
+        cam_extrinsic[:3, :3] = cam_R
+        cam_extrinsic[:3, 3] = cam_T
+        return cam_extrinsic
+    
     def _create_ground_plane(self):
         plane_params = gymapi.PlaneParams()
         plane_params.normal = gymapi.Vec3(0.0, 0.0, 1.0)
@@ -694,6 +709,7 @@ class IsaacSim():
         self.franka_indices = []
         self.franka_dof_indices = []
         self.franka_hand_indices = []
+        self.franka_base_indices = []
         # create franka and set properties
         franka_handle = self.gym.create_actor(env_ptr, self.franka_asset, self.franka_start_pose, "franka", i, 4, 2)
         
@@ -706,7 +722,9 @@ class IsaacSim():
         self.franka_dof_indices.extend(franka_dof_index)
         
         franka_hand_sim_idx = self.gym.find_actor_rigid_body_index(env_ptr, franka_handle, "panda_hand", gymapi.DOMAIN_SIM)
+        franka_base_sim_idx = self.gym.find_actor_rigid_body_index(env_ptr, franka_handle, "panda_link0", gymapi.DOMAIN_SIM)
         self.franka_hand_indices.append(franka_hand_sim_idx)
+        self.franka_base_indices.append(franka_base_sim_idx)
         self.gym.set_actor_dof_properties(env_ptr, franka_handle, self.franka_dof_props)
         
         body_shape_prop = self.gym.get_actor_rigid_shape_properties(env_ptr, franka_handle)
@@ -720,6 +738,7 @@ class IsaacSim():
         self.franka_indices = to_torch(self.franka_indices, dtype=torch.long, device=self.device)
         self.franka_dof_indices = to_torch(self.franka_dof_indices, dtype=torch.long, device=self.device)
         self.franka_hand_indices = to_torch(self.franka_hand_indices, dtype=torch.long, device=self.device)
+        self.franka_base_indices = to_torch(self.franka_base_indices, dtype=torch.long, device=self.device)
         
 
     def _create_envs(self, num_envs, spacing, num_per_row):
@@ -898,11 +917,11 @@ class IsaacSim():
     
     def get_trajectory(self, action) -> List[torch.Tensor]:
         ## TODO
-        ## move, take_tool, put_tool, scoop, put_food, open_microwave, close_microwave, start_microwave, (stir)
+        ## move, take_tool, put_tool, scoop, put_food, open_dumbwaiter, close_dumbwaiter, start_dumbwaiter, (stir)
         """_summary_
 
         Args:
-            action (str): move, grasp_spoon, put_spoon_back, scoop, drop_food, open_microwave, close_microwave, start_microwave, pull_bowl_closer, put_bowl_into_microwave
+            action (str): move, grasp_spoon, put_spoon_back, scoop, drop_food, open_dumbwaiter, close_dumbwaiter, start_dumbwaiter, pull_bowl_closer, put_bowl_into_dumbwaiter
 
         Returns:
             List[torch.Tensor]: _description_
@@ -918,16 +937,16 @@ class IsaacSim():
             "put_spoon_back": self._put_tool_traj,
             "scoop": self._scoop_traj,
             "drop_food": self._scoop_put_traj,
-            "open_microwave": self._open_microwave_traj,
-            "close_microwave": self._close_microwave_traj,
-            "start_microwave": self._start_microwave_traj,
+            "open_dumbwaiter": self._open_dumbwaiter_traj,
+            "close_dumbwaiter": self._close_dumbwaiter_traj,
+            "start_dumbwaiter": self._start_dumbwaiter_traj,
             "pull_bowl_closer": self._pull_bowl_traj,
-            "put_bowl_into_microwave": self._put_bowl_into_microwave_traj,
+            "put_bowl_into_dumbwaiter": self._put_bowl_into_dumbwaiter_traj,
         }
         
         traj = traj_dict.get(action, None)
         if traj is None:
-            return None, None
+            return None
         hand_pos = self.rb_state_tensor[self.franka_hand_indices, :3]
         hand_rot = self.rb_state_tensor[self.franka_hand_indices, 3:7]
         params = {
@@ -947,7 +966,10 @@ class IsaacSim():
             "tool": self.tool_indices,
             "container": self.containers_indices
         }
-        object_indice = self.indices_list[object_type][object]
+        for key in self.indices_list[object_type].keys():
+            if object in key:
+                object_indice = self.indices_list[object_type][key]
+                break
         object_pos = self.rb_state_tensor[object_indice, :3] + torch.tensor([-0.05, 0, 0.4], device=self.device)
         return [object_pos], [hand_rot]
     
@@ -1072,7 +1094,7 @@ class IsaacSim():
         ]
         return pos_set, rot_set
     
-    def _open_microwave_traj(self):
+    def _open_dumbwaiter_traj(self):
         pos_set = [
             torch.tensor([[0.5815, 0.2740, 0.63]], device=self.device),
             # torch.tensor([[0.6021, 0.3101, 0.6262]], device=self.device),
@@ -1107,7 +1129,7 @@ class IsaacSim():
         ]
         return pos_set, rot_set
     
-    def _close_microwave_traj(self):
+    def _close_dumbwaiter_traj(self):
         pos_set = [
             torch.tensor([[0.3119, 0.0020, 0.8432]], device=self.device),
             torch.tensor([[0.2851, -0.0098, 0.6229]], device=self.device),
@@ -1134,7 +1156,7 @@ class IsaacSim():
         ]
         return pos_set, rot_set
     
-    def _start_microwave_traj(self):
+    def _start_dumbwaiter_traj(self):
         pos_set = [
             torch.tensor([[0.6581, 0.2500, 0.6262]], device=self.device),
             torch.tensor([[0.6581, 0.3025, 0.6341]], device=self.device),
@@ -1174,7 +1196,7 @@ class IsaacSim():
         ]
         return pos_set, rot_set
     
-    def _put_bowl_into_microwave_traj(self, hand_pos):
+    def _put_bowl_into_dumbwaiter_traj(self, hand_pos):
         init_pos = hand_pos.clone()
         init_pos[:, 2] = 0
         best_tensor = self.find_nearest_container(init_pos)
@@ -1404,7 +1426,7 @@ class IsaacSim():
         return best_tensor
     
     def scoop(self):
-        
+        print(self.dof_state[:, self.franka_dof_indices, 0].squeeze(-1)[:, :7])
         hand_pos = self.rb_state_tensor[self.franka_hand_indices, :3]
         hand_rot = self.rb_state_tensor[self.franka_hand_indices, 3:7]
         use_container_pos = True
@@ -2757,12 +2779,10 @@ class IsaacSim():
         Image.fromarray(rgb_image).save(rgb_path)
         Image.fromarray(depth_image).save(depth_path)
         traj_dict = {action: self.get_trajectory(action) for action in self.decision_pipeline.action_list}
-        joint_limit = torch.tensor([x for x in zip(self.franka_dof_lower_limits[:7], self.franka_dof_upper_limits[:7])])
         kwargs = {
-            'j_eef': self.j_eef,
-            'joint_limit': joint_limit,
-            'intrinsic': self.get_camera_intrinsic(),
-            'extrinsic_list': [self.cam_pos],
+            'K': self.get_camera_intrinsic(),
+            # 'extrinsic': self.gym.get_camera_view_matrix(self.sim, self.envs[0], self.camera_handles[0]),
+            'extrinsic': self.get_camera_extrinsic(), 
             'traj_dict': traj_dict,
             'cur_pose': self.rb_state_tensor[self.franka_hand_indices, :7],
             'cur_joint': self.dof_state[:, self.franka_dof_indices, 0].squeeze(-1)[:, :7]
@@ -3045,7 +3065,18 @@ class IsaacSim():
             'lap': 'saycan',
             'knowno': 'vlm',
         }
-        self.decision_pipeline.set_affordance_agent(affordance_list.get(test_type, None))
+        
+        affordance_type = affordance_list.get(test_type, None)
+        kwargs = {}
+        if affordance_type == 'our':
+            joint_limit = torch.tensor([x for x in zip(self.franka_dof_lower_limits[:7], self.franka_dof_upper_limits[:7])])
+            kwargs = {
+                'DH_params': {},
+                'joint_limit': joint_limit,
+                'base_pose': self.rb_state_tensor[self.franka_base_indices, :7],
+                'device': self.device
+            }
+        self.decision_pipeline.set_affordance_agent(affordance_type, **kwargs)
         
         if self.record_video:
             resolution = (1920, 1080)
@@ -3353,13 +3384,31 @@ class IsaacSim():
                         break
                 dpose = torch.tensor([[[0.],[0.],[0.],[0.],[0.],[0.]]])
             elif self.action == "get_trajectory":
-                for action in self.decision_pipeline.action_list:
-                    pose = self.get_trajectory(action)
-                    print(action)
-                    if pose is None:
-                        continue
-                    [print(p) for p in pose]
-                    print('=' * 50)
+                joint_limit = torch.tensor([x for x in zip(self.franka_dof_lower_limits[:7], self.franka_dof_upper_limits[:7])])
+                kwargs = {
+                    'DH_params': [
+                        {'a': 0, 'd': 0.333, 'alpha': 0},
+                        {'a': 0, 'd': 0, 'alpha': -np.pi/2},
+                        {'a': 0, 'd': 0.316, 'alpha': np.pi/2},
+                        {'a': 0.0825, 'd': 0, 'alpha': np.pi/2},
+                        {'a': -0.0825, 'd': 0.384, 'alpha': -np.pi/2},
+                        {'a': 0, 'd': 0, 'alpha': np.pi/2},
+                        {'a': 0.088, 'd': 0, 'alpha': np.pi/2}
+                    ],
+                    'joint_limit': joint_limit,
+                    'base_pose': self.rb_state_tensor[self.franka_base_indices, :7],
+                    'device': self.device
+                }
+                self.decision_pipeline.set_affordance_agent("our", **kwargs)
+                print('GT jeef', self.j_eef)
+                self.affordance_pipeline()
+                # for action in self.decision_pipeline.action_list:
+                #     pose = self.get_trajectory(action)
+                #     print(action)
+                #     if pose is None:
+                #         continue
+                #     [print(p) for p in pose]
+                #     print('=' * 50)
                 dpose = torch.tensor([[[0.],[0.],[0.],[0.],[0.],[0.]]])
                     
             elif self.action == "change_ball_friction":
@@ -3420,7 +3469,6 @@ class IsaacSim():
        
             test_dof_state = self.dof_state[:, :, 0].contiguous()
             test_dof_state[:, self.franka_dof_indices] = self.pos_action
-
             franka_actor_indices = self.franka_indices.to(dtype=torch.int32)
             self.gym.set_dof_position_target_tensor_indexed(
                 self.sim,
@@ -3580,8 +3628,8 @@ class IsaacSim():
 
 
 if __name__ == "__main__":
-    config = read_yaml("./src/config/config.yaml", task_type='general_hard', env_idx=2)
+    config = read_yaml("./src/config/final_task/distance.yaml", task_type='distance', env_idx=1)
     os.makedirs('temp', exist_ok=True)
-    issac = IsaacSim(config, log_folder='temp')
-    issac.data_collection()
-    # issac.simulate()
+    isaac = IsaacSim(config, log_folder='temp')
+    isaac.data_collection()
+    # isaac.simulate()
