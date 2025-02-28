@@ -62,6 +62,7 @@ class Affordance_agent_ours(Affordance_agent):
         spoon_on_hand = self.spoon_on_hand(action_seq)
         food_on_hand = spoon_on_hand and self.food_on_hand(action_seq)
         dumbwaiter_opened = self.dumbwaiter_opened(action_seq)
+        move_to_target = self.move_to_target(action_seq)
         dis_holder_threshold = 0.15
         dis_dumbwaiter_threshold = 0.32
         
@@ -75,7 +76,7 @@ class Affordance_agent_ours(Affordance_agent):
             if not joint_affordable:
                 self.affordance_info += f'Cannot do {action} because the target bowl is too far, please pull it closer. '
                 continue
-            state_affordable, state_info = self.state_affordable(action, spoon_on_hand, food_on_hand, dumbwaiter_opened, dis_holder < dis_holder_threshold, dis_dumbwaiter < dis_dumbwaiter_threshold)
+            state_affordable, state_info = self.state_affordable(action, spoon_on_hand, food_on_hand, dumbwaiter_opened, move_to_target, dis_holder < dis_holder_threshold, dis_dumbwaiter < dis_dumbwaiter_threshold)
             if not state_affordable:
                 self.affordance_info += f'Cannot do {action} because {state_info}. '
                 continue
@@ -85,7 +86,7 @@ class Affordance_agent_ours(Affordance_agent):
 
         return affordance
     
-    def state_affordable(self, action, spoon_on_hand, food_on_hand, dumbwaiter_opened, obstacle_holder, obstacle_dumbwaiter):
+    def state_affordable(self, action, spoon_on_hand, food_on_hand, dumbwaiter_opened, move_to_target, obstacle_holder, obstacle_dumbwaiter):
         if action == 'grasp_spoon':
             if spoon_on_hand:
                 return False, "spoon is already on hand, please put it back first"
@@ -99,9 +100,13 @@ class Affordance_agent_ours(Affordance_agent):
                 return False, "spoon is not on hand, please grasp it first"
             if food_on_hand:
                 return False, "there are already food in the spoon, please drop it first"
+            if not move_to_target:
+                return False, "the robot is not close to the target bowl, please move to the bowl you want to scoop first"
         elif action == 'drop_food':
             if not food_on_hand:
                 return False, "there is no food in the spoon, please scoop some food first"
+            if not move_to_target:
+                return False, "the robot is not close to the target bowl, please move to the bowl you want to put food first"
         elif action == 'open_dumbwaiter':
             if spoon_on_hand:
                 return False, "spoon is on hand, please put it back first"
@@ -122,11 +127,18 @@ class Affordance_agent_ours(Affordance_agent):
                 return False, "spoon is on hand, please put it back first"
             if not dumbwaiter_opened:
                 return False, "the dumbwaiter is not opened, please open it first"
+            if not move_to_target:
+                return False, "the robot is not close to the target bowl, please move to the bowl you want to put in dumbwaiter first"
         elif action == 'pull_bowl_closer':
             if spoon_on_hand:
                 return False, "spoon is on hand, please put it back first"
+            if not move_to_target:
+                return False, "the robot is not close to the target bowl, please move to the bowl you want to pull first"
         return True, None
-            
+    
+    def move_to_target(self, action_seq):
+        return len(action_seq) > 0 and action_seq[-1].startswith('move_to')
+    
     def spoon_on_hand(self, action_seq):
         """assume the robot has no spoon at the beginning"""
         grasped = False
