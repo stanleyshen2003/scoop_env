@@ -95,7 +95,7 @@ def get_selection_score(
     action_seq=None, 
     use_vlm=False, 
     current_obs_url=None,
-    additional_info="",
+    additional_info: Dict={},
     log_folder=None,
     obs_id=None,
     example_with_image=False,
@@ -115,7 +115,9 @@ def get_selection_score(
     assert not (example_with_image and example_in_system), "Cannot have both example_with_image and example_in_system"
     action_description = {preprocess_action(action): action for action in action_list}
     action_dict = format_action_choices(list(action_description.keys()))
-    system_prompt = get_system_prompt(selection=True, with_example=example_in_system, additional_info=['Current Observation'] if use_vlm else [])
+    additional_info_key = list(additional_info.keys())
+    additional_info_key += ['Current Observation'] if use_vlm else []
+    system_prompt = get_system_prompt(selection=True, with_example=example_in_system, additional_info=additional_info_key)
     current_user_prompt = get_user_prompt(instruction, action_seq, action_dict, object_list, additional_info=additional_info, segmentation=segmentation_prompt)
     
     if not example_in_system:
