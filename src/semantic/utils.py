@@ -70,10 +70,10 @@ def get_action_description_prompt():
         'grasp_spoon': "Grasp the spoon from the tool holder. The robot arm must have no tools in the gripper when choosing this action.",
         'put_spoon_back': "Put the spoon back to the tool holder.",
         'move_to_container': "Move to a container for actions like pulling or scooping.",
-        'scoop': "Scoop food, with the speed adapted to the food's state.",
+        'scoop': "Scoop food, with the speed adapted to the food's state. You should select the bowl to scoop with move_to_container.",
         'stir': "Stir the food.",
         'drop_food': "When the robot arm is positioned above a container, drop the food from the spoon into the container.",
-        'pull_bowl_closer': "When the gripper is empty, pull the nearest bowl toward the center of the table.",
+        'pull_bowl_closer': "When the gripper is empty, pull the bowl toward the center of the table. You should select the bowl to pull with move_to_container.",
         'open_dumbwaiter': "Open the dumbwaiter door.",
         'close_dumbwaiter': "Close the dumbwaiter door.",
         'put_bowl_into_dumbwaiter': "Place the nearest bowl into the dumbwaiter.",
@@ -93,8 +93,8 @@ def get_key_considerations():
 def get_example_prompt(with_image=False, selection=False):
     system_prompt = ""
     system_image_url = []
-    # example_path = '/home/hcis-s25/Desktop/yuhong/from_s21/scoop_env/src/semantic/example/text'
-    example_path = '/home/hcis-s17/multimodal_manipulation/scoop_env/src/semantic/example/text'
+    example_path = '/home/hcis-s25/Desktop/yuhong/from_s21/scoop_env/src/semantic/example/text'
+    # example_path = '/home/hcis-s17/multimodal_manipulation/scoop_env/src/semantic/example/text'
     example_id = 1
     for txt in os.listdir(example_path):
         if not txt.endswith('.txt'):

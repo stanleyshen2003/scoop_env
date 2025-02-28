@@ -143,8 +143,8 @@ def get_selection_score(
     top_logprobs = response.choices[0].logprobs.content[0].top_logprobs
     top_logprobs = {top_logprob.token: top_logprob.logprob for top_logprob in top_logprobs}
     
-    explanation_system_prompt = "You are a robot arm in food manipulation scneario. You should focus on your gripper. You need to explain why you choose the action."
-    explanation_prompt = get_messages(explanation_system_prompt, current_user_prompt + f"{response_content} \nPlease explain why you choose the last action.", user_image_url=current_obs_url)
+    # explanation_system_prompt = "You are a robot arm in food manipulation scneario. You should focus on your gripper. You need to explain why you choose the action."
+    # explanation_prompt = get_messages(explanation_system_prompt, current_user_prompt + f"{response_content} \nPlease explain why you choose the last action.", user_image_url=current_obs_url)
     # explanation = call_openai_api(explanation_prompt, model).choices[0].message.content
     print(response_content)
     previous_best_action = max(record[len(action_seq)+1], key=record[len(action_seq)+1].get, default=None) if len(action_seq)+1 in record.keys() else None
@@ -184,16 +184,16 @@ def get_selection_score(
         possible_actions = " or ".join([current_answer, f"{previous_best_action}. {reverse_dict[previous_best_action]}"])
         choose_sys_prompt = get_system_prompt_choose_one(selection=True, with_example=example_in_system, additional_info=['Current Observation'])
         choose_user_prompt = get_user_prompt_choose_one(instruction, action_seq, action_dict, object_list, additional_info=additional_info, possible_actions=possible_actions)
-        messages = get_messages(choose_sys_prompt, choose_user_prompt, user_image_url=obs_url)
-        response_content = call_openai_api(messages, model).choices[0].message.content
-        answer = response_content.split("The action I should execute in next iteration is ")[1].split(".")[0][-1]
+        choose_messages = get_messages(choose_sys_prompt, choose_user_prompt, user_image_url=obs_url)
+        choose_response_content = call_openai_api(choose_messages, model).choices[0].message.content
+        answer = choose_response_content.split("The action I should execute in next iteration is ")[1].split(".")[0][-1]
         if log_folder is not None:
             assert obs_id is not None, "Please provide observation id"
             with open(os.path.join(log_folder, f'correction_{obs_id}.txt'), 'w') as f:
                 f.write('\n'.join([
                     '\n[SYS]\n' + choose_sys_prompt, 
                     '\n[USER]\n' + choose_user_prompt, 
-                    '\n[RES]\n' + response_content, 
+                    '\n[RES]\n' + choose_response_content, 
                     # '\n[EXP]\n' + explanation, 
                     '\n[ANSWER]\n' + f"{answer}"
                 ]))
