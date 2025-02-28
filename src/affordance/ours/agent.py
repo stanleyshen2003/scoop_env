@@ -70,11 +70,15 @@ class Affordance_agent_ours(Affordance_agent):
         for action in affordance.keys():
             
             if action == 'scoop':
-                joint_affordable = target_container_pos[:, 0] < 0.71
+                joint_affordable = target_container_pos[:, 0] < 0.70
             else:
                 joint_affordable = True
             if not joint_affordable:
-                self.affordance_info += f'Cannot do {action} because the target bowl is too far, please pull it closer. '
+                try:
+                    target_color = action_seq[-1].split('_')[2] + ' '
+                except:
+                    target_color = ''
+                self.affordance_info += f'Cannot do {action} because the target {target_color}bowl is too far, please pull it closer. '
                 continue
             state_affordable, state_info = self.state_affordable(action, spoon_on_hand, food_on_hand, dumbwaiter_opened, move_to_target, dis_holder < dis_holder_threshold, dis_dumbwaiter < dis_dumbwaiter_threshold)
             if not state_affordable:
@@ -101,7 +105,7 @@ class Affordance_agent_ours(Affordance_agent):
             if food_on_hand:
                 return False, "there are already food in the spoon, please drop it first"
             if not move_to_target:
-                return False, "the robot is not close to the target bowl, please move to the bowl you want to scoop before choosing this action"
+                return False, "the robot did not move to the target bowl first, please move to the bowl you want to scoop before scooping"
         elif action == 'drop_food':
             if not food_on_hand:
                 return False, "there is no food in the spoon, please scoop some food first"
@@ -128,12 +132,12 @@ class Affordance_agent_ours(Affordance_agent):
             if not dumbwaiter_opened:
                 return False, "the dumbwaiter is not opened, please open it first"
             if not move_to_target:
-                return False, "the robot is not close to the target bowl, please move to the bowl you want to put in dumbwaiter first"
+                return False, "the robot did not move to the target bowl first, please move to the bowl you want to put first" 
         elif action == 'pull_bowl_closer':
             if spoon_on_hand:
                 return False, "spoon is on hand, please put it back first"
             if not move_to_target:
-                return False, "the robot is not close to the target bowl, please move to the bowl you want to pull first"
+                return False, "the robot did not move to the target bowl first, please move to the bowl you want to pull first"
         return True, None
     
     def move_to_target(self, action_seq):

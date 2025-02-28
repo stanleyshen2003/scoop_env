@@ -182,7 +182,7 @@ def get_selection_score(
         current_answer = response_content.split("Output: ")[1].split("\n")[0].strip()
         reverse_dict = {v:k for k, v in action_dict.items()}
         possible_actions = " or ".join([current_answer, f"{previous_best_action}. {reverse_dict[previous_best_action]}"])
-        choose_sys_prompt = get_system_prompt_choose_one(selection=True, with_example=example_in_system, additional_info=['Current Observation'])
+        choose_sys_prompt = get_system_prompt_choose_one(selection=True, with_example=example_in_system, additional_info=additional_info_key)
         choose_user_prompt = get_user_prompt_choose_one(instruction, action_seq, action_dict, object_list, additional_info=additional_info, possible_actions=possible_actions)
         choose_messages = get_messages(choose_sys_prompt, choose_user_prompt, user_image_url=obs_url)
         choose_response_content = call_openai_api(choose_messages, model).choices[0].message.content

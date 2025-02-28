@@ -93,7 +93,8 @@ def get_key_considerations():
 def get_example_prompt(with_image=False, selection=False):
     system_prompt = ""
     system_image_url = []
-    example_path = '/home/hcis-s25/Desktop/yuhong/from_s21/scoop_env/src/semantic/example/text'
+    example_path = 'src/semantic/example/text'
+    # example_path = '/home/hcis-s25/Desktop/yuhong/from_s21/scoop_env/src/semantic/example/text'
     # example_path = '/home/hcis-s17/multimodal_manipulation/scoop_env/src/semantic/example/text'
     example_id = 1
     for txt in os.listdir(example_path):
@@ -273,6 +274,7 @@ def get_user_prompt(instruction, action_seq, action_dict, container_list, additi
     return user_prompt
 
 def get_user_prompt_choose_one(instruction, action_seq, action_dict, container_list, additional_info={}, possible_actions=str) -> str:
+    print(additional_info)
     container_list = [preprocess_object(container) for container in container_list]
     action_seq = [preprocess_action(action) for action in action_seq]
     # possible_actions = [preprocess_action(action) for action in possible_actions]
