@@ -144,10 +144,15 @@ def get_selection_score(
     explanation_system_prompt = "You are a robot arm in food manipulation scneario. You should focus on your gripper. You need to explain why you choose the action."
     explanation_prompt = get_messages(explanation_system_prompt, current_user_prompt + f"{response_content} \nPlease explain why you choose the last action.", user_image_url=current_obs_url)
     # explanation = call_openai_api(explanation_prompt, model).choices[0].message.content
-    
-    answer = response_content.split("Iteration")[1].split(".")[0][-1]
+    print(response_content)
     previous_best_action = max(record[len(action_seq)+1], key=record[len(action_seq)+1].get, default=None) if len(action_seq)+1 in record.keys() else None
+    
+    try:
+        answer = response_content.split("Iteration")[1].split(".")[0][-1]
+    except:
+        answer = previous_best_action
 
+    
     # print(action_dict)
     if previous_best_action is None or previous_best_action == answer:
         # Write result to record
@@ -172,7 +177,7 @@ def get_selection_score(
                     record[iteration] = dict(char_counts)
     else:
         print(f"answer: {answer}, previous answer: {previous_best_action}")
-        current_answer = response_content.split("Output: ")[1].split("\n").strip()
+        current_answer = response_content.split("Output: ")[1].split("\n")[0].strip()
         reverse_dict = {v:k for k, v in action_dict.items()}
         possible_actions = " or ".join([current_answer, f"{previous_best_action}. {reverse_dict[previous_best_action]}"])
         choose_sys_prompt = get_system_prompt_choose_one(selection=True, with_example=example_in_system, additional_info=['Current Observation'])
@@ -195,7 +200,6 @@ def get_selection_score(
     # print(messages[0]["content"][0]['text'])
     print('=' * 80)
     # print(top_logprobs)
-    print(response_content)
     answer = {answer: 0}
     semantic = {action_description[key]: np.exp(answer.get(value, float('-inf'))) for key, value in action_dict.items()}
     if use_vlm:
