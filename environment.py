@@ -644,7 +644,7 @@ class IsaacSim():
         self.dumbwaiter_pose = gymapi.Transform()
         quat = euler_to_quaternion(0, 0, math.pi / 2)
         self.dumbwaiter_pose.r = quat
-        self.dumbwaiter_pose.p = gymapi.Vec3(0.5, 0.62, self.default_height / 2 + 0.095)
+        self.dumbwaiter_pose.p = gymapi.Vec3(0.5, 0.62, self.default_height / 2 + 0.08)
     
     def add_dumbwaiter(self, env_ptr):
         dumbwaiter_handle = self.gym.create_actor(env_ptr, self.dumbwaiter_asset, self.dumbwaiter_pose, 'dumbwaiter', 0, 8)
@@ -2035,16 +2035,16 @@ class IsaacSim():
                 init_pos + torch.tensor([[-0.07, -0.07,  0.6]], device=self.device),
                 init_pos + torch.tensor([[-0.07, -0.07,  0.6]], device=self.device),
                 init_pos + torch.tensor([[-0.07, -0.07,  0.6]], device=self.device),
-                torch.tensor([[0.4794 - offset, 0.0003, 0.6256]], device=self.device),
-                torch.tensor([[0.4794 - offset, 0.1503, 0.6256]], device=self.device),
-                torch.tensor([[0.4794 - offset, 0.2803, 0.6277]], device=self.device),
-                torch.tensor([[0.4794 - offset, 0.3203, 0.6277]], device=self.device),
-                torch.tensor([[0.4794 - offset, 0.3321, 0.6277]], device=self.device),
-                torch.tensor([[0.4794 - offset, 0.3321, 0.6700]], device=self.device),
-                torch.tensor([[0.4794 - offset, 0.2621, 0.6700]], device=self.device),
-                torch.tensor([[0.4794 - offset, 0.2621, 0.6277]], device=self.device),
-                torch.tensor([[0.4794 - offset, 0.3321, 0.6277]], device=self.device),
-                torch.tensor([[0.4794 - offset, 0.3383, 0.6277]], device=self.device)
+                # torch.tensor([[0.4794 - offset, 0.0003 + 0.02, 0.6256 + 0.01]], device=self.device),
+                torch.tensor([[0.4794 - offset, 0.1503 + offset, 0.6256]], device=self.device),
+                torch.tensor([[0.4794 - offset, 0.2803 + offset, 0.6277]], device=self.device),
+                torch.tensor([[0.4794 - offset, 0.3203 + offset, 0.6277]], device=self.device),
+                torch.tensor([[0.4794 - offset, 0.3321 + offset, 0.6277]], device=self.device),
+                torch.tensor([[0.4794 - offset, 0.3321 + offset, 0.6700]], device=self.device),
+                torch.tensor([[0.4794 - offset, 0.2621 + offset, 0.6700]], device=self.device),
+                torch.tensor([[0.4794 - offset, 0.2621 + offset, 0.6277]], device=self.device),
+                # torch.tensor([[0.4794 - offset, 0.3321, 0.6277]], device=self.device),
+                # torch.tensor([[0.4794 - offset, 0.3383, 0.6277]], device=self.device)
                 
             ]
 
@@ -2053,7 +2053,7 @@ class IsaacSim():
                 torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
                 torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
 
-                torch.tensor([[ 0.9864,  0.0982,  0.1127, -0.0682]], device=self.device),
+                # torch.tensor([[ 0.9864,  0.0982,  0.1127, -0.0682]], device=self.device),
                 torch.tensor([[ 0.9864,  0.0982,  0.1127, -0.0682]], device=self.device),
                 torch.tensor([[ 0.9842, -0.0319,  0.0889, -0.1498]], device=self.device),
                 torch.tensor([[ 0.9842, -0.0319,  0.0889, -0.1498]], device=self.device),
@@ -2062,8 +2062,8 @@ class IsaacSim():
                 torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
                 torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
                 torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
-                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
-                torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device)
+                # torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device),
+                # torch.tensor([[ 0.9851,  0.0639,  0.0880, -0.1335]], device=self.device)
             ]
             self.action_stage['put_bowl_into_dumbwaiter'] = 0
             self.is_acting['put_bowl_into_dumbwaiter'] = True
@@ -2230,17 +2230,17 @@ class IsaacSim():
             self.goal_pos_set = [
                 torch.tensor([[0.5815, 0.2740, 0.63]], device=self.device),
 
-                torch.tensor([[0.6021, 0.3101 + offset, 0.6262]], device=self.device),
+                torch.tensor([[0.6021, 0.3101 + offset, 0.6262 - 0.015]], device=self.device),
                 
                 # torch.tensor([[0.6021, 0.321 + offset, 0.6262]], device=self.device),
                 
                 # torch.tensor([[0.58, 0.3053, 0.6002]], device=self.device)
                 
-                torch.tensor([[0.5865, 0.2111 + offset, 0.6281]], device=self.device),
-                torch.tensor([[0.5528, 0.1524 + offset, 0.6283]], device=self.device),
-                torch.tensor([[0.4601, 0.0769 + offset, 0.6280]], device=self.device),
-                torch.tensor([[0.2797 - 0.05, 0.0333 + offset - 0.008, 0.6281]], device=self.device),
-                torch.tensor([[0.2797 - 0.05, 0.0333 + offset - 0.01, 0.6281]], device=self.device),
+                torch.tensor([[0.5865, 0.2111 + offset, 0.6281 - 0.015]], device=self.device),
+                torch.tensor([[0.5528, 0.1524 + offset, 0.6283 - 0.015]], device=self.device),
+                torch.tensor([[0.4601, 0.0769 + offset, 0.6280 - 0.015]], device=self.device),
+                torch.tensor([[0.2797 - 0.05, 0.0333 + offset - 0.008, 0.6281 - 0.015]], device=self.device),
+                torch.tensor([[0.2797 - 0.05, 0.0333 + offset - 0.01, 0.6281 - 0.015]], device=self.device),
                 torch.tensor([[0.2851, -0.0098 + offset - 0.01, 0.6229]], device=self.device),
                 torch.tensor([[0.3119, 0.0020 + offset - 0.01, 0.8432]], device=self.device)
             ]
@@ -2331,22 +2331,24 @@ class IsaacSim():
             self.goal_rot_set = [torch.tensor([[1.0, 0.0, -0.05, 0.0]], device=self.device)]
             init_pos = hand_pos.clone()                
             
-            offset = 0.041
+            offset = 0.06
             # original pos: 0.3871, 0.0877, container pos: 0.43999999999999995, 0.07500000000000001
             self.goal_pos_set = [
                 torch.tensor([[0.3119, 0.0020 + offset, 0.8432]], device=self.device),
+                torch.tensor([[0.2551, -0.0098 + offset, 0.6229]], device=self.device),
                 torch.tensor([[0.2851, -0.0098 + offset, 0.6229]], device=self.device),
                 torch.tensor([[0.2797, 0.0333 + offset, 0.6281]], device=self.device),
                 torch.tensor([[0.2797, 0.0333 + offset, 0.6281]], device=self.device),
                 torch.tensor([[0.4601, 0.0769 + offset, 0.6280]], device=self.device),
                 torch.tensor([[0.5528, 0.1524 + offset, 0.6283]], device=self.device),
                 torch.tensor([[0.5865, 0.2111 + offset, 0.6281]], device=self.device),
-                torch.tensor([[0.6081, 0.3025 + offset, 0.6262]], device=self.device),
-                torch.tensor([[0.5499, 0.2111 + offset, 0.6341]], device=self.device)
+                torch.tensor([[0.6081, 0.3025, 0.6262]], device=self.device),
+                torch.tensor([[0.5499, 0.2111, 0.6341]], device=self.device)
             ]
 
             self.goal_rot_set = [
                 torch.tensor([[ 0.9634, 0.1132, 0.2373, -0.0520]], device=self.device),
+                torch.tensor([[ 0.5951, 0.4882, 0.4980, -0.3993]], device=self.device),
                 torch.tensor([[ 0.5951, 0.4882, 0.4980, -0.3993]], device=self.device),
                 torch.tensor([[ 0.5951, 0.4882, 0.4980, -0.3993]], device=self.device),
                 torch.tensor([[ 0.5951, 0.4882, 0.4980, -0.3993]], device=self.device),
