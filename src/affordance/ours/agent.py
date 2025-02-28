@@ -105,6 +105,8 @@ class Affordance_agent_ours(Affordance_agent):
         elif action == 'drop_food':
             if not food_on_hand:
                 return False, "there is no food in the spoon, please scoop some food first"
+            if not move_to_target:
+                return False, "the robot is not close to the target bowl, please move to the bowl you want to put food first"
         elif action == 'open_dumbwaiter':
             if spoon_on_hand:
                 return False, "spoon is on hand, please put it back first"
