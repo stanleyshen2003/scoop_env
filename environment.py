@@ -1258,7 +1258,7 @@ class IsaacSim():
         hand_pos = self.rb_state_tensor[self.franka_hand_indices, :3]
         hand_rot = self.rb_state_tensor[self.franka_hand_indices, 3:7]
         if rot is None:
-            rot = hand_rot
+            rot = torch.tensor([[0.9963,  0.0368,  0.0511,  0.0582]], device=self.device)
         if pos is None:
             pos = object_pos
         xy_offset = 0.03
@@ -1379,7 +1379,7 @@ class IsaacSim():
                 torch.tensor([[tool_pos.x, tool_pos.y + 0.05, tool_pos.z + 0.18]], device=self.device),
                 torch.tensor([[tool_pos.x, tool_pos.y + 0.05, tool_pos.z + 0.15]], device=self.device),
                 torch.tensor([[tool_pos.x, tool_pos.y - 0.0026, tool_pos.z + 0.13]], device=self.device),
-                torch.tensor([[tool_pos.x, tool_pos.y - 0.0026, tool_pos.z + 0.085]], device=self.device),
+                torch.tensor([[tool_pos.x, tool_pos.y - 0.0026, tool_pos.z + 0.09]], device=self.device),
                 torch.tensor([[tool_pos.x, tool_pos.y - 0.0026, tool_pos.z + 0.2]], device=self.device)
             ]
             self.goal_rot_set = [torch.tensor([[rot.x, rot.y, rot.z, rot.w]], device=self.device)] * len(self.goal_pos_set)
@@ -1933,6 +1933,7 @@ class IsaacSim():
             init_pos = hand_pos.clone()
             init_pos[:, 2] = 0
             
+            self.stop_counter = 100
             # find the nearest container
             if use_container_pos:
                 best_tensor = self.find_nearest_container(init_pos)
@@ -1952,12 +1953,18 @@ class IsaacSim():
             ]
 
             self.goal_rot_set = [
-                torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
-                torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
-                torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
-                torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
-                torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
-                torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device)
+                # torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
+                # torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
+                # torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
+                # torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
+                # torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device),
+                # torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.0101]], device=self.device)
+                torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.015]], device=self.device),
+                torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.015]], device=self.device),
+                torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.015]], device=self.device),
+                torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.015]], device=self.device),
+                torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.015]], device=self.device),
+                torch.tensor([[ 0.8973, -0.4209,  0.1325,  0.015]], device=self.device)
             ]
             self.action_stage['pull_bowl_closer'] = 0
             self.is_acting['pull_bowl_closer'] = True
@@ -1974,6 +1981,9 @@ class IsaacSim():
         
         if self.action_stage['pull_bowl_closer'] > 1 and self.action_stage['pull_bowl_closer'] < 5:
             self.pos_action[:, 7:9] = gripper_close
+            if self.gripper_offset_cnt < self.gripper_action_offset:
+                self.gripper_offset_cnt += 1
+                return torch.tensor([[0.], [0.], [0.], [0.], [0.], [0.]], device=self.device)
         else:
             self.pos_action[:, 7:9] = gripper_open
             if self.gripper_offset_cnt < self.gripper_action_offset:
@@ -1995,7 +2005,7 @@ class IsaacSim():
         if goal_dist <= self.goal_offset and axis_dist <= self.axis_offset and w_dist <= self.w_offset:
             self.action_stage['pull_bowl_closer'] += 1
             print(self.action_stage['pull_bowl_closer'])
-            if self.action_stage['pull_bowl_closer'] == 5 or self.action_stage['pull_bowl_closer'] == 1:
+            if self.action_stage['pull_bowl_closer'] == 5 or self.action_stage['pull_bowl_closer'] == 1 or self.action_stage['pull_bowl_closer'] == 2:
                 self.gripper_offset_cnt = 0
             else:
                 self.gripper_offset_cnt = self.gripper_action_offset
@@ -3482,6 +3492,11 @@ class IsaacSim():
             elif self.action == "take_bowl_out_dumbwaiter":
                 dpose = self.take_bowl_out_dumbwaiter()
             else:
+                rgb_img = self.gym.get_camera_image(self.sim, self.envs[0], self.camera_handles[0], gymapi.IMAGE_COLOR).reshape(1080, 1920, 4)[:,:,:-1]
+                rgb_img = Image.fromarray(rgb_img)
+                print("executed")
+                # split text to multiple lines if too long
+                rgb_img.save('out.jpg')
                 dpose = torch.tensor([[[0.],[0.],[0.],[0.],[0.],[0.]]])
             dpose = dpose.to(self.device)
             

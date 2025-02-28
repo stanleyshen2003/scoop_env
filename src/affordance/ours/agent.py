@@ -105,7 +105,7 @@ class Affordance_agent_ours(Affordance_agent):
             if food_on_hand:
                 return False, "there are already food in the spoon, please drop it first"
             if not move_to_target:
-                return False, "the robot did not move to the target bowl first, please move to the bowl you want to scoop before scooping"
+                return False, "the robot did not move to the target bowl first, please move to the target bowl you want to scoop"
         elif action == 'drop_food':
             if not food_on_hand:
                 return False, "there is no food in the spoon, please scoop some food first"
