@@ -2785,9 +2785,10 @@ class IsaacSim():
             # 'K': self.get_camera_intrinsic(),
             # 'extrinsic': self.gym.get_camera_view_matrix(self.sim, self.envs[0], self.camera_handles[0]),
             # 'extrinsic': self.get_camera_extrinsic(), 
-            'traj_dict': traj_dict,
-            'cur_pose': self.rb_state_tensor[self.franka_hand_indices, :7],
-            'cur_joint': self.dof_state[:, self.franka_dof_indices, 0].squeeze(-1)[:, :7],
+            # 'traj_dict': traj_dict,
+            # 'cur_pose': self.rb_state_tensor[self.franka_hand_indices, :7],
+            # 'cur_joint': self.dof_state[:, self.franka_dof_indices, 0].squeeze(-1)[:, :7],
+            'target_container_pos': self.find_nearest_container(self.rb_state_tensor[self.franka_hand_indices, :3]),
             'dis_holder': distance_nearest_container_holder,
             'dis_dumbwaiter': distance_nearest_dumbwaiter_holder,
         }

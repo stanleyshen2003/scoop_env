@@ -50,9 +50,7 @@ class Affordance_agent_ours(Affordance_agent):
         rgb_img_path,
         gray_scale_img, 
         action_seq, 
-        traj_dict,
-        cur_pose,
-        cur_joint,
+        target_container_pos,
         dis_holder,
         dis_dumbwaiter,
         action_candidate=[], 
@@ -70,16 +68,16 @@ class Affordance_agent_ours(Affordance_agent):
         self.affordance_info = ''
         for action in affordance.keys():
             
-            if action == 'scoop' and traj_dict[action] is not None:
-                joint_affordable = self.joint_affordable(cur_pose.clone(), cur_joint.clone(), traj_dict[action][:10])
+            if action == 'scoop':
+                joint_affordable = target_container_pos[:, 0] < 0.71
             else:
                 joint_affordable = True
             if not joint_affordable:
-                self.affordance_info += f'Cannot do {action}, because the target bowl is too far.'
+                self.affordance_info += f'Cannot do {action} because the target bowl is too far, please pull it closer. '
                 continue
             state_affordable, state_info = self.state_affordable(action, spoon_on_hand, food_on_hand, dumbwaiter_opened, dis_holder < dis_holder_threshold, dis_dumbwaiter < dis_dumbwaiter_threshold)
             if not state_affordable:
-                self.affordance_info += f'Cannot do {action}, because {state_info}. '
+                self.affordance_info += f'Cannot do {action} because {state_info}. '
                 continue
             
             affordance[action] = 1                
@@ -90,43 +88,43 @@ class Affordance_agent_ours(Affordance_agent):
     def state_affordable(self, action, spoon_on_hand, food_on_hand, dumbwaiter_opened, obstacle_holder, obstacle_dumbwaiter):
         if action == 'grasp_spoon':
             if spoon_on_hand:
-                return False, "spoon is already on hand"
+                return False, "spoon is already on hand, please put it back first"
             if obstacle_holder:
-                return False, "there is a bowl too close to the holder"
+                return False, "there is a bowl too close to the holder, please move to the bowl near the holder and pull it to make space"
         elif action == 'put_spoon_back':
             if not spoon_on_hand:
-                return False, "spoon is not on hand"
+                return False, "spoon is not on hand, please grasp it first"
         elif action == 'scoop':
             if not spoon_on_hand:
-                return False, "spoon is not on hand"
+                return False, "spoon is not on hand, please grasp it first"
             if food_on_hand:
-                return False, "there are already food in the spoon"
+                return False, "there are already food in the spoon, please drop it first"
         elif action == 'drop_food':
             if not food_on_hand:
-                return False, "there is no food in the spoon"
+                return False, "there is no food in the spoon, please scoop some food first"
         elif action == 'open_dumbwaiter':
             if spoon_on_hand:
-                return False, "spoon is on hand"
+                return False, "spoon is on hand, please put it back first"
             if dumbwaiter_opened:
-                return False, "it is already opened"
+                return False, "it is already opened, please close it first"
             if obstacle_dumbwaiter:
-                return False, "there is a bowl too close to the dumbwaiter"
+                return False, "there is a bowl too close to the dumbwaiter, please move to the bowl near the dumbwaiter and pull it to make space"
         elif action == 'close_dumbwaiter':
             if spoon_on_hand:
-                return False, "spoon is on hand"
+                return False, "spoon is on hand, please put it back first"
             if not dumbwaiter_opened:
-                return False, "it is already closed"
+                return False, "it is already closed, please open it first"
         elif action == 'start_dumbwaiter':
             if spoon_on_hand:
-                return False, "spoon is on hand"
+                return False, "spoon is on hand, please put it back first"
         elif action == 'put_bowl_into_dumbwaiter':
             if spoon_on_hand:
-                return False, "spoon is on hand"
+                return False, "spoon is on hand, please put it back first"
             if not dumbwaiter_opened:
-                return False, "the dumbwaiter is not opened"
+                return False, "the dumbwaiter is not opened, please open it first"
         elif action == 'pull_bowl_closer':
             if spoon_on_hand:
-                return False, "spoon is on hand"
+                return False, "spoon is on hand, please put it back first"
         return True, None
             
     def spoon_on_hand(self, action_seq):

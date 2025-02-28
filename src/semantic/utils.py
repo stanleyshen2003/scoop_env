@@ -13,7 +13,7 @@ AFFORDANCE_DESCRIPTION = {
     'Current Observation': "An image of the robot's current environment.",
     'Goal Description': "A description of the subgoal that the robot must accomplish in next iteration.",
     "Additional important information": "A detailed description of the environment and task. Please consider this information when making your decision.",
-    "Previous Affordance Feedback": "A record of the affordance feedback from the previous iteration.",
+    "Previous Affordance Feedback": "A record of action names, their failure reasons, and some suggestion from previous iterations. Please consider this information when making your decision.",
 }
 
 def preprocess_action(action):
