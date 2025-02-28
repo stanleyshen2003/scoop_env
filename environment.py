@@ -2011,10 +2011,10 @@ class IsaacSim():
         gripper_close = self.franka_dof_lower_limits[7:]
         if self.action_stage['put_bowl_into_dumbwaiter'] == -1:
             # initialize
-            self.stop_counter = 40
+            self.stop_counter = 100
             print("put bowl into dumbwaiter start")
             self.gripper_offset_cnt = self.gripper_action_offset
-            self.delta['put_bowl_into_dumbwaiter'] = [2, 2, 2, 0.8]#, 0.5, 0.5, 0.5]
+            self.delta['put_bowl_into_dumbwaiter'] = [2, 2, 2, 1.]#, 0.5, 0.5, 0.5]
             self.goal_pos_set = [hand_pos + torch.tensor([[0., 0., -0.065]], device=self.device)]
             self.goal_rot_set = [torch.tensor([[1.0, 0.0, -0.05, 0.0]], device=self.device)]
             init_pos = hand_pos.clone()
@@ -2028,22 +2028,23 @@ class IsaacSim():
                 init_pos[0][1] += 0.0127
             else:
                 init_pos[0][2] -= 0.02
-                
+            
+            offset = 0.02
             self.goal_pos_set = [
                 init_pos + torch.tensor([[-0.07, -0.07, 0.7836]], device=self.device),
                 init_pos + torch.tensor([[-0.07, -0.07,  0.6]], device=self.device),
                 init_pos + torch.tensor([[-0.07, -0.07,  0.6]], device=self.device),
                 init_pos + torch.tensor([[-0.07, -0.07,  0.6]], device=self.device),
-                torch.tensor([[0.4794, 0.0003, 0.6256]], device=self.device),
-                torch.tensor([[0.4794, 0.1503, 0.6256]], device=self.device),
-                torch.tensor([[0.4794, 0.2803, 0.6277]], device=self.device),
-                torch.tensor([[0.4794, 0.3203, 0.6277]], device=self.device),
-                torch.tensor([[0.4794, 0.3321, 0.6277]], device=self.device),
-                torch.tensor([[0.4794, 0.3321, 0.6700]], device=self.device),
-                torch.tensor([[0.4794, 0.2621, 0.6700]], device=self.device),
-                torch.tensor([[0.4794, 0.2621, 0.6277]], device=self.device),
-                torch.tensor([[0.4794, 0.3321, 0.6277]], device=self.device),
-                torch.tensor([[0.4794, 0.3383, 0.6277]], device=self.device)
+                torch.tensor([[0.4794 - offset, 0.0003, 0.6256]], device=self.device),
+                torch.tensor([[0.4794 - offset, 0.1503, 0.6256]], device=self.device),
+                torch.tensor([[0.4794 - offset, 0.2803, 0.6277]], device=self.device),
+                torch.tensor([[0.4794 - offset, 0.3203, 0.6277]], device=self.device),
+                torch.tensor([[0.4794 - offset, 0.3321, 0.6277]], device=self.device),
+                torch.tensor([[0.4794 - offset, 0.3321, 0.6700]], device=self.device),
+                torch.tensor([[0.4794 - offset, 0.2621, 0.6700]], device=self.device),
+                torch.tensor([[0.4794 - offset, 0.2621, 0.6277]], device=self.device),
+                torch.tensor([[0.4794 - offset, 0.3321, 0.6277]], device=self.device),
+                torch.tensor([[0.4794 - offset, 0.3383, 0.6277]], device=self.device)
                 
             ]
 
@@ -2216,40 +2217,36 @@ class IsaacSim():
         
         if self.action_stage['open_dumbwaiter'] == -1:
             # initialize
-            self.stop_counter = 70
+            self.stop_counter = 100
             print("open_dumbwaiter start")
-            self.delta['open_dumbwaiter'] = [2, 2, 2, 2, 2, 2, 1, 1, 1, 2]
+            self.delta['open_dumbwaiter'] = [2, 2, 2, 2, 1, 1, 1, 1, 1, 2]
             # self.delta['open_dumbwaiter'] = [0.05, 0.05, 0.05, 0.5]
             self.goal_pos_set = [hand_pos + torch.tensor([[0., 0., -0.065]], device=self.device)]
             self.goal_rot_set = [torch.tensor([[1.0, 0.0, -0.05, 0.0]], device=self.device)]
             init_pos = hand_pos.clone()                
             
             # original pos: 0.3871, 0.0877, container pos: 0.43999999999999995, 0.07500000000000001
+            offset = 0.041
             self.goal_pos_set = [
                 torch.tensor([[0.5815, 0.2740, 0.63]], device=self.device),
 
-                # torch.tensor([[0.6021, 0.3101, 0.6262]], device=self.device),
-                # torch.tensor([[0.6021, 0.3101, 0.6262]], device=self.device),
-                # torch.tensor([[0.6021, 0.3101, 0.6262]], device=self.device),
+                torch.tensor([[0.6021, 0.3101 + offset, 0.6262]], device=self.device),
                 
-                torch.tensor([[0.6021, 0.321, 0.6262]], device=self.device),
-                torch.tensor([[0.6021, 0.321, 0.6262]], device=self.device),
-                torch.tensor([[0.6021, 0.321, 0.6262]], device=self.device),
+                # torch.tensor([[0.6021, 0.321 + offset, 0.6262]], device=self.device),
                 
                 # torch.tensor([[0.58, 0.3053, 0.6002]], device=self.device)
-                torch.tensor([[0.5865, 0.2111, 0.6281]], device=self.device),
-                torch.tensor([[0.5528, 0.1524, 0.6283]], device=self.device),
-                torch.tensor([[0.4601, 0.0769, 0.6280]], device=self.device),
-                torch.tensor([[0.2797, 0.0333, 0.6281]], device=self.device),
-                torch.tensor([[0.2797, 0.0333, 0.6281]], device=self.device),
-                torch.tensor([[0.2851, -0.0098, 0.6229]], device=self.device),
-                torch.tensor([[0.3119, 0.0020, 0.8432]], device=self.device)
+                
+                torch.tensor([[0.5865, 0.2111 + offset, 0.6281]], device=self.device),
+                torch.tensor([[0.5528, 0.1524 + offset, 0.6283]], device=self.device),
+                torch.tensor([[0.4601, 0.0769 + offset, 0.6280]], device=self.device),
+                torch.tensor([[0.2797 - 0.05, 0.0333 + offset - 0.008, 0.6281]], device=self.device),
+                torch.tensor([[0.2797 - 0.05, 0.0333 + offset - 0.01, 0.6281]], device=self.device),
+                torch.tensor([[0.2851, -0.0098 + offset - 0.01, 0.6229]], device=self.device),
+                torch.tensor([[0.3119, 0.0020 + offset - 0.01, 0.8432]], device=self.device)
             ]
 
             self.goal_rot_set = [
                 torch.tensor([[ 0.5699, 0.4882, 0.4497, -0.4844]], device=self.device),
-                torch.tensor([[ 0.5096, 0.5654, 0.4241, -0.4906]], device=self.device),
-                torch.tensor([[ 0.5096, 0.5654, 0.4241, -0.4906]], device=self.device),
                 torch.tensor([[ 0.5096, 0.5654, 0.4241, -0.4906]], device=self.device),
                 torch.tensor([[ 0.5193, 0.5606, 0.4172, -0.4920]], device=self.device),
                 torch.tensor([[ 0.5088, 0.5718, 0.4091, -0.4968]], device=self.device),
@@ -2334,17 +2331,18 @@ class IsaacSim():
             self.goal_rot_set = [torch.tensor([[1.0, 0.0, -0.05, 0.0]], device=self.device)]
             init_pos = hand_pos.clone()                
             
+            offset = 0.041
             # original pos: 0.3871, 0.0877, container pos: 0.43999999999999995, 0.07500000000000001
             self.goal_pos_set = [
-                torch.tensor([[0.3119, 0.0020, 0.8432]], device=self.device),
-                torch.tensor([[0.2851, -0.0098, 0.6229]], device=self.device),
-                torch.tensor([[0.2797, 0.0333, 0.6281]], device=self.device),
-                torch.tensor([[0.2797, 0.0333, 0.6281]], device=self.device),
-                torch.tensor([[0.4601, 0.0769, 0.6280]], device=self.device),
-                torch.tensor([[0.5528, 0.1524, 0.6283]], device=self.device),
-                torch.tensor([[0.5865, 0.2111, 0.6281]], device=self.device),
-                torch.tensor([[0.6081, 0.3025, 0.6262]], device=self.device),
-                torch.tensor([[0.5499, 0.2111, 0.6341]], device=self.device)
+                torch.tensor([[0.3119, 0.0020 + offset, 0.8432]], device=self.device),
+                torch.tensor([[0.2851, -0.0098 + offset, 0.6229]], device=self.device),
+                torch.tensor([[0.2797, 0.0333 + offset, 0.6281]], device=self.device),
+                torch.tensor([[0.2797, 0.0333 + offset, 0.6281]], device=self.device),
+                torch.tensor([[0.4601, 0.0769 + offset, 0.6280]], device=self.device),
+                torch.tensor([[0.5528, 0.1524 + offset, 0.6283]], device=self.device),
+                torch.tensor([[0.5865, 0.2111 + offset, 0.6281]], device=self.device),
+                torch.tensor([[0.6081, 0.3025 + offset, 0.6262]], device=self.device),
+                torch.tensor([[0.5499, 0.2111 + offset, 0.6341]], device=self.device)
             ]
 
             self.goal_rot_set = [
@@ -3648,7 +3646,7 @@ class IsaacSim():
 
 
 if __name__ == "__main__":
-    config = read_yaml("./src/config/final_task/obstacles.yaml", task_type='obstacles', env_idx=30)
+    config = read_yaml("./src/config/example.yaml", task_type='example', env_idx=1)
     os.makedirs('temp', exist_ok=True)
     isaac = IsaacSim(config, log_folder='temp')
     isaac.data_collection()

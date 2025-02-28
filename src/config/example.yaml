@@ -15,17 +15,17 @@ example:
         colorcode: [darkorange, plum, indigo]
         amount: 2000
         position: [1, 1]
-    - x: 0.5
-      y: 0.28
-      type: bowl
-      color: green
-      colorcode: green
-      food:
-        type: ball
-        foodname: [white, pink]
-        colorcode: [white, lightcoral]
-        amount: 1600
-        position: [1, 1]
+    # - x: 0.5
+    #   y: 0.28
+    #   type: bowl
+    #   color: green
+    #   colorcode: green
+    #   food:
+    #     type: ball
+    #     foodname: [white, pink]
+    #     colorcode: [white, lightcoral]
+    #     amount: 1600
+    #     position: [1, 1]
     - x: 0.4473437589809517
       y: -0.01301534186995279
       type: bowl
